@@ -18,12 +18,11 @@ def sendtoall(message, markdown, exeptions):
     return
 
 @bot.message_handler(commands=['start'])
+
 def send_welcome(message):
     global ActiveUser
-    print(message.chat.id)
     ActiveUser[message.chat.id] = {'id': message.chat.id}
     finduser = db.search_record("Users", "id", message.chat.id)
-    print(finduser)
     if len(finduser) == 0:
         bot.send_message(
             message.chat.id,
@@ -32,14 +31,16 @@ def send_welcome(message):
         )
         bot.register_next_step_handler(message, register.reg1)
     else:
+        ufname = str(db.get_record_by_id("Users", message.chat.id)[1])
         bot.send_message(
             message.chat.id,
-            f'Вы зарегистрированы как {db.get_record_by_id("Users", message.chat.id)[1]}.',
+            'Вы зарегистрированы как' + ufname + '.',
             reply_markup=buttons.Buttons(['Главное меню'])
         )
         bot.register_next_step_handler(message, MainMenu.Main1)
 
 @bot.message_handler(content_types=['text'])
+
 class register:
     
     def reg1(message):
@@ -123,6 +124,7 @@ class MainMenu:
     
     def Main1(message):
         global ActiveUser
+        print('main menu')
         if message.text == 'Главное меню' or message.text == 'Вернуться':
             bot.send_message(
                 message.chat.id,
@@ -137,31 +139,25 @@ class MainMenu:
             bot.send_message(
                 message.chat.id,
                 'Выберите клиента или введите его ИНН.',
-                reply_markup=buttons.Buttons(functions.listgen(contragents, [0, 1], 2))
+                reply_markup=buttons.Buttons(functions.listgen(contragents, [0, 1], 2), 1)
             )
             bot.register_next_step_handler(message, NewTask.nt1)
         elif message.text == 'Список заявок':
-            tasks = db.select_table('Tasks',['id', 'added', 'contragent', 'status'])
-            bot.send_message(
+            ActiveUser[message.chat.id]['filter'] = {
+                'from': '01.01.2000 00:00',
+                'to': '31.12.2100 23:59',
+                'added': 1,
+                'confirmed': 1,
+                'done': 1,
+                'canceled': 1,
+                'justmy': 0
+            }
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'Вот все заявки в базе...',
+                filters(message),
+                reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
             )
-            taskslist = functions.listgen(tasks, [0, 1, 3, 10], 1)
-            for line in taskslist:
-                print(line)
-                taskid = line.split()[2]
-                print('номер заявки - ' + taskid)
-                bot.send_message(
-                    message.chat.id,
-                    line,
-                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                )
-            bot.send_message(
-                message.chat.id,
-                'Вернитесь в главное меню.',
-                reply_markup=buttons.Buttons(['Главное меню'])
-            )
-            bot.register_next_step_handler(message, MainMenu.Main1)
+            bot.register_next_step_handler(message, TL.tl1)
         elif message.text == 'Написать всем':
             bot.send_message(
                 message.chat.id,
@@ -437,6 +433,13 @@ class Task:
                     reply_markup=buttons.Buttons(['Главное меню'])
                 )
                 bot.register_next_step_handler(message, MainMenu.Main1)
+        elif message.text == 'Назад':
+            bot.send_message(
+                message.chat.id,
+                'Что вы хотите сделать.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
+            )
+            bot.register_next_step_handler(message, MainMenu.Main2)
     
     def task2(message):
         if message.text == 'Да':
@@ -483,16 +486,201 @@ class Task:
         )
         bot.register_next_step_handler(message, MainMenu.Main1)
 
-class allchats:
-    def chat1(message):
-        if message.text == 'Ответить':
+def filters(message):
+    global ActiveUser
+    messagetouser = 'По каким параметрам формировать список\n'
+    if ActiveUser[message.chat.id]['filter']['from'] == '01.01.2000 00:00':
+        messagetouser = messagetouser + '📅 Будут показаны все заявки за весь период.\n'
+    else:
+        messagetouser = messagetouser + '📅 Выбран период:\n c' + str(ActiveUser[message.chat.id]['filter']['from']) + ' по ' + str(ActiveUser[message.chat.id]['filter']['to']) + '\n'
+    messagetouser = messagetouser + '\n📍 СТАТУС:\n'
+    if ActiveUser[message.chat.id]['filter']['added'] == 1:
+        messagetouser = messagetouser + '🔵 Зарегистрированные\n'
+    if ActiveUser[message.chat.id]['filter']['confirmed'] == 1:
+        messagetouser = messagetouser + '🟡 В работе\n'
+    if ActiveUser[message.chat.id]['filter']['done'] == 1:
+        messagetouser = messagetouser + '🟢 Завершенные\n'
+    if ActiveUser[message.chat.id]['filter']['canceled'] == 1:
+        messagetouser = messagetouser + '🔴 Отмененные'
+    if ActiveUser[message.chat.id]['filter']['justmy'] == 1:
+        messagetouser = messagetouser + '\n👤 Показать только мои заявки.'
+    return messagetouser
+
+class TL:
+    def tl1(message):
+        global ActiveUser
+        if message.text == 'Сформировать':
+            statuses = []
+            if ActiveUser[message.chat.id]['filter']['added'] == 1:
+                statuses.append(1)
+            if ActiveUser[message.chat.id]['filter']['confirmed'] == 1:
+                statuses.append(2)
+            if ActiveUser[message.chat.id]['filter']['done'] == 1:
+                statuses.append(3)
+            if ActiveUser[message.chat.id]['filter']['canceled'] == 1:
+                statuses.append(4)
+            if ActiveUser[message.chat.id]['filter']['justmy'] == 1:
+                tasks = db.select_table_with_filters('Tasks', {'status': statuses, 'master': message.chat.id})
+            else:
+                tasks = db.select_table_with_filters('Tasks', {'status': statuses})
+            if ActiveUser[message.chat.id]['filter']['from'] != '01.01.2000 00:00':
+                for line in tasks[:]:
+                    if datetime.strptime(ActiveUser[message.chat.id]['filter']['from'], '%d.%m.%Y %H:%M') <= datetime.strptime(line[1], '%d.%m.%Y %H:%M') <= datetime.strptime(ActiveUser[message.chat.id]['filter']['to'], '%d.%m.%Y %H:%M'):
+                        print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
+                    else:
+                        tasks.remove(line)
+            taskslist = functions.listgen(tasks, [0, 1, 3, 10], 1)
+            for line in taskslist:
+                print(line)
+                taskid = line.split()[2]
+                print('номер заявки - ' + taskid)
+                bot.send_message(
+                    message.chat.id,
+                    line,
+                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                )
             bot.send_message(
                 message.chat.id,
-                'Напишите Ваше сообщение и оно будет разослано всем.\nчтобы вернуться в главное меню нажмите [Главное меню]',
-                reply_markup=buttons.Buttons(['Главное меню'])
+                'Что вы хотите сделать.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
             )
-            bot.register_next_step_handler(message, allchats.chat1)
-        elif message.text == 'Главное меню':
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        elif message.text == 'Указать период':
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                'Укажите дату начала периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, TL.tl2)
+        elif message.text == 'Зарегистрированные':
+            if ActiveUser[message.chat.id]['filter']['added'] == 1:
+                ActiveUser[message.chat.id]['filter']['added'] = 0
+            else:
+                ActiveUser[message.chat.id]['filter']['added'] = 1
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                filters(message),
+                reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
+            )
+            bot.register_next_step_handler(message, TL.tl1)
+        elif message.text == 'В работе':
+            if ActiveUser[message.chat.id]['filter']['confirmed'] == 1:
+                ActiveUser[message.chat.id]['filter']['confirmed'] = 0
+            else:
+                ActiveUser[message.chat.id]['filter']['confirmed'] = 1
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                filters(message),
+                reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
+            )
+            bot.register_next_step_handler(message, TL.tl1)
+        elif message.text == 'Завершенные':
+            if ActiveUser[message.chat.id]['filter']['done'] == 1:
+                ActiveUser[message.chat.id]['filter']['done'] = 0
+            else:
+                ActiveUser[message.chat.id]['filter']['done'] = 1
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                filters(message),
+                reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
+            )
+            bot.register_next_step_handler(message, TL.tl1)
+        elif message.text == 'Отмененные':
+            if ActiveUser[message.chat.id]['filter']['canceled'] == 1:
+                ActiveUser[message.chat.id]['filter']['canceled'] = 0
+            else:
+                ActiveUser[message.chat.id]['filter']['canceled'] = 1
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                filters(message),
+                reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
+            )
+            bot.register_next_step_handler(message, TL.tl1)
+        elif message.text == 'Только мои':
+            if ActiveUser[message.chat.id]['filter']['justmy'] == 1:
+                ActiveUser[message.chat.id]['filter']['justmy'] = 0
+            else:
+                ActiveUser[message.chat.id]['filter']['justmy'] = 1
+                ActiveUser[message.chat.id]['filter']['added'] = 0
+                ActiveUser[message.chat.id]['filter']['confirmed'] = 1
+                ActiveUser[message.chat.id]['filter']['done'] = 1
+                ActiveUser[message.chat.id]['filter']['canceled'] = 0
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                filters(message),
+                reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
+            )
+            bot.register_next_step_handler(message, TL.tl1)
+            
+    def tl2(message):
+        if len(message.text.split('.')) == 3 and len(message.text.split('.')[0]) == 2 and len(message.text.split('.')[1]) == 2 and len(message.text.split('.')[2]) == 4:
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['filter']['from'] = message.text + ' 00:00'
+            print(ActiveUser[message.chat.id]['filter']['from'])
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                'Укажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, TL.tl3)
+        else:
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                'НЕ ВЕРНЫЙ ФОРМАТ!\nУкажите дату начала периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, TL.tl2)
+
+    def tl3(message):
+        if len(message.text.split('.')) == 3 and len(message.text.split('.')[0]) == 2 and len(message.text.split('.')[1]) == 2 and len(message.text.split('.')[2]) == 4 and datetime.strptime(ActiveUser[message.chat.id]['filter']['from'], '%d.%m.%Y %H:%M') < datetime.strptime(message.text + ' 23:00', '%d.%m.%Y %H:%M'):
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['filter']['to'] = message.text + ' 23:00'
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                filters(message),
+                reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
+            )
+            bot.register_next_step_handler(message, TL.tl1)
+        elif datetime.strptime(ActiveUser[message.chat.id]['filter']['from'], '%d.%m.%Y %H:%M') > datetime.strptime(message.text + ' 23:00', '%d.%m.%Y %H:%M'):
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                'УКАЗАННАЯ ВАМИ ДАТА РАНЬШЕ ЧЕМ ДАТА НАЧАЛА ПЕРИОДА!\nУкажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, TL.tl3)
+        else:
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                message.chat.id,
+                'НЕ ВЕРНЫЙ ФОРМАТ!\nУкажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, TL.tl3)
+            
+@bot.message_handler(func=lambda message: True)
+
+class allchats:
+    def chat1(message):
+        if message.text == 'Главное меню':
             bot.send_message(
                 message.chat.id,
                 'Что вы хотите сделать.',
@@ -500,14 +688,8 @@ class allchats:
             )
             bot.register_next_step_handler(message, MainMenu.Main2)
         else:
-            bot.send_message(
-                message.chat.id,
-                'Напишите Ваше сообщение и оно будет разослано всем.\nчтобы вернуться в главное меню нажмите [Главное меню]',
-                reply_markup=buttons.Buttons(['Главное меню'])
-            )
             sendtoall('Сообщение от пользователя  ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n' + str(message.text), '', message.chat.id)
-            bot.register_next_step_handler(message, allchats.chat1)
-            
+            bot.register_next_step_handler(message, allchats.chat1)   
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
@@ -517,11 +699,11 @@ def callback_handler(call):
         status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
         print(status)
         if status[11] == 1:
-            markdownt = buttons.Buttons(['Принять', 'Отменить заявку'])
+            markdownt = buttons.Buttons(['Принять', 'Отменить заявку', 'Назад'])
         elif status[11] == 2:
-            markdownt = buttons.Buttons(['Выполнено', 'Отменить заявку'])
+            markdownt = buttons.Buttons(['Выполнено', 'Отменить заявку', 'Назад'])
         else:
-            markdownt = buttons.clearbuttons()
+            markdownt = buttons.Buttons(['Назад'])
         print('Отправка текста заявки пользователю.')
         bot.send_message(
             call.from_user.id,
@@ -547,6 +729,7 @@ def callback_handler(call):
             call.data.split()[1]
         )
         sendtoall('Пользователь ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nПринял заявку №' + str(call.data.split()[1]), '', call.from_user.id)
+
 
 while True:
     try:

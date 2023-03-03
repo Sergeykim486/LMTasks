@@ -24,9 +24,7 @@ class Database:
             self.cur.execute(f"INSERT INTO {table_name} VALUES ({vals})", values)
             self.conn.commit()
 
-    def update_record(
-        self, table_name, set_column, set_value, where_column, where_value
-    ):
+    def update_record(self, table_name, set_column, set_value, where_column, where_value):
         with self.lock:
             self.cur.execute(
                 f"UPDATE {table_name} SET {set_column} = ? WHERE {where_column} = ?",
@@ -81,3 +79,24 @@ class Database:
             self.cur.execute(f"SELECT * FROM {table_name} WHERE id=?", (id_value,))
             row = self.cur.fetchone()
             return row
+
+    def select_table_with_filters(self, table_name, filters={}):
+        with self.lock:
+            if len(filters) > 0:
+                filter_columns = []
+                filter_values = []
+                for column, value in filters.items():
+                    if isinstance(value, list):
+                        filter_columns.append(f"{column} IN ({','.join(['?' for _ in value])})")
+                        filter_values.extend(value)
+                    else:
+                        filter_columns.append(f"{column} = ?")
+                        filter_values.append(value)
+                where_clause = " AND ".join(filter_columns)
+                query = f"SELECT * FROM {table_name} WHERE {where_clause}"
+                self.cur.execute(query, filter_values)
+            else:
+                query = f"SELECT * FROM {table_name}"
+                self.cur.execute(query)
+            rows = self.cur.fetchall()
+            return rows

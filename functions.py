@@ -67,3 +67,4 @@ def getuserlist():
     for line in users:
         userlist.append(line[0])
     return userlist
+
