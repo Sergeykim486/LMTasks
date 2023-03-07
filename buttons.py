@@ -1,9 +1,11 @@
 import telebot, config
 bot = telebot.TeleBot(config.TOKEN)
 
-def Buttons(buttons, r = 2):
+def Buttons(buttons, r = 2, cancelbut = None):
     markup = telebot.types.ReplyKeyboardRemove()
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    if cancelbut is not None:
+        markup.row('Отмена')
     result = []
     for i in range(0, len(buttons), r):
         result.append(buttons[i:i+r])
@@ -25,6 +27,7 @@ def Buttons1(buttons, r = 3):
     for line in result:
         markup.row(*line)
     markup.row(last)
+    markup.row('Отмена')
     return markup
 
 def buttonsinline(buttons):

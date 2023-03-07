@@ -27,9 +27,9 @@ def listgen(table, cols, tasks = 0):
                     print(cname)
                     curline = curline + str(cname) + ' '
                 else:
-                    curline = curline + str(line[i]) + ' ' 
+                    curline = curline + str(line[i]) + ' '
             else:
-                curline = curline + str(line[i]) + ' ' 
+                curline = curline + str(line[i]) + ' '
         if tasks == 0:
             res.append(curline)
         elif tasks == 1:
@@ -51,10 +51,12 @@ def curtask(id):
     messtext = 'Заявка №' + str(task[0]) + ' от ' + str(task[1])
     messtext = messtext + '\nЗаявку зарегистрировал: ' + str(db.get_record_by_id('Users', task[2])[1])
     if task[11] == 2 or task[10] == 3:
-        messtext = messtext + '\nМастер ' + str(db.get_record_by_id('Users', task[6])[2]) + str(db.get_record_by_id('Users', task[6])[1])
-        messtext = messtext + 'принял ' + str(task[5])
+        messtext = messtext + '\nМастер ' + str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
+        messtext = messtext + ' принял ' + str(task[5])
     elif task[11] == 4:
         messtext = messtext + '\n' + str(db.get_record_by_id('Users', task[9])[1]) + ' отменил заявку\nПРИЧИНА ОТМЕНЫ:\n' + str(task[10])
+    if task[10] is not None:
+        messtext = messtext + '\n❗️ ' + str(task[10])
     messtext = messtext + '\nПоступила от: ' + str(db.get_record_by_id('Contragents', task[3])[1])
     messtext = messtext + '\nЗАПРОС:\n' + str(task[4])
     messtext = messtext + '\nКОНТАКТЫ ЗАКАЗЧИКА:\n' + str(db.get_record_by_id('Contragents', task[3])[3]) + ' - ' + str(db.get_record_by_id('Contragents', task[3])[4])

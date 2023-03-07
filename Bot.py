@@ -1,6 +1,6 @@
 import os, config, telebot, functions, buttons, logging, time
 from db import Database
-from datetime import datetime
+from datetime import datetime, timedelta
 ActiveUser = {}
 dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 db = Database(dbname)
@@ -42,7 +42,7 @@ def send_welcome(message):
 @bot.message_handler(content_types=['text'])
 
 class register:
-    
+
     def reg1(message):
         if message.text == 'Регистрация':
             bot.send_message(
@@ -50,6 +50,7 @@ class register:
                 'Как Вас зовут (укажите имя)',
             reply_markup=buttons.clearbuttons()
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, register.reg2)
         else:
             bot.send_message(
@@ -57,6 +58,7 @@ class register:
                 'Пожалуйста зарегистрируйтесь.',
                 reply_markup=buttons.Buttons(['Регистрация'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, register.reg1)
 
     def reg2(message):
@@ -104,6 +106,7 @@ class register:
                 'Поздравляем Вы успешно зарегистрировались!',
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
         elif message.text == 'Нет':
             bot.send_message(
@@ -118,38 +121,41 @@ class register:
                 'Вы не подтвердили информацию!\n' + functions.conftext(message, ActiveUser),
                 reply_markup=buttons.Buttons(['Да', 'Нет'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, register.reg5)
 
 class MainMenu:
-    
+
     def Main1(message):
         global ActiveUser
         print('main menu')
         if message.text == 'Главное меню' or message.text == 'Вернуться':
-            bot.send_message(
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'Добро пожаловать в систему. Что вы хотите сделать.',
+                'Что вы хотите сделать.',
                 reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
 
     def Main2(message):
         if message.text == 'Новая заявка':
             contragents = db.select_table('Contragents', ['id', 'cname'])
-            bot.send_message(
+            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
                 'Выберите клиента или введите его ИНН.',
-                reply_markup=buttons.Buttons(functions.listgen(contragents, [0, 1], 2), 1)
+                reply_markup=buttons.Buttons(functions.listgen(contragents, [0, 1], 2), 1, 1)
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, NewTask.nt1)
         elif message.text == 'Список заявок':
             ActiveUser[message.chat.id]['filter'] = {
                 'from': '01.01.2000 00:00',
                 'to': '31.12.2100 23:59',
                 'added': 1,
-                'confirmed': 1,
-                'done': 1,
-                'canceled': 1,
+                'confirmed': 0,
+                'done': 0,
+                'canceled': 0,
                 'justmy': 0
             }
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -157,6 +163,7 @@ class MainMenu:
                 filters(message),
                 reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, TL.tl1)
         elif message.text == 'Написать всем':
             bot.send_message(
@@ -164,6 +171,7 @@ class MainMenu:
                 'Напишите Ваше сообщение и оно будет разослано всем.\nчтобы вернуться в главное меню нажмите [Главное меню]',
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, allchats.chat1)
         else:
             bot.send_message(
@@ -174,13 +182,22 @@ class MainMenu:
             bot.register_next_step_handler(message, MainMenu.Main2)
 
 class NewTask:
-    
+
     def nt1(message):
         global ActiveUser
         ActiveUser[message.chat.id]['added'] = datetime.now().strftime("%d.%m.%Y %H:%M")
         ActiveUser[message.chat.id]['manager'] = message.chat.id
         ActiveUser[message.chat.id]['status'] = 1
-        if len(message.text.replace(' ', '')) == 9:
+        if message.text == 'Отмена':
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            bot.send_message(
+                message.chat.id,
+                'Что вы хотите сделать.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
+            )
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        elif len(message.text.replace(' ', '')) == 9:
             ActiveUser[message.chat.id]['inn'] = message.text
             findcont = db.get_record_by_id('Contragents', message.text)
             if findcont == None:
@@ -226,6 +243,7 @@ class NewTask:
                 'Выберите клиента или введите его ИНН.',
                 reply_markup=buttons.Buttons(functions.listgen(contragents, [0, 1], 2))
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, NewTask.nt1)
         elif message.text == 'Главное меню':
             global ActiveUser
@@ -235,6 +253,7 @@ class NewTask:
                 'Добро пожаловать в систему. Что вы хотите сделать.',
                 reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
 
     def nt2(message):
@@ -246,7 +265,7 @@ class NewTask:
             reply_markup=buttons.clearbuttons()
         )
         bot.register_next_step_handler(message, NewTask.nt3)
-    
+
     def nt3(message):
         global ActiveUser
         ActiveUser[message.chat.id]['cadr'] = message.text
@@ -256,7 +275,7 @@ class NewTask:
             reply_markup=buttons.clearbuttons()
         )
         bot.register_next_step_handler(message, NewTask.nt4)
-    
+
     def nt4(message):
         global ActiveUser
         ActiveUser[message.chat.id]['cperson'] = message.text
@@ -266,7 +285,7 @@ class NewTask:
             reply_markup=buttons.clearbuttons()
         )
         bot.register_next_step_handler(message, NewTask.nt5)
-        
+
     def nt5(message):
         global ActiveUser
         ActiveUser[message.chat.id]['cphone'] = message.text
@@ -284,13 +303,13 @@ class NewTask:
             reply_markup=buttons.clearbuttons()
         )
         bot.register_next_step_handler(message, NewTask.nt6)
-        
+
     def nt6(message):
         global ActiveUser
         ActiveUser[message.chat.id]['task'] = message.text
         confmes = 'Подтвердите заявку. \n Заявка от: '
         confmes = confmes + ActiveUser[message.chat.id]['added']
-        
+
         record = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['inn'])
         confmes = confmes + '\nКлиент: ' + (record[1] if record[1] is not None else '')
         confmes = confmes + '\nТекст заявки: ' + ActiveUser[message.chat.id]['task']
@@ -303,7 +322,7 @@ class NewTask:
             reply_markup=buttons.Buttons(['Да', 'Нет'])
         )
         bot.register_next_step_handler(message, NewTask.nt7)
-    
+
     def nt7(message):
         global ActiveUser
         if message.text == 'Да':
@@ -329,6 +348,7 @@ class NewTask:
                 'Заявка успешно зарегистрирована.',
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
         elif message.text == 'Нет':
             bot.send_message(
@@ -336,6 +356,7 @@ class NewTask:
                 'Новая заявка удалена.',
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
         else:
             bot.send_message(
@@ -368,7 +389,7 @@ class Task:
             print('запись изменена')
             atask = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])
             tk = '№' + str(atask[0]) + ' от ' + str(atask[1]) + '\nпоступившую от ' + str(db.get_record_by_id('Contragents', atask[2]))
-            mes = 'Пользователь ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + 'Принял заявку' + tk
+            mes = '-> ' + str(db.get_record_by_id('Users', call.from_user.id)[2]) + ' ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nПринял заявку' + tk
             mark = buttons.Buttons(['Главное меню'])
             exn = message.chat.id
             sendtoall(mes, mark, exn)
@@ -378,7 +399,8 @@ class Task:
                 'Вы приняли заявку.',
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
-            bot.register_next_step_handler(message, MainMenu.Main1)            
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, MainMenu.Main1)
         elif message.text == 'Выполнено':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
             print(manager)
@@ -397,7 +419,7 @@ class Task:
                 )
                 atask = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])
                 tk = '№' + str(atask[0]) + ' от ' + str(atask[1]) + '\nпоступившую от ' + str(db.get_record_by_id('Contragents', atask[2]))
-                mes = 'Пользователь ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + 'Выполнил заявку ' + tk
+                mes = '-> ' + str(db.get_record_by_id('Users', call.from_user.id)[2]) + ' ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nВыполнил заявку ' + tk
                 mark = buttons.Buttons(['Главное меню'])
                 exn = message.chat.id
                 sendtoall(mes, mark, exn)
@@ -406,13 +428,46 @@ class Task:
                     'Вы завершили заявку.',
                     reply_markup=buttons.Buttons(['Главное меню'])
                 )
+                bot.register_next_step_handler(message, MainMenu.Main1)
+        elif message.text == 'Отказаться от заявки':
+            manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
+            print(manager)
+            if manager == str(message.chat.id):
+                confdate = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[5]
+                db.update_records(
+                    'Tasks',
+                    [
+                        'more',
+                        'master',
+                        'status'
+                    ], [
+                        'Мастер ' + str(db.get_record_by_id('Users', call.from_user.id)[2]) + ' ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + ' принял заявку ' + str(confdate) + '.\n ' + str(datetime.now().strftime("%d.%m.%Y %H:%M")) + 'отказался от выполнения',
+                        '',
+                        1
+                    ],
+                    'id',
+                    ActiveUser[message.chat.id]['task']
+                )
+                atask = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])
+                tk = '№' + str(atask[0]) + ' от ' + str(atask[1]) + '\nпоступившую от ' + str(db.get_record_by_id('Contragents', atask[2]))
+                mes = 'Пользователь ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + 'Отказался от заявки ' + tk
+                mark = buttons.Buttons(['Главное меню'])
+                exn = message.chat.id
+                sendtoall(mes, mark, exn)
+                bot.send_message(
+                    message.chat.id,
+                    'Вы отказались от заявки.',
+                    reply_markup=buttons.Buttons(['Главное меню'])
+                )
+                bot.register_next_step_handler(message, MainMenu.Main1)
             else:
                 master = db.get_record_by_id('Users', manager)[1]
                 bot.send_message(
                     message.chat.id,
-                    'Вы не можете завершить эту заявку, так как она не Ваша.\nЗаявку принял ' + str(master),
+                    'Вы не можете отказаться от этой заявки, так как она не Ваша.\nЗаявку принял ' + str(master),
                     reply_markup=buttons.Buttons(['Главное меню'])
                 )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
         elif message.text == 'Отменить заявку':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[2])
@@ -424,6 +479,7 @@ class Task:
                     'Вы уверены, что хотите отменить заявку?',
                     reply_markup=buttons.Buttons(['Да', 'Нет'])
                 )
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
                 bot.register_next_step_handler(message, Task.task2)
             else:
                 master = db.get_record_by_id('Users', manager)[1]
@@ -432,6 +488,7 @@ class Task:
                     'Вы пытаетесь отменить заявку которую зарегистрировал другой пользователь.\nОтменить эту заявку может только ' + str(master),
                     reply_markup=buttons.Buttons(['Главное меню'])
                 )
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
                 bot.register_next_step_handler(message, MainMenu.Main1)
         elif message.text == 'Назад':
             bot.send_message(
@@ -439,8 +496,9 @@ class Task:
                 'Что вы хотите сделать.',
                 reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
             )
-            bot.register_next_step_handler(message, MainMenu.Main2)
-    
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            # bot.register_next_step_handler(message, MainMenu.Main2)
+
     def task2(message):
         if message.text == 'Да':
             bot.send_message(
@@ -448,15 +506,17 @@ class Task:
                 'Пожалуйста укажите причину отмены заявки.',
                 reply_markup=buttons.clearbuttons()
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Task.task3)
         elif message.text == 'Нет':
             bot.send_message(
                 message.chat.id,
-                'Заявка не отменена.',
+                'Вернитесь в главное меню.',
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
-            
+
     def task3(message):
         db.update_records(
             'Tasks',[
@@ -475,7 +535,7 @@ class Task:
         )
         atask = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])
         tk = '№' + str(atask[0]) + ' от ' + str(atask[1]) + '\nпоступившую от ' + str(db.get_record_by_id('Contragents', atask[2]))
-        mes = 'Пользователь ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + 'Отменил заявку ' + tk + '\nПРИЧИНА:\n' + message.text
+        mes = '-> ' + str(db.get_record_by_id('Users', call.from_user.id)[2]) + ' ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nОтменил заявку ' + tk + '\nПРИЧИНА:\n' + message.text
         mark = buttons.Buttons(['Главное меню'])
         exn = message.chat.id
         sendtoall(mes, mark, exn)
@@ -529,7 +589,7 @@ class TL:
                         print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
                     else:
                         tasks.remove(line)
-            taskslist = functions.listgen(tasks, [0, 1, 3, 10], 1)
+            taskslist = functions.listgen(tasks, [0, 1, 3, 4], 1)
             for line in taskslist:
                 print(line)
                 taskid = line.split()[2]
@@ -544,6 +604,8 @@ class TL:
                 'Что вы хотите сделать.',
                 reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == 'Указать период':
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
@@ -623,7 +685,16 @@ class TL:
                 reply_markup=buttons.Buttons1(['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать'])
             )
             bot.register_next_step_handler(message, TL.tl1)
-            
+        elif message.text == 'Отмена':
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            bot.send_message(
+                message.chat.id,
+                'Что вы хотите сделать.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
+            )
+            bot.register_next_step_handler(message, MainMenu.Main2)
+
     def tl2(message):
         if len(message.text.split('.')) == 3 and len(message.text.split('.')[0]) == 2 and len(message.text.split('.')[1]) == 2 and len(message.text.split('.')[2]) == 4:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
@@ -675,7 +746,7 @@ class TL:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl3)
-            
+
 @bot.message_handler(func=lambda message: True)
 
 class allchats:
@@ -686,10 +757,14 @@ class allchats:
                 'Что вы хотите сделать.',
                 reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
             )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
         else:
-            sendtoall('Сообщение от пользователя  ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n' + str(message.text), '', message.chat.id)
-            bot.register_next_step_handler(message, allchats.chat1)   
+            users = db.select_table('Users')
+            for user in users:
+                if user [0] != message.chat.id:
+                    bot.forward_message(user[0], message.chat.id, message.message_id)
+            bot.register_next_step_handler(message, allchats.chat1)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
@@ -701,9 +776,9 @@ def callback_handler(call):
         if status[11] == 1:
             markdownt = buttons.Buttons(['Принять', 'Отменить заявку', 'Назад'])
         elif status[11] == 2:
-            markdownt = buttons.Buttons(['Выполнено', 'Отменить заявку', 'Назад'])
+            markdownt = buttons.Buttons(['Выполнено', 'Отказаться от заявки', 'Отменить заявку', 'Назад'])
         else:
-            markdownt = buttons.Buttons(['Назад'])
+            markdownt = buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
         print('Отправка текста заявки пользователю.')
         bot.send_message(
             call.from_user.id,
@@ -728,7 +803,7 @@ def callback_handler(call):
             'id',
             call.data.split()[1]
         )
-        sendtoall('Пользователь ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nПринял заявку №' + str(call.data.split()[1]), '', call.from_user.id)
+        sendtoall('-> ' + str(db.get_record_by_id('Users', call.from_user.id)[2]) + ' ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nПринял заявку №' + str(call.data.split()[1]), '', call.from_user.id)
 
 
 while True:
