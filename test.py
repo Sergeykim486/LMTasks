@@ -1,116 +1,180 @@
 import os
-import csv
-import datetime
-from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, NamedStyle
 from db import Database
+from openpyxl import Workbook
+from datetime import datetime
 
-# формируем абсолютный путь до базы данных
-db_path = os.path.abspath("Database/lmtasksbase.db")
+# Определяем имя файла базы данных
+dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 
-# создаем подключение к базе данных
-db = Database(db_path)
-
-# получаем список статусов из базы данных
-statuses = db.select_table("Statuses")
-
-# запрашиваем у пользователя статусы, по которым нужно сформировать отчет
-print("Выберите статусы для формирования отчета:")
-for i, status in enumerate(statuses):
-    print(f"{i + 1}. {status[1]}")
-status_choices = input("Введите номера статусов через запятую: ").split(",")
-status_ids = [statuses[int(choice) - 1][0] for choice in status_choices]
-
-# запрашиваем у пользователя период, за который нужно сформировать отчет
-start_date_str = input("Введите начало периода в формате ДД.ММ.ГГГГ ЧЧ:ММ: ")
-end_date_str = input("Введите конец периода в формате ДД.ММ.ГГГГ ЧЧ:ММ: ")
-start_date = datetime.datetime.strptime(start_date_str, "%d.%m.%Y %H:%M")
-end_date = datetime.datetime.strptime(end_date_str, "%d.%m.%Y %H:%M")
-
-# получаем список заявок из базы данных по заданным статусам и периоду
-tasks = db.select_table_with_filters(
-    "Tasks",
-    {"status": status_ids},
-)
-filtered_tasks = [
-    task
-    for task in tasks
-    if start_date <= datetime.datetime.strptime(task[1], "%d.%m.%Y %H:%M") <= end_date
-]
-
-# заменяем id пользователей и клиентов на их имя и фамилию
-users = db.select_table("Users")
-contragents = db.select_table("Contragents")
-for i, task in enumerate(filtered_tasks):
-    manager_id = task[2]
-    contragent_id = task[3]
-    master_id = task[6]
-    userc_id = task[9]
-
-    manager = next((user for user in users if user[0] == manager_id), None)
-    contragent = next((c for c in contragents if c[0] == contragent_id), None)
-    master = next((user for user in users if user[0] == master_id), None)
-    userc = next((user for user in users if user[0] == userc_id), None)
-
-    if manager is not None:
-        filtered_tasks[i] = (
-            task[0],
-            task[1],
-            f"{manager[2]} {manager[1]}",
-            contragent[1] if contragent is not None else "",
-            task[4],
-            task[5],
-            f"{master[2]} {master[1]}" if master is not None else "",
-            task[7],
-            task[8],
-            f"{userc[2]} {userc[1]}" if userc is not None else "",
-            task[10],
-            task[11],
-        )
+# Создаем объект базы данных
+db = Database(dbname)
 
 
-# Создаем объект Workbook
-workbook = Workbook()
+def print_table(table_name):
+    """
+    Выводит содержимое таблицы на экран
+    """
+    rows = db.select_table(table_name)
+    if not rows:
+        print("Таблица пуста")
+        return
+    for row in rows:
+        print(row)
 
-# Получаем активный лист
-worksheet = workbook.active
+def tasks_in_period(dfrom, dto):
+    rows = db.select_table("Tasks")
+    if not rows:
+        print("Таблица пуста")
+        return
+    else:
+        tableforexp = []
+        for row in rows:
+            if datetime.strptime(str(dfrom)+" 00:00", '%d.%m.%Y %H:%M') < datetime.strptime(row[1], '%d.%m.%Y %H:%M') < datetime.strptime(str(dto)+" 23:59", '%d.%m.%Y %H:%M'):
+                tableforexp.append((
+                    row[0],
+                    row[1],
+                    str(db.get_record_by_id("Users", row[2])[2]) + " " + str(db.get_record_by_id("Users", row[2])[1]) if row[2] is not None and db.get_record_by_id("Users", row[2]) is not None else '',
+                    str(db.get_record_by_id("Contragents", row[3])[1]) if row[3] is not None and db.get_record_by_id("Contragents", row[3]) is not None else '',
+                    row[4],
+                    row[5],
+                    str(db.get_record_by_id("Users", row[6])[2]) + " " + str(db.get_record_by_id("Users", row[6])[1]) if row[6] is not None and db.get_record_by_id("Users", row[6]) is not None else '',
+                    row[7],
+                    row[8],
+                    str(db.get_record_by_id("Users", row[9])[2]) + " " + str(db.get_record_by_id("Users", row[9])[1]) if row[9] is not None and db.get_record_by_id("Users", row[9]) is not None else '',
+                    row[10],
+                    str(db.get_record_by_id("Statuses", row[11])[1]) if row[11] is not None and db.get_record_by_id("Statuses", row[11]) is not None else ''
+                ))
 
-# Настройки форматирования
-bold_font = Font(bold=True)
-header_fill = PatternFill(start_color='C0C0C0', end_color='C0C0C0', fill_type='solid')
-date_format = NamedStyle(name='datetime', number_format='DD.MM.YYYY HH:MM')
+        wb = Workbook()
+        ws = wb.active
+        ws.append(["№", "Дата поступления", "Зарегистрировал", "Клиент", "Тема заявки", "Дата принятия мастером", "Мастер", "Завершена", "Отменена", "Кем отменена", "Примечание", "Статус"])
+        for r in tableforexp:
+            ws.append(r)
+        wb.save("Отчет по заявкам за период с " + dfrom + " по " + dto + ".xlsx")
 
-# Заголовки столбцов
-headers = ["ID", "Дата создания", "Менеджер", "Клиент", "Тема", "Принята мастером", "Мастер", "Завершена", "Отменена", "Кто отменил", "Примечание", "Статус"]
-for i, header in enumerate(headers):
-    cell = worksheet.cell(row=1, column=i+1)
-    cell.value = header
-    cell.fill = header_fill
-    cell.font = bold_font
+def export_table_to_excel(table_name, filename):
+    """
+    Экспортирует содержимое таблицы в файл xlsx
+    """
+    rows = db.select_table(table_name)
+    if not rows:
+        print("Таблица пуста")
+        return
+    wb = Workbook()
+    ws = wb.active
+    ws.append([i[0] for i in db.cur.description])
+    for row in rows:
+        ws.append(row)
+    wb.save(filename)
 
-# Данные
-for i, task in enumerate(filtered_tasks):
-    for j, value in enumerate(task):
-        cell = worksheet.cell(row=i+2, column=j+1)
-        if isinstance(value, datetime.datetime):
-            cell.value = value
-            cell.style = date_format
-        else:
-            cell.value = value
+def create_table():
+    """
+    Создает новую таблицу
+    """
+    table_name = input("Введите имя таблицы: ")
+    num_columns = int(input("Введите количество столбцов: "))
+    columns = []
+    for i in range(num_columns):
+        column_name = input(f"Введите имя столбца {i+1}: ")
+        column_type = input(f"Введите тип данных для столбца {column_name}: ")
+        columns.append(f"{column_name} {column_type}")
+    db.create_table(table_name, columns)
+    print(f"Таблица {table_name} создана")
 
-# Сохраняем файл
-report_name = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S_report.xlsx")
-workbook.save(report_name)
+
+def delete_table():
+    """
+    Удаляет таблицу
+    """
+    table_name = input("Введите имя таблицы, которую нужно удалить: ")
+    db.cur.execute(f"DROP TABLE IF EXISTS {table_name}")
+    db.conn.commit()
+    print(f"Таблица {table_name} удалена")
 
 
-# Сохраняем файл
-report_name = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S_report.xlsx")
-workbook.save(report_name)
-# сохраняем результаты в файл csv
-# report_name = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S_report.csv")
-# with open(report_name, mode="w", newline="", encoding="utf-8") as report_file:
-#     report_writer = csv.writer(report_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
-#     report_writer.writerow(["ID", "Дата создания", "Менеджер", "Клиент", "Тема", "Принята мастером", "Мастер", "Завершена", "Отменена", "Кто отменил", "Примечание", "Статус"])
-#     report_writer.writerows(filtered_tasks)
+def insert_record():
+    """
+    Добавляет новую запись в таблицу
+    """
+    table_name = input("Введите имя таблицы: ")
+    columns = db.cur.execute(f"PRAGMA table_info({table_name})").fetchall()
+    values = []
+    for column in columns:
+        value = input(f"Введите значение для столбца {column[1]}: ")
+        values.append(value)
+    db.insert_record(table_name, values)
+    print("Запись добавлена")
 
-# print(f"Отчет сохранен в файл {report_name}.")
+
+def update_record():
+    """
+    Обновляет запись в таблице
+    """
+    table_name = input("Введите имя таблицы: ")
+    row_id = input("Введите ID записи, которую нужно обновить: ")
+    columns = db.cur.execute(f"PRAGMA table_info({table_name})").fetchall()
+    for column in columns:
+        new_value = input(f"Введите новое значение для столбца {column[1]}: ")
+        db.update_record(table_name, column[1], new_value, "id", row_id)
+    print("Запись обновлена")
+
+
+def delete_record():
+    """
+    Удаляет запись из таблицы
+    """
+    table_name = input("Введите имя таблицы: ")
+    row_id = input("Введите ID записи, которую нужно удалить: ")
+    db.delete_record(table_name, "id", row_id)
+    print("Запись удалена")
+
+
+# Главный цикл программы
+while True:
+    print("1. Вывести содержимое таблицы")
+    print("2. Экспорт в Excel")
+    print("3. Создать таблицу")
+    print("4. Удалить таблицу")
+    print("5. Добавить запись в таблицу")
+    print("6. Обновить запись в таблице")
+    print("7. Удалить запись из таблицы")
+    print("8. Отчет по заявкам за период")
+    print("0. Выход")
+    choice = input("Введите номер действия: ")
+
+    if choice == "1":
+        table_name = input("Введите имя таблицы: ")
+        print_table(table_name)
+
+    if choice == "2":
+        table_name = input("Введите имя таблицы: ")
+        xls_file_name = input("Введите имя таблицы: ")
+        export_table_to_excel(table_name,xls_file_name)
+
+    elif choice == "3":
+        create_table()
+
+    elif choice == "4":
+        delete_table()
+
+    elif choice == "5":
+        insert_record()
+
+    elif choice == "6":
+        update_record()
+
+    elif choice == "7":
+        delete_record()
+
+    elif choice == "8":
+        dfrom = input("Введите дату начала периода: ")
+        dto = input("Введите дату окончания периода: ")
+        tasks_in_period(dfrom, dto)
+
+    elif choice == "0":
+        print("Выход")
+        break
+
+    else:
+        print("Неправильный выбор, повторите попытку")
+
