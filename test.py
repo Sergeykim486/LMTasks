@@ -112,10 +112,10 @@ def update_record():
     """
     table_name = input("Введите имя таблицы: ")
     row_id = input("Введите ID записи, которую нужно обновить: ")
+    rowname = input('Введите имя колонки которую нужно обновить. ')
+    rowval = input('Введите новое значение. ')
     columns = db.cur.execute(f"PRAGMA table_info({table_name})").fetchall()
-    for column in columns:
-        new_value = input(f"Введите новое значение для столбца {column[1]}: ")
-        db.update_record(table_name, column[1], new_value, "id", row_id)
+    db.update_record(table_name, rowname, rowval, "id", row_id)
     print("Запись обновлена")
 
 
@@ -139,6 +139,7 @@ while True:
     print("6. Обновить запись в таблице")
     print("7. Удалить запись из таблицы")
     print("8. Отчет по заявкам за период")
+    print("9. Очистить таблицу")
     print("0. Выход")
     choice = input("Введите номер действия: ")
 
@@ -148,14 +149,15 @@ while True:
 
     if choice == "2":
         table_name = input("Введите имя таблицы: ")
-        xls_file_name = input("Введите имя таблицы: ")
+        xls_file_name = table_name + ' ' + str(datetime.now().strftime('%d %B %Y'))
         export_table_to_excel(table_name,xls_file_name)
 
     elif choice == "3":
         create_table()
 
     elif choice == "4":
-        delete_table()
+        # delete_table()
+        print("Не доступно")
 
     elif choice == "5":
         insert_record()
@@ -170,6 +172,10 @@ while True:
         dfrom = input("Введите дату начала периода: ")
         dto = input("Введите дату окончания периода: ")
         tasks_in_period(dfrom, dto)
+
+    elif choice == "9":
+        table = input("Введите название таблицы для очистки: ")
+        db.delete_all_records(table)
 
     elif choice == "0":
         print("Выход")

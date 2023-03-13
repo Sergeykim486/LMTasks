@@ -18,6 +18,11 @@ class Database:
             self.cur.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(columns)})")
             self.conn.commit()
 
+    def delete_all_records(self, table_name):
+        with self.lock:
+            self.cur.execute(f"DELETE FROM {table_name}")
+            self.conn.commit()
+
     def insert_record(self, table_name, values):
         with self.lock:
             vals = ",".join(["?" for _ in values])
@@ -58,7 +63,7 @@ class Database:
             )
             rows = self.cur.fetchall()
             return rows
-    
+
     def update_records(self, table_name, set_columns, set_values, where_column, where_value):
         with self.lock:
             set_clause = ", ".join([f"{col} = ?" for col in set_columns])

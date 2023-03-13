@@ -30,6 +30,31 @@ def Buttons1(buttons, r = 3):
     markup.row('Отмена')
     return markup
 
+# ○●
+def buttonslist(filter):
+    buttonsl = ['Указать период', 'Зарегистрированные', 'В работе', 'Завершенные', 'Отмененные', 'Только мои', 'Сформировать']
+    if filter["added"] == 1:
+        buttonsl[1] = "● Зарегистрированные"
+    else:
+        buttonsl[1] = "○ Зарегистрированные"
+    if filter["confirmed"] == 1:
+        buttonsl[2] = "● В работе"
+    else:
+        buttonsl[2] = "○ В работе"
+    if filter["done"] == 1:
+        buttonsl[3] = "● Завершенные"
+    else:
+        buttonsl[3] = "○ Завершенные"
+    if filter["canceled"] == 1:
+        buttonsl[4] = "● Отмененные"
+    else:
+        buttonsl[4] = "○ Отмененные"
+    if filter["justmy"] == 1:
+        buttonsl[5] = "● Только мои"
+    else:
+        buttonsl[5] = "○ Только мои"
+    return buttonsl
+
 def buttonsinline(buttons):
     markup = telebot.types.ReplyKeyboardRemove()
     markup = telebot.types.InlineKeyboardMarkup()
