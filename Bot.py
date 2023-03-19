@@ -1,15 +1,42 @@
-import os, config, telebot, functions, buttons, logging, time
+import os, config, telebot, functions, buttons, logging, time, sched, asyncio, threading
 from db import Database
 from datetime import datetime
+
+# Объявляем глобальные переменные
 ActiveUser = {}
 sendedmessages = []
+# Путь к базе
 dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 db = Database(dbname)
+
+# Инициализируем токен бота
 bot = telebot.TeleBot(config.TOKEN)
 
-def sendtoall(message, markdown, exeptions):
+async def job():
+    await schedule_message()
+
+async def schedule_message():
+    while True:
+        now = datetime.now()
+        if now.hour == 8 and now.minute == 30:
+            # asyncio.create_task(daylyreport.morning())
+            await daylyreport.morning()
+        elif now.hour == 18 and now.minute == 0:
+            # asyncio.create_task(daylyreport.evening())
+            await daylyreport.evening()
+        await asyncio.sleep(60)  # проверка каждую минуту
+
+async def main():
+    print('Проверка времени рассылки...')
+    await job()
+
+
+# Отправка сообщения всем пользователям
+def sendtoall(message, markdown, exeptions, nt = 0):
     global sendedmessages
+    # Получение списка пользователей из базы данных
     users = db.select_table('Users')
+    # Проход по циклу и отправка сообщения каждому пользователю
     for user in users:
         try:
             if user[0] != exeptions:
@@ -18,18 +45,109 @@ def sendtoall(message, markdown, exeptions):
                     message,
                     reply_markup=markdown
                 )
-                sendedmessages.append([[user[0]], [mes.message_id]])
+                if nt == 1:
+                    sendedmessages.append([[user[0]], [mes.message_id]])
         except Exception as e:
             logging.error(e)
+    # Выход из метода
     return
+
+class daylyreport:
+    async def morning():
+        # Получаем список заявок в соответствии с их статусами
+        print('план отправлен.')
+        confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
+        addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
+        if len(confirmedtasks) == 0 and len(addedtasks) == 0:
+            sendtoall('Всем доброе утро!\nНа сегодня нет переходящих заявок.', '', 0)
+        else:
+            sendtoall('Всем доброе утро!\nСо вчерашнего дня на сегодня переходят следующие заявки:', '', 0)
+        if len(confirmedtasks) == 0:
+            sendtoall('Нет ни одной заявки назначенной мастерам.', '', 0)
+        else:
+            sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров', '', 0)
+            for line in confirmedtasks:
+                taskid = line.split()[2]
+                sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        if len(addedtasks) == 0:
+            sendtoall('Незакрепленных заявок за мастерами нет.', '', 0)
+        else:
+            sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки', '', 0)
+            for line in addedtasks:
+                taskid = line.split()[2]
+                sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        sendtoall('Список заявок на сегодня\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺', '', 0)
+
+    async def evening():
+        # Получаем список заявок в соответствии с их статусами
+        print('план отправлен.')
+        donetasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
+        confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
+        addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
+        canceledtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
+        today = datetime.now().strftime("%d.%m.%Y %H:%M")
+        f = today.split()[0]+' 00:00'
+        t = today.split()[0]+' 23:59'
+        if len(confirmedtasks) == 0 and len(addedtasks) == 0 and len():
+            sendtoall('ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.', '', 0)
+        else:
+            sendtoall('ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:', '', 0)
+        if len(donetasks) == 0:
+            sendtoall('Нет ни одной выполненной заявки.', '', 0)
+        else:
+            for line in donetasks:
+                print('Ищем ошибку...')
+                print(line)
+                print(line[7])
+                if datetime.strptime(f, '%d.%m.%Y %H:%M') <= datetime.strptime(db.get_record_by_id('Tasks', line.split()[2])[7], '%d.%m.%Y %H:%M') <= datetime.strptime(t, '%d.%m.%Y %H:%M'):
+                    print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
+                else:
+                    donetasks.remove(line)
+            if len(donetasks) == 0:
+                sendtoall('Нет ни одной выполненной заявки.', '', 0)
+            else:
+                sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки', '', 0)
+                for line in donetasks:
+                    taskid = line.split()[2]
+                    sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        if len(confirmedtasks) == 0:
+            sendtoall('Нет ни одной заявки назначенной мастерам.')
+        else:
+            sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров', '', 0)
+            for line in confirmedtasks:
+                taskid = line.split()[2]
+                sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        if len(addedtasks) == 0:
+            sendtoall('Незакрепленных заявок за мастерами нет.', '', 0)
+        else:
+            sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки', '', 0)
+            for line in addedtasks:
+                taskid = line.split()[2]
+                sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        if len(canceledtasks) == 0:
+            sendtoall('Отмененных заявок нет.', '', 0)
+        else:
+            for line in canceledtasks:
+                if datetime.strptime(f, '%d.%m.%Y %H:%M') <= datetime.strptime(db.get_record_by_id('Tasks', line.split()[2])[8], '%d.%m.%Y %H:%M') <= datetime.strptime(t, '%d.%m.%Y %H:%M'):
+                    print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
+                else:
+                    canceledtasks.remove(line)
+            sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные', '', 0)
+            for line in canceledtasks:
+                taskid = line.split()[2]
+                sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        report = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
+        sendtoall('ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + report, '', 0)
 
 @bot.message_handler(commands=['start'])
 
+# Стартовое сообщение при получении команды старт
 def send_welcome(message):
     global ActiveUser
-    # os.execl(sys.executable, sys.executable, *sys.argv)
+    # Проверяем зарегистрирован ли текущий пользователь
     ActiveUser[message.chat.id] = {'id': message.chat.id}
     finduser = db.search_record("Users", "id", message.chat.id)
+    # Если пользователь не зарегистрирован
     if len(finduser) == 0:
         bot.send_message(
             message.chat.id,
@@ -37,6 +155,7 @@ def send_welcome(message):
             reply_markup=buttons.Buttons(['Регистрация'])
         )
         bot.register_next_step_handler(message, Reg.reg1)
+    # Если пользователь зарегистрирован отправляем его в главное меню
     else:
         bot.send_message(
             message.chat.id,
@@ -47,9 +166,13 @@ def send_welcome(message):
 
 @bot.message_handler(content_types=['text'])
 
+# Регистрация нового пользователя
 class Reg:
 
+    # Проверяем нажал ли пользователь кнопку регистрации
     def reg1(message):
+        
+        # Если да то спрашиваем имя
         if message.text == 'Регистрация':
             bot.send_message(
                 message.chat.id,
@@ -58,6 +181,7 @@ class Reg:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Reg.reg2)
+        # Если нет просим пользователя зарегистрироваться
         else:
             bot.send_message(
                 message.chat.id,
@@ -67,6 +191,7 @@ class Reg:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Reg.reg1)
 
+    # Сохраняем имя т спрашиваем фамилию
     def reg2(message):
         global ActiveUser
         ActiveUser[message.chat.id]['FirstName'] = message.text
@@ -77,6 +202,7 @@ class Reg:
         )
         bot.register_next_step_handler(message, Reg.reg3)
 
+    # Сохраняем фамилию и спрашиваем номер телефона
     def reg3(message):
         global ActiveUser
         ActiveUser[message.chat.id]['LastName'] = message.text
@@ -87,9 +213,11 @@ class Reg:
         )
         bot.register_next_step_handler(message, Reg.reg4)
 
+    # Сохраняем номер телефона и просим пользователя подтвердить информацию
     def reg4(message):
         global ActiveUser
         ActiveUser[message.chat.id]['PhoneNumber'] = message.text
+        # conftext() - генерирует текст где указана вся введенная пользователем информация
         bot.send_message(
             message.chat.id,
             functions.conftext(message, ActiveUser),
@@ -97,15 +225,19 @@ class Reg:
         )
         bot.register_next_step_handler(message, Reg.reg5)
 
+    # Проверка подтверждения
     def reg5(message):
         global ActiveUser
+        # Если пользователь подтвердил информацию
         if message.text == 'Да':
+            # Сохраняем всю информацию в список
             valuedict = [
                 ActiveUser[message.chat.id]['id'],
                 ActiveUser[message.chat.id]['FirstName'],
                 ActiveUser[message.chat.id]['LastName'],
                 ActiveUser[message.chat.id]['PhoneNumber']
             ]
+            # Добавляем нового пользователя в базу
             db.insert_record("Users", valuedict)
             bot.send_message(
                 message.chat.id,
@@ -113,15 +245,20 @@ class Reg:
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            # Отправляем в главное меню
             bot.register_next_step_handler(message, MainMenu.Main1)
+        # Если пользователь не подтвердил информацию
         elif message.text == 'Нет':
+            # Просим пользователя заново пройти регистрацию
             bot.send_message(
                 message.chat.id,
                 'Пройдите регистрацию повторно.',
                 reply_markup=buttons.Buttons(['Регистрация'])
             )
             bot.register_next_step_handler(message, Reg.reg1)
+        # Если пользователь отправил сообщение и не нажал кнопки да и нет
         else:
+            # Повторно просим подтвердить введенную информацию
             bot.send_message(
                 message.chat.id,
                 'Вы не подтвердили информацию!\n' + functions.conftext(message, ActiveUser),
@@ -130,8 +267,10 @@ class Reg:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Reg.reg5)
 
+# Главное меню
 class MainMenu:
 
+    # Показываем пользователю кнопки главного меню
     def Main1(message):
         global ActiveUser
         # if bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -144,7 +283,9 @@ class MainMenu:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
 
+    # Проверяем нажатие кнопок
     def Main2(message):
+        global ActiveUser
         if message.text == 'Новая заявка':
             contragents = db.select_table('Contragents', ['id', 'cname'])
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -159,7 +300,7 @@ class MainMenu:
                 'from': '01.01.2000 00:00',
                 'to': '31.12.2100 23:59',
                 'added': 1,
-                'confirmed': 0,
+                'confirmed': 1,
                 'done': 0,
                 'canceled': 0,
                 'justmy': 0
@@ -169,7 +310,8 @@ class MainMenu:
                 filters(message),
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            if message.message_id is not None:
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, TL.tl1)
         elif message.text == '/start':
             bot.send_message(
@@ -184,7 +326,8 @@ class MainMenu:
                 'Напишите Ваше сообщение и оно будет разослано всем.\nчтобы вернуться в главное меню нажмите [Главное меню]',
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            if message.message_id is not None:
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, allchats.chat1)
         else:
             # bot.send_message(
@@ -359,7 +502,7 @@ class NewTask:
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
             tid = db.get_last_record('Tasks')[0]
-            sendtoall(functions.curtask(tid), buttons.buttonsinline([['Принять', 'confirm ' + str(tid)], ['Назначить', 'set ' + str(tid)]]), message.chat.id)
+            sendtoall(functions.curtask(tid), buttons.buttonsinline([['Принять', 'confirm ' + str(tid)], ['Назначить', 'set ' + str(tid)]]), message.chat.id, 1)
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
         elif message.text == 'Нет':
@@ -639,24 +782,31 @@ class TL:
                         print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
                     else:
                         tasks.remove(line)
-            bot.send_message(
-                message.chat.id,
-                '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\n‼ ️Список заявок: ‼️\n👇🏼👇🏼👇🏼👇🏼👇🏼👇🏼',
-                reply_markup=buttons.clearbuttons()
-            )
             taskslist = functions.listgen(tasks, [0, 1, 3, 4, 6], 1)
-            for line in taskslist:
-                taskid = line.split()[2]
+            if len(taskslist) != 0:
                 bot.send_message(
                     message.chat.id,
-                    line,
-                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\n‼ ️Список заявок: ‼️\n👇🏼👇🏼👇🏼👇🏼👇🏼👇🏼',
+                    reply_markup=buttons.clearbuttons()
                 )
-            bot.send_message(
-                message.chat.id,
-                '👆🏼👆🏼👆🏼👆🏼👆🏼👆🏼\n‼️ Список заявок ‼️\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺\nВыберите операцию.',
-                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
-            )
+                for line in taskslist:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+                bot.send_message(
+                    message.chat.id,
+                    '👆🏼👆🏼👆🏼👆🏼👆🏼👆🏼\n‼️ Список заявок ‼️\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺\nВыберите операцию.',
+                    reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'Заявок по вашему запросу не найдено.',
+                    reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Написать всем'])
+                )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
@@ -669,7 +819,7 @@ class TL:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl2)
-        elif message.text == '○ Зарегистрированные' or message.text == '● Зарегистрированные':
+        elif message.text == '⬜️ Зарегистрированные' or message.text == '🔳 Зарегистрированные':
             if ActiveUser[message.chat.id]['filter']['added'] == 1:
                 ActiveUser[message.chat.id]['filter']['added'] = 0
             else:
@@ -682,7 +832,7 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-        elif message.text == '○ В работе' or message.text == '● В работе':
+        elif message.text == '⬜️ В работе' or message.text == '🔳 В работе':
             if ActiveUser[message.chat.id]['filter']['confirmed'] == 1:
                 ActiveUser[message.chat.id]['filter']['confirmed'] = 0
             else:
@@ -695,7 +845,7 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-        elif message.text == '○ Завершенные' or message.text == '● Завершенные':
+        elif message.text == '⬜️ Завершенные' or message.text == '🔳 Завершенные':
             if ActiveUser[message.chat.id]['filter']['done'] == 1:
                 ActiveUser[message.chat.id]['filter']['done'] = 0
             else:
@@ -708,7 +858,7 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-        elif message.text == '○ Отмененные' or message.text == '● Отмененные':
+        elif message.text == '⬜️ Отмененные' or message.text == '🔳 Отмененные':
             if ActiveUser[message.chat.id]['filter']['canceled'] == 1:
                 ActiveUser[message.chat.id]['filter']['canceled'] = 0
             else:
@@ -721,7 +871,7 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-        elif message.text == '○ Только мои' or message.text == '● Только мои':
+        elif message.text == '⬜️ Только мои' or message.text == '🔳 Только мои':
             if ActiveUser[message.chat.id]['filter']['justmy'] == 1:
                 ActiveUser[message.chat.id]['filter']['justmy'] = 0
             else:
@@ -799,8 +949,6 @@ class TL:
             )
             bot.register_next_step_handler(message, TL.tl3)
 
-# @bot.message_handler(func=lambda message: True)
-
 class allchats:
     def chat1(message):
         if message.text == 'Главное меню':
@@ -819,6 +967,7 @@ class allchats:
             bot.register_next_step_handler(message, allchats.chat1)
 
 @bot.callback_query_handler(func=lambda call: True)
+
 def callback_handler(call):
     global ActiveUser, sendedmessages
     if call.data.split()[0] == 'tasklist':
@@ -881,10 +1030,14 @@ def callback_handler(call):
 # bot.polling()
 
 if __name__ == '__main__':
+    # asyncio.run(main())
     while True:
         try:
+            thread = threading.Thread(target=asyncio.run, args=(main(),))
+            thread.start()
+            print("polling...")
             bot.polling(none_stop=True, interval=0)
+            print("Bot is polling...")
         except Exception as e:
             logging.error(e)
             time.sleep(5)
-
