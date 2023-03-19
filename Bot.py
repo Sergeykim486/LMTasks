@@ -1212,16 +1212,16 @@ def callback_handler(call):
         ActiveUser[call.from_user.id]['task'] = call.data.split()[1]
         bot.register_next_step_handler(call.message, Task.task4)
 
-bot.polling()
+# bot.polling()
 
-# if __name__ == '__main__':
-#     while True:
-#         try:
-#             thread = threading.Thread(target=asyncio.run, args=(main(),))
-#             thread.start()
-#             print("polling...")
-#             bot.polling(none_stop=True, interval=0)
-#             print("Bot is polling...")
-#         except Exception as e:
-#             logging.error(e)
-#             time.sleep(5)
+if __name__ == '__main__':
+    while True:
+        try:
+            thread = threading.Thread(target=asyncio.run, args=(main(),))
+            thread.start()
+            print("polling...")
+            bot.polling(none_stop=True, interval=0)
+            print("Bot is polling...")
+        except Exception as e:
+            logging.error(e)
+            time.sleep(5)
