@@ -1215,10 +1215,10 @@ def callback_handler(call):
 # bot.polling()
 
 if __name__ == '__main__':
+    thread = threading.Thread(target=asyncio.run, args=(main(),))
+    thread.start()
     while True:
         try:
-            thread = threading.Thread(target=asyncio.run, args=(main(),))
-            thread.start()
             print("polling...")
             bot.polling(none_stop=True, interval=0)
             print("Bot is polling...")
