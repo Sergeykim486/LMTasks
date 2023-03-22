@@ -1,4 +1,4 @@
-import os, config, telebot, functions, buttons, logging, time, sched, asyncio, threading
+import os, config, telebot, functions, buttons, logging, time, pickle, asyncio, threading
 from db import Database
 from datetime import datetime
 
@@ -12,9 +12,9 @@ db = Database(dbname)
 # Инициализируем токен бота
 bot = telebot.TeleBot(config.TOKEN)
 
+# Расписание для рассылки сообщений по утрам и вечерам
 async def job():
     await schedule_message()
-
 async def schedule_message():
     while True:
         now = datetime.now()
@@ -25,7 +25,6 @@ async def schedule_message():
             # asyncio.create_task(daylyreport.evening())
             await daylyreport.evening()
         await asyncio.sleep(60)  # проверка каждую минуту
-
 async def main():
     print('Проверка времени рассылки...')
     await job()
@@ -51,6 +50,7 @@ def sendtoall(message, markdown, exeptions, nt = 0):
     # Выход из метода
     return
 
+# Рассылка сообщений о состоянии заявок
 class daylyreport:
     async def morning():
         # Получаем список заявок в соответствии с их статусами
@@ -80,35 +80,29 @@ class daylyreport:
     async def evening():
         # Получаем список заявок в соответствии с их статусами
         print('план отправлен.')
-        donetasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
+        donetaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
         confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
         addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
-        canceledtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
-        today = datetime.now().strftime("%d.%m.%Y %H:%M")
-        f = today.split()[0]+' 00:00'
-        t = today.split()[0]+' 23:59'
+        canceledtaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
+        donetasks = []
+        canceledtasks = []
+        for line in donetaskstemp:
+            if str(db.get_record_by_id('Tasks', line.split()[2])[7].split()[0]) == str(datetime.now().strftime("%d.%m.%Y")):
+                donetasks.append(line)
+        for line in canceledtaskstemp:
+            if str(db.get_record_by_id('Tasks', line.split()[2])[8].split()[0]) == str(datetime.now().strftime("%d.%m.%Y")):
+                canceledtasks.append(x)(line)
         if len(confirmedtasks) == 0 and len(addedtasks) == 0:
-            sendtoall('ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.', '', 0)
+            sendtoall('ИТОГИ ДНЯ:\nПо итогам дня нет не закрытых заявок.', '', 0)
         else:
-            sendtoall('ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:', '', 0)
+            sendtoall('ИТОГИ ДНЯ:\nНа завтра остаются следующие заявки:', '', 0)
         if len(donetasks) == 0:
             sendtoall('Нет ни одной выполненной заявки.', '', 0)
         else:
+            sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки', '', 0)
             for line in donetasks:
-                print('Ищем ошибку...')
-                print(line)
-                print(line[7])
-                if datetime.strptime(f, '%d.%m.%Y %H:%M') <= datetime.strptime(db.get_record_by_id('Tasks', line.split()[2])[7], '%d.%m.%Y %H:%M') <= datetime.strptime(t, '%d.%m.%Y %H:%M'):
-                    print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
-                else:
-                    donetasks.remove(line)
-            if len(donetasks) == 0:
-                sendtoall('Нет ни одной выполненной заявки.', '', 0)
-            else:
-                sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки', '', 0)
-                for line in donetasks:
-                    taskid = line.split()[2]
-                    sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+                taskid = line.split()[2]
+                sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
         if len(confirmedtasks) == 0:
             sendtoall('Нет ни одной заявки назначенной мастерам.')
         else:
@@ -126,11 +120,6 @@ class daylyreport:
         if len(canceledtasks) == 0:
             sendtoall('Отмененных заявок нет.', '', 0)
         else:
-            for line in canceledtasks:
-                if datetime.strptime(f, '%d.%m.%Y %H:%M') <= datetime.strptime(db.get_record_by_id('Tasks', line.split()[2])[8], '%d.%m.%Y %H:%M') <= datetime.strptime(t, '%d.%m.%Y %H:%M'):
-                    print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
-                else:
-                    canceledtasks.remove(line)
             sendtoall('🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные', '', 0)
             for line in canceledtasks:
                 taskid = line.split()[2]
@@ -340,194 +329,7 @@ class MainMenu:
         else:
             bot.register_next_step_handler(message, MainMenu.Main2)
 
-class report:
-    def reportall(message):
-        if message.text == 'Все':
-            print('план отправлен.')
-            confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
-            addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
-            if len(confirmedtasks) == 0 and len(addedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Всем доброе утро!\nНа сегодня нет переходящих заявок.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    'Всем доброе утро!\nСо вчерашнего дня на сегодня переходят следующие заявки:',
-                    reply_markup=''
-                )
-            if len(confirmedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Нет ни одной заявки назначенной мастерам.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
-                    reply_markup=''
-                )
-                for line in confirmedtasks:
-                    taskid = line.split()[2]
-                    bot.send_message(
-                        message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                    )
-            if len(addedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Незакрепленных заявок за мастерами нет.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
-                    reply_markup=''
-                )
-                for line in addedtasks:
-                    taskid = line.split()[2]
-                    bot.send_message(
-                        message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                    )
-            bot.send_message(
-                message.chat.id,
-                'Список заявок на сегодня\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺',
-                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
-            )
-        elif message.text == 'Итоги дня':
-            # Получаем список заявок в соответствии с их статусами
-            print('план отправлен.')
-            donetasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
-            confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
-            addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
-            canceledtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
-            today = datetime.now().strftime("%d.%m.%Y %H:%M")
-            f = today.split()[0]+' 00:00'
-            t = today.split()[0]+' 23:59'
-            if len(confirmedtasks) == 0 and len(addedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    'ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:',
-                    reply_markup=''
-                )
-            if len(donetasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Нет ни одной выполненной заявки.',
-                    reply_markup=''
-                )
-            else:
-                for line in donetasks:
-                    print('Ищем ошибку...')
-                    print(line)
-                    print(line[7])
-                    if datetime.strptime(f, '%d.%m.%Y %H:%M') <= datetime.strptime(db.get_record_by_id('Tasks', line.split()[2])[7], '%d.%m.%Y %H:%M') <= datetime.strptime(t, '%d.%m.%Y %H:%M'):
-                        print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
-                    else:
-                        donetasks.remove(line)
-                if len(donetasks) == 0:
-                    bot.send_message(
-                        message.chat.id,
-                        'Нет ни одной выполненной заявки.',
-                        reply_markup=''
-                    )
-                else:
-                    bot.send_message(
-                        message.chat.id,
-                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки',
-                        reply_markup=''
-                    )
-                    for line in donetasks:
-                        taskid = line.split()[2]
-                        bot.send_message(
-                            message.chat.id,
-                            line,
-                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                        )
-            if len(confirmedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Нет ни одной заявки назначенной мастерам.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
-                    reply_markup=''
-                )
-                for line in confirmedtasks:
-                    taskid = line.split()[2]
-                    bot.send_message(
-                        message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                    )
-            if len(addedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Незакрепленных заявок за мастерами нет.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
-                    reply_markup=''
-                )
-                for line in addedtasks:
-                    taskid = line.split()[2]
-                    bot.send_message(
-                        message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                    )
-            if len(canceledtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Отмененных заявок нет.',
-                    reply_markup=''
-                )
-            else:
-                for line in canceledtasks:
-                    if datetime.strptime(f, '%d.%m.%Y %H:%M') <= datetime.strptime(db.get_record_by_id('Tasks', line.split()[2])[8], '%d.%m.%Y %H:%M') <= datetime.strptime(t, '%d.%m.%Y %H:%M'):
-                        print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
-                    else:
-                        canceledtasks.remove(line)
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные',
-                    reply_markup=''
-                )
-                for line in canceledtasks:
-                    taskid = line.split()[2]
-                    bot.send_message(
-                        message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                    )
-            report = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
-            bot.send_message(
-                message.chat.id,
-                'ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + report,
-                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
-            )
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        bot.register_next_step_handler(message, MainMenu.Main2)
-
+# Регистрация новой аяявки
 class NewTask:
 
     def nt1(message):
@@ -712,6 +514,7 @@ class NewTask:
             )
             bot.register_next_step_handler(message, NewTask.nt7)
 
+# Выбранная заявка
 class Task:
 
     def task1(message):
@@ -926,6 +729,7 @@ class Task:
             sendtoall(mes, '', exn)
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
+# Фильтр для формирования отчета
 def filters(message):
     global ActiveUser
     messagetouser = 'По каким параметрам формировать список\n'
@@ -946,6 +750,7 @@ def filters(message):
         messagetouser = messagetouser + '\n👤 Показать только мои заявки.'
     return messagetouser
 
+# Формирование списка заявок
 class TL:
     def tl1(message):
         global ActiveUser
@@ -1002,7 +807,7 @@ class TL:
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'Укажите дату начала периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                'Укажите дату начала периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023 или 01,01,2023',
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl2)
@@ -1086,13 +891,17 @@ class TL:
             bot.register_next_step_handler(message, MainMenu.Main2)
 
     def tl2(message):
-        if len(message.text.split('.')) == 3 and len(message.text.split('.')[0]) == 2 and len(message.text.split('.')[1]) == 2 and len(message.text.split('.')[2]) == 4:
+        m1 = message.text
+        m1 = m1.replace(' ', '.')
+        m1 = m1.replace(',', '.')
+        m = m1.split('.')
+        if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['filter']['from'] = message.text + ' 00:00'
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'Укажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                'Укажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023 или 01,01,2023',
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl3)
@@ -1101,7 +910,7 @@ class TL:
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'НЕ ВЕРНЫЙ ФОРМАТ!\nУкажите дату начала периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                'НЕ ВЕРНЫЙ ФОРМАТ!\nУкажите дату начала периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023 или 01,01,2023',
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl2)
@@ -1122,7 +931,7 @@ class TL:
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'УКАЗАННАЯ ВАМИ ДАТА РАНЬШЕ ЧЕМ ДАТА НАЧАЛА ПЕРИОДА!\nУкажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                'УКАЗАННАЯ ВАМИ ДАТА РАНЬШЕ ЧЕМ ДАТА НАЧАЛА ПЕРИОДА!\nУкажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023 или 01,01,2023',
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl3)
@@ -1131,11 +940,12 @@ class TL:
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'НЕ ВЕРНЫЙ ФОРМАТ!\nУкажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023',
+                'НЕ ВЕРНЫЙ ФОРМАТ!\nУкажите дату конца периода.\nДень точка Месяц точка Год полностью\nПРИМЕР: 01.01.2023 или 01,01,2023',
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl3)
 
+# Общий чат пересылка всех полученных от пользователя сообщений всем пользователям
 class allchats:
     def chat1(message):
         if message.text == 'Главное меню':
@@ -1153,8 +963,330 @@ class allchats:
                     bot.forward_message(user[0], message.chat.id, message.message_id)
             bot.register_next_step_handler(message, allchats.chat1)
 
+# Отчет за день и начало дня
+class report:
+
+    def reportall(message):
+        if message.text == 'Все':
+            print('план отправлен.')
+            confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
+            addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
+            if len(confirmedtasks) == 0 and len(addedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Всем доброе утро!\nНа сегодня нет переходящих заявок.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'С предыдущих дней на сегодня перешли следующие заявки:',
+                    reply_markup=''
+                )
+            if len(confirmedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Нет ни одной заявки назначенной мастерам.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
+                    reply_markup=''
+                )
+                for line in confirmedtasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            if len(addedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Незакрепленных заявок за мастерами нет.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
+                    reply_markup=''
+                )
+                for line in addedtasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            bot.send_message(
+                message.chat.id,
+                'Список заявок на сегодня\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        elif message.text == 'Итоги дня':
+            bot.send_message(
+                message.chat.id,
+                'Какой день вы хотите увидеть?',
+                reply_markup = buttons.Buttons(['Сегодня', 'Другой день'])
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, report.reportall1)
+
+    def reportall1(message):
+        if message.text == 'Сегодня':
+            daterep = str(datetime.now().strftime("%d.%m.%Y"))
+            print('план отправлен.')
+            donetaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
+            confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
+            addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
+            canceledtaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
+            donetasks = []
+            canceledtasks = []
+            for line in donetaskstemp:
+                if str(db.get_record_by_id('Tasks', line.split()[2])[7].split()[0]) == daterep:
+                    donetasks.append(line)
+            for line in canceledtaskstemp:
+                if str(db.get_record_by_id('Tasks', line.split()[2])[8].split()[0]) == daterep:
+                    canceledtasks.append(x)(line)
+            if len(confirmedtasks) == 0 and len(addedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:',
+                    reply_markup=''
+                )
+            if len(donetasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Нет ни одной выполненной заявки.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки',
+                    reply_markup=''
+                )
+                for line in donetasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            if len(confirmedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Нет ни одной заявки назначенной мастерам.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
+                    reply_markup=''
+                )
+                for line in confirmedtasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            if len(addedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Незакрепленных заявок за мастерами нет.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
+                    reply_markup=''
+                )
+                for line in addedtasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            if len(canceledtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Отмененных заявок нет.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные',
+                    reply_markup=''
+                )
+                for line in canceledtasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
+            bot.send_message(
+                message.chat.id,
+                'ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports,
+                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        elif message.text == 'Другой день':
+            bot.send_message(
+                message.chat.id,
+                'Укажите дату в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                reply_markup = buttons.clearbuttons()
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, report.reportall2)
+
+    def reportall2(message):
+        m1 = message.text
+        m1 = m1.replace(' ', '.')
+        m1 = m1.replace(',', '.')
+        m = m1.split('.')
+        if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
+            daterep = message.text
+            # Получаем список заявок в соответствии с их статусами
+            print('план отправлен.')
+            donetaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
+            confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
+            addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
+            canceledtaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
+            donetasks = []
+            canceledtasks = []
+            for line in donetaskstemp:
+                if str(db.get_record_by_id('Tasks', line.split()[2])[7].split()[0]) == daterep:
+                    donetasks.append(line)
+            for line in canceledtaskstemp:
+                if str(db.get_record_by_id('Tasks', line.split()[2])[8].split()[0]) == daterep:
+                    canceledtasks.append(x)(line)
+            if len(confirmedtasks) == 0 and len(addedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:',
+                    reply_markup=''
+                )
+            if len(donetasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Нет ни одной выполненной заявки.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки',
+                    reply_markup=''
+                )
+                for line in donetasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            if len(confirmedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Нет ни одной заявки назначенной мастерам.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
+                    reply_markup=''
+                )
+                for line in confirmedtasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            if len(addedtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Незакрепленных заявок за мастерами нет.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
+                    reply_markup=''
+                )
+                for line in addedtasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            if len(canceledtasks) == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Отмененных заявок нет.',
+                    reply_markup=''
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные',
+                    reply_markup=''
+                )
+                for line in canceledtasks:
+                    taskid = line.split()[2]
+                    bot.send_message(
+                        message.chat.id,
+                        line,
+                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                    )
+            reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
+            bot.send_message(
+                message.chat.id,
+                'ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports,
+                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Не верно указана дата.\n\nУкажите дату в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                reply_markup = ''
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, report.reportall2)
+
 @bot.callback_query_handler(func=lambda call: True)
 
+# Реакция на кнопки
 def callback_handler(call):
     global ActiveUser, sendedmessages
     if call.data.split()[0] == 'tasklist':
@@ -1212,16 +1344,14 @@ def callback_handler(call):
         ActiveUser[call.from_user.id]['task'] = call.data.split()[1]
         bot.register_next_step_handler(call.message, Task.task4)
 
-# bot.polling()
-
+# Запуск бота
 if __name__ == '__main__':
+    sendtoall('‼️‼️‼️Сервер бота был перезагружен...‼️‼️‼️\nДля продолжения работы нажмите start', buttons.Buttons(['/start']), 0)
     thread = threading.Thread(target=asyncio.run, args=(main(),))
     thread.start()
     while True:
         try:
-            print("polling...")
             bot.polling(none_stop=True, interval=0)
-            print("Bot is polling...")
         except Exception as e:
             logging.error(e)
             time.sleep(5)
