@@ -16,7 +16,6 @@ def listgen(table, cols, tasks = 0):
     for line in table:
         curline = ''
         for i in cols:
-            print(line[i])
             if tasks == 1:
                 if i == 0:
                     curline = curline + '№ ' + str(line[i]) + '\n'
@@ -24,11 +23,8 @@ def listgen(table, cols, tasks = 0):
                     curline = curline + ' от ' + str(line[i]) + '\n'
                 elif i == 3:
                     cname = db.get_record_by_id('Contragents', line[i])[1]
-                    print(cname)
                     curline = curline + str(cname) + '\n'
                 elif i == 6 and line[i]:
-                    print('Ячейка местер не пуста')
-                    print(line[i])
                     Mastername = db.get_record_by_id("Users", line[i])[2] + ' ' + db.get_record_by_id("Users", line[i])[1]
                     curline = curline + '\nМастер: - ' + str(Mastername) + '\n'
                 else:
@@ -50,12 +46,12 @@ def listgen(table, cols, tasks = 0):
             res.append('🗄 ' + curline)
         elif tasks == 3:
             res.append('👤 ' + curline)
+        print(curline)
     return res
 
 def curtask(id):
     messtext = ''
     task = db.get_record_by_id('Tasks', id)
-    print('Выбранная заявка найдена')
     messtext = 'Заявка №' + str(task[0]) + ' от ' + str(task[1])
     messtext = messtext + '\nЗаявку зарегистрировал: ' + str(db.get_record_by_id('Users', task[2])[1])
     if task[11] == 2 or task[10] == 3:

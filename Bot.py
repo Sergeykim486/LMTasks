@@ -1,6 +1,7 @@
 import os, config, telebot, functions, buttons, logging, time, pickle, asyncio, threading
 from db import Database
 from datetime import datetime
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # Объявляем глобальные переменные
 ActiveUser = {}
@@ -17,16 +18,16 @@ async def job():
     await schedule_message()
 async def schedule_message():
     while True:
+        logging.info('Проверка расписания')
         now = datetime.now()
-        if now.hour == 8 and now.minute == 30:
+        if now.hour == 8 and now.minute == 0:
             # asyncio.create_task(daylyreport.morning())
             await daylyreport.morning()
-        elif now.hour == 18 and now.minute == 0:
+        elif now.hour == 20 and now.minute == 0:
             # asyncio.create_task(daylyreport.evening())
             await daylyreport.evening()
         await asyncio.sleep(60)  # проверка каждую минуту
 async def main():
-    print('Проверка времени рассылки...')
     await job()
 
 # Отправка сообщения всем пользователям
@@ -36,6 +37,7 @@ def sendtoall(message, markdown, exeptions, nt = 0):
     users = db.select_table('Users')
     # Проход по циклу и отправка сообщения каждому пользователю
     for user in users:
+        logging.info(f'sended message to user {user[2]} {user[1]}')
         try:
             if user[0] != exeptions:
                 mes = bot.send_message(
@@ -47,6 +49,7 @@ def sendtoall(message, markdown, exeptions, nt = 0):
                     sendedmessages.append([[user[0]], [mes.message_id]])
         except Exception as e:
             logging.error(e)
+            pass
     # Выход из метода
     return
 
@@ -54,7 +57,7 @@ def sendtoall(message, markdown, exeptions, nt = 0):
 class daylyreport:
     async def morning():
         # Получаем список заявок в соответствии с их статусами
-        print('план отправлен.')
+        logging.info('план отправлен.')
         confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
         addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
         if len(confirmedtasks) == 0 and len(addedtasks) == 0:
@@ -79,7 +82,7 @@ class daylyreport:
 
     async def evening():
         # Получаем список заявок в соответствии с их статусами
-        print('план отправлен.')
+        logging.info('план отправлен.')
         donetaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
         confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
         addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
@@ -91,7 +94,7 @@ class daylyreport:
                 donetasks.append(line)
         for line in canceledtaskstemp:
             if str(db.get_record_by_id('Tasks', line.split()[2])[8].split()[0]) == str(datetime.now().strftime("%d.%m.%Y")):
-                canceledtasks.append(x)(line)
+                canceledtasks.append(line)
         if len(confirmedtasks) == 0 and len(addedtasks) == 0:
             sendtoall('ИТОГИ ДНЯ:\nПо итогам дня нет не закрытых заявок.', '', 0)
         else:
@@ -132,6 +135,8 @@ class daylyreport:
 # Стартовое сообщение при получении команды старт
 def send_welcome(message):
     global ActiveUser
+    username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+    logging.info(f'{username} Отправил запрос - {message.text}')
     # Проверяем зарегистрирован ли текущий пользователь
     ActiveUser[message.chat.id] = {'id': message.chat.id}
     finduser = db.search_record("Users", "id", message.chat.id)
@@ -159,7 +164,8 @@ class Reg:
 
     # Проверяем нажал ли пользователь кнопку регистрации
     def reg1(message):
-        
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         # Если да то спрашиваем имя
         if message.text == 'Регистрация':
             bot.send_message(
@@ -181,6 +187,8 @@ class Reg:
 
     # Сохраняем имя т спрашиваем фамилию
     def reg2(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         ActiveUser[message.chat.id]['FirstName'] = message.text
         bot.send_message(
@@ -192,6 +200,8 @@ class Reg:
 
     # Сохраняем фамилию и спрашиваем номер телефона
     def reg3(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         ActiveUser[message.chat.id]['LastName'] = message.text
         bot.send_message(
@@ -203,6 +213,8 @@ class Reg:
 
     # Сохраняем номер телефона и просим пользователя подтвердить информацию
     def reg4(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         ActiveUser[message.chat.id]['PhoneNumber'] = message.text
         # conftext() - генерирует текст где указана вся введенная пользователем информация
@@ -215,6 +227,8 @@ class Reg:
 
     # Проверка подтверждения
     def reg5(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         # Если пользователь подтвердил информацию
         if message.text == 'Да':
@@ -260,6 +274,8 @@ class MainMenu:
 
     # Показываем пользователю кнопки главного меню
     def Main1(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         # if bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
         if message.text == 'Главное меню' or message.text == 'Вернуться':
@@ -273,6 +289,8 @@ class MainMenu:
 
     # Проверяем нажатие кнопок
     def Main2(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         if message.text == 'Новая заявка':
             contragents = db.select_table('Contragents', ['id', 'cname'])
@@ -333,6 +351,8 @@ class MainMenu:
 class NewTask:
 
     def nt1(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         ActiveUser[message.chat.id]['added'] = datetime.now().strftime("%d.%m.%Y %H:%M")
         ActiveUser[message.chat.id]['manager'] = message.chat.id
@@ -384,6 +404,8 @@ class NewTask:
             bot.register_next_step_handler(message, NewTask.nt6)
 
     def innerror(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Ввести снова':
             contragents = db.select_table('Contragents', ['id', 'cname'])
             bot.send_message(
@@ -406,6 +428,8 @@ class NewTask:
 
     def nt2(message):
         global ActiveUser
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['cname'] = message.text
         bot.send_message(
             message.chat.id,
@@ -415,6 +439,8 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.nt3)
 
     def nt3(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         ActiveUser[message.chat.id]['cadr'] = message.text
         bot.send_message(
@@ -425,6 +451,8 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.nt4)
 
     def nt4(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         ActiveUser[message.chat.id]['cperson'] = message.text
         bot.send_message(
@@ -435,6 +463,8 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.nt5)
 
     def nt5(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         ActiveUser[message.chat.id]['cphone'] = message.text
         contragent = [
@@ -453,6 +483,8 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.nt6)
 
     def nt6(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         ActiveUser[message.chat.id]['task'] = message.text
         confmes = 'Подтвердите заявку. \n Заявка от: '
@@ -472,6 +504,8 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.nt7)
 
     def nt7(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         if message.text == 'Да':
             task = [
@@ -518,6 +552,8 @@ class NewTask:
 class Task:
 
     def task1(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         if message.text == 'Принять':
             if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] != 1:
@@ -643,6 +679,8 @@ class Task:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
     def task2(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Да':
             bot.send_message(
                 message.chat.id,
@@ -661,6 +699,8 @@ class Task:
             bot.register_next_step_handler(message, MainMenu.Main1)
 
     def task3(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         db.update_records(
             'Tasks',[
                 'canceled',
@@ -688,6 +728,8 @@ class Task:
         sendtoall(mes, mark, exn)
 
     def task4(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text.split()[1] is None:
             users = db.select_table('Users')
             bot.send_message(
@@ -731,6 +773,8 @@ class Task:
 
 # Фильтр для формирования отчета
 def filters(message):
+    username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+    logging.info(f'{username} Отправил запрос - {message.text}')
     global ActiveUser
     messagetouser = 'По каким параметрам формировать список\n'
     if ActiveUser[message.chat.id]['filter']['from'] == '01.01.2000 00:00':
@@ -753,6 +797,8 @@ def filters(message):
 # Формирование списка заявок
 class TL:
     def tl1(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         if message.text == 'Сформировать':
             statuses = []
@@ -771,7 +817,7 @@ class TL:
             if ActiveUser[message.chat.id]['filter']['from'] != '01.01.2000 00:00':
                 for line in tasks[:]:
                     if datetime.strptime(ActiveUser[message.chat.id]['filter']['from'], '%d.%m.%Y %H:%M') <= datetime.strptime(line[1], '%d.%m.%Y %H:%M') <= datetime.strptime(ActiveUser[message.chat.id]['filter']['to'], '%d.%m.%Y %H:%M'):
-                        print('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
+                        logging.info('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
                     else:
                         tasks.remove(line)
             taskslist = functions.listgen(tasks, [0, 1, 3, 4, 6], 1)
@@ -891,6 +937,8 @@ class TL:
             bot.register_next_step_handler(message, MainMenu.Main2)
 
     def tl2(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         m1 = message.text
         m1 = m1.replace(' ', '.')
         m1 = m1.replace(',', '.')
@@ -916,6 +964,8 @@ class TL:
             bot.register_next_step_handler(message, TL.tl2)
 
     def tl3(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         if len(message.text.split('.')) == 3 and len(message.text.split('.')[0]) == 2 and len(message.text.split('.')[1]) == 2 and len(message.text.split('.')[2]) == 4 and datetime.strptime(ActiveUser[message.chat.id]['filter']['from'], '%d.%m.%Y %H:%M') < datetime.strptime(message.text + ' 23:00', '%d.%m.%Y %H:%M'):
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -948,6 +998,8 @@ class TL:
 # Общий чат пересылка всех полученных от пользователя сообщений всем пользователям
 class allchats:
     def chat1(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Главное меню':
             bot.send_message(
                 message.chat.id,
@@ -959,28 +1011,35 @@ class allchats:
         else:
             users = db.select_table('Users')
             for user in users:
-                if user [0] != message.chat.id:
-                    bot.forward_message(user[0], message.chat.id, message.message_id)
+                try:
+                    logging.info(f'sended message to user {user[2]} {user[1]}')
+                    if user[0] != message.chat.id:
+                        bot.forward_message(user[0], message.chat.id, message.message_id)
+                except Exception as e:
+                    logging.error(e)
+                    pass
             bot.register_next_step_handler(message, allchats.chat1)
 
 # Отчет за день и начало дня
 class report:
 
     def reportall(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Все':
-            print('план отправлен.')
+            logging.info('план отправлен.')
             confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
             addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
             if len(confirmedtasks) == 0 and len(addedtasks) == 0:
                 bot.send_message(
                     message.chat.id,
-                    'Всем доброе утро!\nНа сегодня нет переходящих заявок.',
+                    'На текущий момент нет переходящих заявок.',
                     reply_markup=''
                 )
             else:
                 bot.send_message(
                     message.chat.id,
-                    'С предыдущих дней на сегодня перешли следующие заявки:',
+                    'На текущий момент следующие заявки:',
                     reply_markup=''
                 )
             if len(confirmedtasks) == 0:
@@ -1038,117 +1097,123 @@ class report:
             bot.register_next_step_handler(message, report.reportall1)
 
     def reportall1(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Сегодня':
-            daterep = str(datetime.now().strftime("%d.%m.%Y"))
-            print('план отправлен.')
-            donetaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
-            confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
-            addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
-            canceledtaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
-            donetasks = []
-            canceledtasks = []
-            for line in donetaskstemp:
-                if str(db.get_record_by_id('Tasks', line.split()[2])[7].split()[0]) == daterep:
-                    donetasks.append(line)
-            for line in canceledtaskstemp:
-                if str(db.get_record_by_id('Tasks', line.split()[2])[8].split()[0]) == daterep:
-                    canceledtasks.append(x)(line)
-            if len(confirmedtasks) == 0 and len(addedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    'ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:',
-                    reply_markup=''
-                )
-            if len(donetasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Нет ни одной выполненной заявки.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки',
-                    reply_markup=''
-                )
-                for line in donetasks:
-                    taskid = line.split()[2]
+            try:
+                logging.info(f'Формирование отчета для {message.chat.id}')
+                daterep = str(datetime.now().strftime("%d.%m.%Y"))
+                logging.info('план отправлен.')
+                donetaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
+                confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
+                addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
+                canceledtaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
+                donetasks = []
+                canceledtasks = []
+                for line in donetaskstemp:
+                    if str(db.get_record_by_id('Tasks', line.split()[2])[7].split()[0]) == daterep:
+                        donetasks.append(line)
+                for line in canceledtaskstemp:
+                    if str(db.get_record_by_id('Tasks', line.split()[2])[8].split()[0]) == daterep:
+                        canceledtasks.append(line)
+                if len(confirmedtasks) == 0 and len(addedtasks) == 0:
                     bot.send_message(
                         message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        'ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.',
+                        reply_markup=''
                     )
-            if len(confirmedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Нет ни одной заявки назначенной мастерам.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
-                    reply_markup=''
-                )
-                for line in confirmedtasks:
-                    taskid = line.split()[2]
+                else:
                     bot.send_message(
                         message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        'ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:',
+                        reply_markup=''
                     )
-            if len(addedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Незакрепленных заявок за мастерами нет.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
-                    reply_markup=''
-                )
-                for line in addedtasks:
-                    taskid = line.split()[2]
+                if len(donetasks) == 0:
                     bot.send_message(
                         message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        'Нет ни одной выполненной заявки.',
+                        reply_markup=''
                     )
-            if len(canceledtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Отмененных заявок нет.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные',
-                    reply_markup=''
-                )
-                for line in canceledtasks:
-                    taskid = line.split()[2]
+                else:
                     bot.send_message(
                         message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки',
+                        reply_markup=''
                     )
-            reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
-            bot.send_message(
-                message.chat.id,
-                'ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports,
-                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
-            )
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.register_next_step_handler(message, MainMenu.Main2)
+                    for line in donetasks:
+                        taskid = line.split()[2]
+                        bot.send_message(
+                            message.chat.id,
+                            line,
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        )
+                if len(confirmedtasks) == 0:
+                    bot.send_message(
+                        message.chat.id,
+                        'Нет ни одной заявки назначенной мастерам.',
+                        reply_markup=''
+                    )
+                else:
+                    bot.send_message(
+                        message.chat.id,
+                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
+                        reply_markup=''
+                    )
+                    for line in confirmedtasks:
+                        taskid = line.split()[2]
+                        bot.send_message(
+                            message.chat.id,
+                            line,
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        )
+                if len(addedtasks) == 0:
+                    bot.send_message(
+                        message.chat.id,
+                        'Незакрепленных заявок за мастерами нет.',
+                        reply_markup=''
+                    )
+                else:
+                    bot.send_message(
+                        message.chat.id,
+                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
+                        reply_markup=''
+                    )
+                    for line in addedtasks:
+                        taskid = line.split()[2]
+                        bot.send_message(
+                            message.chat.id,
+                            line,
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        )
+                if len(canceledtasks) == 0:
+                    bot.send_message(
+                        message.chat.id,
+                        'Отмененных заявок нет.',
+                        reply_markup=''
+                    )
+                else:
+                    bot.send_message(
+                        message.chat.id,
+                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные',
+                        reply_markup=''
+                    )
+                    for line in canceledtasks:
+                        taskid = line.split()[2]
+                        bot.send_message(
+                            message.chat.id,
+                            line,
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        )
+                reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
+                bot.send_message(
+                    message.chat.id,
+                    'ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports,
+                    reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
+                )
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                bot.register_next_step_handler(message, MainMenu.Main2)
+            except Exception as e:
+                logging.error(e)
         elif message.text == 'Другой день':
             bot.send_message(
                 message.chat.id,
@@ -1159,122 +1224,128 @@ class report:
             bot.register_next_step_handler(message, report.reportall2)
 
     def reportall2(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
         m1 = message.text
         m1 = m1.replace(' ', '.')
         m1 = m1.replace(',', '.')
         m = m1.split('.')
         if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
-            daterep = message.text
-            # Получаем список заявок в соответствии с их статусами
-            print('план отправлен.')
-            donetaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
-            confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
-            addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
-            canceledtaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
-            donetasks = []
-            canceledtasks = []
-            for line in donetaskstemp:
-                if str(db.get_record_by_id('Tasks', line.split()[2])[7].split()[0]) == daterep:
-                    donetasks.append(line)
-            for line in canceledtaskstemp:
-                if str(db.get_record_by_id('Tasks', line.split()[2])[8].split()[0]) == daterep:
-                    canceledtasks.append(x)(line)
-            if len(confirmedtasks) == 0 and len(addedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    'ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:',
-                    reply_markup=''
-                )
-            if len(donetasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Нет ни одной выполненной заявки.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки',
-                    reply_markup=''
-                )
-                for line in donetasks:
-                    taskid = line.split()[2]
+            try:
+                daterep = message.text
+                logging.info(f'Формирование отчета для {message.chat.id}')
+                # Получаем список заявок в соответствии с их статусами
+                logging.info('план отправлен.')
+                donetaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 3}), [0, 1, 3, 4, 6], 1)
+                confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
+                addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
+                canceledtaskstemp = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}), [0, 1, 3, 4, 6], 1)
+                donetasks = []
+                canceledtasks = []
+                for line in donetaskstemp:
+                    if str(db.get_record_by_id('Tasks', line.split()[2])[7].split()[0]) == daterep:
+                        donetasks.append(line)
+                for line in canceledtaskstemp:
+                    if str(db.get_record_by_id('Tasks', line.split()[2])[8].split()[0]) == daterep:
+                        canceledtasks.append(line)
+                if len(confirmedtasks) == 0 and len(addedtasks) == 0:
                     bot.send_message(
                         message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        'ИТОГИ ДНЯ:\nОтличная работа! По итогам дня нет не закрытых заявок.',
+                        reply_markup=''
                     )
-            if len(confirmedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Нет ни одной заявки назначенной мастерам.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
-                    reply_markup=''
-                )
-                for line in confirmedtasks:
-                    taskid = line.split()[2]
+                else:
                     bot.send_message(
                         message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        'ИТОГИ ДНЯ:\nСо вчерашнего дня на сегодня переходят следующие заявки:',
+                        reply_markup=''
                     )
-            if len(addedtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Незакрепленных заявок за мастерами нет.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
-                    reply_markup=''
-                )
-                for line in addedtasks:
-                    taskid = line.split()[2]
+                if len(donetasks) == 0:
                     bot.send_message(
                         message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        'Нет ни одной выполненной заявки.',
+                        reply_markup=''
                     )
-            if len(canceledtasks) == 0:
-                bot.send_message(
-                    message.chat.id,
-                    'Отмененных заявок нет.',
-                    reply_markup=''
-                )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные',
-                    reply_markup=''
-                )
-                for line in canceledtasks:
-                    taskid = line.split()[2]
+                else:
                     bot.send_message(
                         message.chat.id,
-                        line,
-                        reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nВыполненные заявки',
+                        reply_markup=''
                     )
-            reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
-            bot.send_message(
-                message.chat.id,
-                'ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports,
-                reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
-            )
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.register_next_step_handler(message, MainMenu.Main2)
+                    for line in donetasks:
+                        taskid = line.split()[2]
+                        bot.send_message(
+                            message.chat.id,
+                            line,
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        )
+                if len(confirmedtasks) == 0:
+                    bot.send_message(
+                        message.chat.id,
+                        'Нет ни одной заявки назначенной мастерам.',
+                        reply_markup=''
+                    )
+                else:
+                    bot.send_message(
+                        message.chat.id,
+                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nЗаявки у мастеров',
+                        reply_markup=''
+                    )
+                    for line in confirmedtasks:
+                        taskid = line.split()[2]
+                        bot.send_message(
+                            message.chat.id,
+                            line,
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        )
+                if len(addedtasks) == 0:
+                    bot.send_message(
+                        message.chat.id,
+                        'Незакрепленных заявок за мастерами нет.',
+                        reply_markup=''
+                    )
+                else:
+                    bot.send_message(
+                        message.chat.id,
+                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nНе принятые заявки',
+                        reply_markup=''
+                    )
+                    for line in addedtasks:
+                        taskid = line.split()[2]
+                        bot.send_message(
+                            message.chat.id,
+                            line,
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        )
+                if len(canceledtasks) == 0:
+                    bot.send_message(
+                        message.chat.id,
+                        'Отмененных заявок нет.',
+                        reply_markup=''
+                    )
+                else:
+                    bot.send_message(
+                        message.chat.id,
+                        '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОтмененные',
+                        reply_markup=''
+                    )
+                    for line in canceledtasks:
+                        taskid = line.split()[2]
+                        bot.send_message(
+                            message.chat.id,
+                            line,
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                        )
+                reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
+                bot.send_message(
+                    message.chat.id,
+                    'ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports,
+                    reply_markup=buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
+                )
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                bot.register_next_step_handler(message, MainMenu.Main2)
+            except Exception as e:
+                logging.error(e)
         else:
             bot.send_message(
                 message.chat.id,
@@ -1288,6 +1359,8 @@ class report:
 
 # Реакция на кнопки
 def callback_handler(call):
+    # username = db.get_record_by_id('Users', call.from_user.id)[2] + ' ' + db.get_record_by_id('Users', call.from_user.id)[2]
+    # logging.info(f'{username} Нажал на кнопку - {call.text}')
     global ActiveUser, sendedmessages
     if call.data.split()[0] == 'tasklist':
         status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
@@ -1352,6 +1425,7 @@ if __name__ == '__main__':
     while True:
         try:
             bot.polling(none_stop=True, interval=0)
+            logging.info()
         except Exception as e:
             logging.error(e)
             time.sleep(5)
