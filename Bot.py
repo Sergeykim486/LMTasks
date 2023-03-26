@@ -1290,7 +1290,7 @@ class report:
         m1 = m1.replace(',', '.')
         m = m1.split('.')
         if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
-            daterep = message.text
+            daterep = m1
             try:
                 logging.info(f'Формирование отчета для {message.chat.id} За {daterep}')
                 report.rep(message, daterep, 1, 1, 1, 1, 1)
