@@ -1,5 +1,6 @@
 import sqlite3
 import threading
+from datetime import datetime
 
 class Database:
     def __init__(self, dbname):
@@ -85,23 +86,111 @@ class Database:
             row = self.cur.fetchone()
             return row
 
-    def select_table_with_filters(self, table_name, filters={}):
+    # def select_table_with_filters(self, table_name, filters={}, date_columns=None, from_dates=None, to_dates=None):
+    #     with self.lock:
+    #         filter_columns = []
+    #         filter_values = []
+    #         for column, value in filters.items():
+    #             if isinstance(value, list):
+    #                 filter_columns.append(f"{column} IN ({','.join(['?' for _ in value])})")
+    #                 filter_values.extend(value)
+    #             else:
+    #                 filter_columns.append(f"{column} = ?")
+    #                 filter_values.append(value)
+
+    #         date_filters = []
+    #         if date_columns is not None and from_dates is not None and to_dates is not None:
+    #             for i in range(len(date_columns)):
+    #                 date_column = date_columns[i]
+    #                 from_date = from_dates[i]
+    #                 to_date = to_dates[i]
+    #                 date_filter = f"strftime('%d.%m.%Y %H:%M', {date_column}) BETWEEN '{from_date}' AND '{to_date}'"
+    #                 date_filters.append(date_filter)
+
+    #         if len(filter_columns) > 0 and len(date_filters) > 0:
+    #             where_clause = " WHERE " + " AND ".join(filter_columns) + " AND (" + " OR ".join(date_filters) + ")"
+    #         elif len(filter_columns) > 0:
+    #             where_clause = " WHERE " + " AND ".join(filter_columns)
+    #         elif len(date_filters) > 0:
+    #             where_clause = " WHERE " + " OR ".join(date_filters)
+    #         else:
+    #             where_clause = ""
+
+    #         query = f"SELECT * FROM {table_name}" + where_clause
+    #         self.cur.execute(query, filter_values)
+    #         rows = self.cur.fetchall()
+    #         return rows
+
+    # def select_table_with_filters(self, table_name, filters={}, date_columns=None, from_dates=None, to_dates=None):
+    #     with self.lock:
+    #         filter_columns = []
+    #         filter_values = []
+    #         for column, value in filters.items():
+    #             if isinstance(value, list):
+    #                 filter_columns.append(f"{column} IN ({','.join(['?' for _ in value])})")
+    #                 filter_values.extend(value)
+    #             else:
+    #                 filter_columns.append(f"{column} = ?")
+    #                 filter_values.append(value)
+
+    #         date_filters = []
+    #         if date_columns is not None and from_dates is not None and to_dates is not None:
+    #             for i in range(len(date_columns)):
+    #                 date_column = date_columns[i]
+    #                 from_date = from_dates[i]
+    #                 to_date = to_dates[i]
+    #                 date_filter = f"strftime('%d.%m.%Y %H:%M', {date_column}) BETWEEN strftime('%d.%m.%Y %H:%M', ?) AND strftime('%d.%m.%Y %H:%M', ?)"
+    #                 date_filters.append(date_filter)
+    #                 filter_values.append(from_date)
+    #                 filter_values.append(to_date)
+
+    #         if len(filter_columns) > 0 and len(date_filters) > 0:
+    #             where_clause = " WHERE " + " AND ".join(filter_columns) + " AND (" + " OR ".join(date_filters) + ")"
+    #         elif len(filter_columns) > 0:
+    #             where_clause = " WHERE " + " AND ".join(filter_columns)
+    #         elif len(date_filters) > 0:
+    #             where_clause = " WHERE " + " OR ".join(date_filters)
+    #         else:
+    #             where_clause = ""
+
+    #         query = f"SELECT * FROM {table_name}" + where_clause
+    #         self.cur.execute(query, filter_values)
+    #         rows = self.cur.fetchall()
+    #         return rows
+    
+    def select_table_with_filters(self, table_name, filters={}, date_columns=None, from_dates=None, to_dates=None):
         with self.lock:
-            if len(filters) > 0:
-                filter_columns = []
-                filter_values = []
-                for column, value in filters.items():
-                    if isinstance(value, list):
-                        filter_columns.append(f"{column} IN ({','.join(['?' for _ in value])})")
-                        filter_values.extend(value)
-                    else:
-                        filter_columns.append(f"{column} = ?")
-                        filter_values.append(value)
-                where_clause = " AND ".join(filter_columns)
-                query = f"SELECT * FROM {table_name} WHERE {where_clause}"
-                self.cur.execute(query, filter_values)
+            filter_columns = []
+            filter_values = []
+            for column, value in filters.items():
+                if isinstance(value, list):
+                    filter_columns.append(f"{column} IN ({','.join(['?' for _ in value])})")
+                    filter_values.extend(value)
+                else:
+                    filter_columns.append(f"{column} = ?")
+                    filter_values.append(value)
+
+            date_filters = []
+            if date_columns is not None and from_dates is not None and to_dates is not None:
+                for i in range(len(date_columns)):
+                    date_column = date_columns[i]
+                    from_date = from_dates[i]
+                    to_date = to_dates[i]
+                    date_filter = f"{date_column} BETWEEN ? AND ?"
+                    date_filters.append(date_filter)
+                    filter_values.append(from_date)
+                    filter_values.append(to_date)
+
+            if len(filter_columns) > 0 and len(date_filters) > 0:
+                where_clause = " WHERE " + " AND ".join(filter_columns) + " AND (" + " OR ".join(date_filters) + ")"
+            elif len(filter_columns) > 0:
+                where_clause = " WHERE " + " AND ".join(filter_columns)
+            elif len(date_filters) > 0:
+                where_clause = " WHERE " + " OR ".join(date_filters)
             else:
-                query = f"SELECT * FROM {table_name}"
-                self.cur.execute(query)
+                where_clause = ""
+
+            query = f"SELECT * FROM {table_name}" + where_clause
+            self.cur.execute(query, filter_values)
             rows = self.cur.fetchall()
             return rows

@@ -46,7 +46,6 @@ def listgen(table, cols, tasks = 0):
             res.append('🗄 ' + curline)
         elif tasks == 3:
             res.append('👤 ' + curline)
-        print(curline)
     return res
 
 def curtask(id):
