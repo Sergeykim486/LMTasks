@@ -63,6 +63,7 @@ def curtask(id):
     messtext = messtext + '\n\nПоступила от: ' + str(db.get_record_by_id('Contragents', task[3])[1])
     messtext = messtext + '\n\nЗАПРОС:\n' + str(task[4])
     messtext = messtext + '\n\nКОНТАКТЫ ЗАКАЗЧИКА:\n' + str(db.get_record_by_id('Contragents', task[3])[3]) + ' - ' + str(db.get_record_by_id('Contragents', task[3])[4])
+    messtext = messtext + f'\nАдрес: ' + str(db.get_record_by_id('Contragents', task[3])[2])
     messtext = messtext + '\n\nСтатус заявки - ' + str(db.get_record_by_id('Statuses', task[11])[1])
     return messtext
 
