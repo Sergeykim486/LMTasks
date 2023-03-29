@@ -23,7 +23,7 @@ async def schedule_message():
         if now.hour == 8 and now.minute == 0:
             # asyncio.create_task(daylyreport.morning())
             await daylyreport.morning()
-        elif now.hour == 21 and now.minute == 28:
+        elif now.hour == 20 and now.minute == 0:
             # asyncio.create_task(daylyreport.evening())
             await daylyreport.evening()
         await asyncio.sleep(60)  # проверка каждую минуту
