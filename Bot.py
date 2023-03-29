@@ -297,7 +297,7 @@ class MainMenu:
 
         elif message.text == 'Мои заявки':
             daterep = str(datetime.now().strftime("%d.%m.%Y"))
-            report.rep(message, daterep, 0, 1, 0, 0, 0, message.chat.id)
+            report.rep(message, daterep, 0, 1, 0, 1, 0, message.chat.id)
 
         elif message.text == 'Список заявок':
             ActiveUser[message.chat.id]['filter'] = {
