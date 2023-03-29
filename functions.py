@@ -22,7 +22,7 @@ def listgen(table, cols, tasks = 0):
                 elif i == 1:
                     curline = curline + ' от ' + str(line[i]) + '\n'
                 elif i == 3:
-                    cname = db.get_record_by_id('Contragents', line[i])[1]
+                    cname = db.get_record_by_id('Contragents', line[i])[0] + " " + db.get_record_by_id('Contragents', line[i])[1]
                     curline = curline + str(cname) + '\n'
                 elif i == 6 and line[i]:
                     Mastername = db.get_record_by_id("Users", line[i])[2] + ' ' + db.get_record_by_id("Users", line[i])[1]
@@ -60,7 +60,7 @@ def curtask(id):
         messtext = messtext + '\n' + str(db.get_record_by_id('Users', task[9])[1]) + ' отменил заявку\nПРИЧИНА ОТМЕНЫ:\n' + str(task[10])
     if task[10] is not None:
         messtext = messtext + '\n❗️ ' + str(task[10])
-    messtext = messtext + '\n\nПоступила от: ' + str(db.get_record_by_id('Contragents', task[3])[1])
+    messtext = messtext + '\n\nПоступила от: ' + str(db.get_record_by_id('Contragents', task[3])[0]) + " " + str(db.get_record_by_id('Contragents', task[3])[1])
     messtext = messtext + '\n\nЗАПРОС:\n' + str(task[4])
     messtext = messtext + '\n\nКОНТАКТЫ ЗАКАЗЧИКА:\n' + str(db.get_record_by_id('Contragents', task[3])[3]) + ' - ' + str(db.get_record_by_id('Contragents', task[3])[4])
     messtext = messtext + f'\nАдрес: ' + str(db.get_record_by_id('Contragents', task[3])[2])
