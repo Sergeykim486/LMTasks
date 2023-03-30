@@ -633,7 +633,6 @@ class NewTask:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
             logging.info(f'{username} Отправил запрос - {message.text}')
             global ActiveUser
-            ActiveUser[message.chat.id]['cphone'] = message.text
             contragent = [
                 ActiveUser[message.chat.id]['inn'],
                 ActiveUser[message.chat.id]['cname'],
