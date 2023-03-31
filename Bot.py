@@ -496,7 +496,7 @@ class editcont():
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         if message.text.isdigit():
-            ActiveUser[message.chat.id]['contnew'][0] = message.chat.id
+            ActiveUser[message.chat.id]['contnew'][0] = message.text
             editcontragent(message)
             bot.register_next_step_handler(message, editcont.ec2)
         else:
@@ -511,7 +511,7 @@ class editcont():
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-        ActiveUser[message.chat.id]['contnew'][1] = message.chat.id
+        ActiveUser[message.chat.id]['contnew'][1] = message.text
         editcontragent(message)
         bot.register_next_step_handler(message, editcont.ec2)
     
@@ -546,7 +546,7 @@ class editcont():
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-        ActiveUser[message.chat.id]['contnew'][3] = message.chat.id
+        ActiveUser[message.chat.id]['contnew'][3] = message.text
         editcontragent(message)
         bot.register_next_step_handler(message, editcont.ec2)
     
@@ -554,7 +554,7 @@ class editcont():
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-        ActiveUser[message.chat.id]['contnew'][4] = message.chat.id
+        ActiveUser[message.chat.id]['contnew'][4] = message.text
         editcontragent(message)
         bot.register_next_step_handler(message, editcont.ec2)
     
@@ -562,7 +562,7 @@ class editcont():
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-        ActiveUser[message.chat.id]['contnew'][6] = message.chat.id
+        ActiveUser[message.chat.id]['contnew'][6] = message.text
         editcontragent(message)
         bot.register_next_step_handler(message, editcont.ec2)
     
