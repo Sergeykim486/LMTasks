@@ -1957,11 +1957,11 @@ if __name__ == '__main__':
     sendtoall('‼️‼️‼️Сервер бота был перезагружен...‼️‼️‼️\nНажмите кнопку "Перезапустить"', buttons.Buttons(['Перезапустить']), 0, 0, True)
     thread = threading.Thread(target=asyncio.run, args=(main(),))
     thread.start()
-    bot.polling()
-    # while True:
-    #     try:
-    #         bot.polling(none_stop=True, interval=0)
-    #         logging.info()
-    #     except Exception as e:
-    #         logging.error(e)
-    #         time.sleep(5)
+    # bot.polling()
+    while True:
+        try:
+            bot.polling(none_stop=True, interval=0)
+            logging.info()
+        except Exception as e:
+            logging.error(e)
+            time.sleep(5)
