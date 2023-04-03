@@ -8,7 +8,7 @@ TOKEN = "6172385271:AAHYeTps9AXE8dP77_JM4kXV0kIPm22WFwM"
 # TOKEN = "911710144:AAGmHGL80xy_dlQPhx-LxqivNSNQDHrGEjw"
 
 # Тестовый
-TOKENC = "911710144:AAGmHGL80xy_dlQPhx-LxqivNSNQDHrGEjw"
+TOKENC = "5750687344:AAG-AGZjwyLKInDj4LNMQTR7KxH_QpDlUsQ"
 
 ActiveUser = {}
 ru = {
@@ -60,7 +60,12 @@ ru = {
     "sphone": "Телефон:",
     "slang": "Язык:",
     "success": "Операция успешнь выполнена.",
-    "searchnone": "По Вашему запросу ничего нет."
+    "searchnone": "По Вашему запросу ничего нет.",
+    "contractifno": "Укажите номер долгосрочного договора если он есть. Если нет нажмите ппропустить.",
+    "bskip": "Пропустить",
+    "bsave": "Сохранить",
+    "blang": "Язык",
+    "bcancel": "Отмена"
 }
 en = {
     "omporindivid": "How do you want to register",
@@ -111,7 +116,9 @@ en = {
     "sphone": "Phone:",
     "slang": "Language:",
     "success": "Operation completed successfully.",
-    "searchnone": "No results found for your query."
+    "searchnone": "No results found for your query.",
+    "contractifno": "Укажите номер долгосрочного договора если он есть. Если нет нажмите ппропустить.",
+    "bskip": "Пропустить"
 }
 uz = {
     "omporindivid": "Qanday ro'yxatdan o'tmoqchi bo'lishingizni tanlang",
@@ -162,5 +169,7 @@ uz = {
     "sphone": "Telefon:",
     "slang": "Til:",
     "success": "Operatsiya muvaffaqiyatli bajarildi.",
-    "searchnone": "Sizning so'rovingiz uchun hech narsa topilmadi."
+    "searchnone": "Sizning so'rovingiz uchun hech narsa topilmadi.",
+    "contractifno": "Укажите номер долгосрочного договора если он есть. Если нет нажмите ппропустить.",
+    "bskip": "Пропустить"
 }

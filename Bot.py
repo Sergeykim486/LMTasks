@@ -13,6 +13,16 @@ db = Database(dbname)
 
 bot = telebot.TeleBot(config.TOKEN)
 
+if db.get_record_by_id('Users', 0) == None:
+    db.insert_record(
+        'Users',
+        [
+            0,
+            'Client BOT',
+            '...',
+            '...'
+        ]
+    )
 
 async def job():
     await schedule_message()
@@ -20,6 +30,21 @@ async def job():
 async def schedule_message():
     while True:
         logging.info('Проверка расписания')
+        Tasks = db.select_table_with_filters('Tasks', {'status': 0})
+        if len(Tasks) > 0:
+            for line in Tasks:
+                db.update_records('Tasks', ['status'], [1], 'id', line[0])
+                tid = line[0]
+                sendtoall(functions.curtask(tid), buttons.buttonsinline([['Принять', 'confirm ' + str(tid)], ['Назначить', 'set ' + str(tid)]]), 0)
+        revs = db.select_table_with_filters('rev', {'status': 0})
+        if len(revs) > 0:
+            for line in revs:
+                db.update_records('rev', ['status'], [1], 'id', line[0])
+                mes = 'Поступил отзыв/оценка от клиента\n'
+                mes = mes + '\nКЛИЕНТ - ' + str(db.get_record_by_id('Clients', line[2])[2])
+                mes = mes + '\n\nОТЗЫВ:\n' + str(line[3])
+                mes = mes + '\n\nот ' + str(line[1])
+                sendtoall(mes, '', 0)
         now = datetime.now()
         if now.hour == 8 and now.minute == 0:
             await daylyreport.morning()
@@ -134,9 +159,33 @@ class daylyreport:
 
         sendtoall('ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports, '', 0)
 
+@bot.message_handler(commands=['start'])
+
+def check_user_id(message):
+    user_id = message.from_user.id
+    global ActiveUser
+    username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
+    logging.info(f'{username} Отправил запрос - {message.text}')
+    ActiveUser[user_id] = {'id': user_id}
+    finduser = db.search_record("Users", "id", user_id)
+
+    if len(finduser) == 0:
+        bot.send_message(
+            user_id,
+            'Вам нужно пройти регистрацию',
+            reply_markup=buttons.Buttons(['Регистрация'])
+        )
+        bot.register_next_step_handler(message, Reg.reg1)
+
+    else:
+        bot.send_message(
+            user_id,
+            'Выберите операцию.',
+            reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
+        )
+        bot.register_next_step_handler(message, MainMenu.Main2)
 
 @bot.message_handler(func=lambda message: True)
-
 
 def check_user_id(message):
     user_id = message.from_user.id
@@ -809,63 +858,6 @@ class NewTask:
 
         else:
             bot.register_next_step_handler(message, NeContr4)
-
-    # def NeContr4(message):
-    #     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    #     logging.info(f'{username} Отправил запрос - {message.text}')
-    #     global ActiveUser
-    #     if message.content_type == types.ContentType.LOCATION:
-    #         lon, lat = message.location.longitude, message.location.latitude
-    #         url = f'https://www.google.com/maps/search/?api=1&query={lat},{lon}'
-    #         ActiveUser[message.chat.id]['cadr'] = url
-    #     else:
-    #         ActiveUser[message.chat.id]['cadr'] = message.text
-    #     bot.send_message(
-    #         message.chat.id,
-    #         'Кто подал заявку? Укажите имя контактного лица.',
-    #         reply_markup=buttons.clearbuttons()
-    #     )
-    #     bot.register_next_step_handler(message, NewTask.NeContr5)
-
-    # def NeContr4(message):
-    #     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    #     logging.info(f'{username} Отправил запрос - {message.text}')
-    #     global ActiveUser
-    #     if message.content_type == 'location':
-    #         lon, lat = message.location.longitude, message.location.latitude
-    #         url = f'https://www.google.com/maps/search/?api=1&query={lat},{lon}'
-    #         ActiveUser[message.chat.id]['cadr'] = url
-    #     else:
-    #         ActiveUser[message.chat.id]['cadr'] = message.text
-    #     bot.send_message(
-    #         message.chat.id,
-    #         'Кто подал заявку? Укажите имя контактного лица.',
-    #         reply_markup=buttons.clearbuttons()
-    #     )
-    #     bot.register_next_step_handler(message, NewTask.NeContr5)
-
-    # def NeContr5(message):
-    #     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    #     logging.info(f'{username} Отправил запрос - {message.text}')
-    #     global ActiveUser
-
-    #     if ActiveUser[message.chat.id]['ds'] == 3:
-    #         if message.content_type == 'location':
-    #             lon, lat = message.location.longitude, message.location.latitude
-    #             url = f'https://www.google.com/maps/search/?api=1&query={lat},{lon}'
-    #             ActiveUser[message.chat.id]['cadr'] = url
-    #         else:
-    #             ActiveUser[message.chat.id]['cadr'] = message.text
-
-    #     else:
-    #         ActiveUser[message.chat.id]['cperson'] = message.text
-
-    #     bot.send_message(
-    #         message.chat.id,
-    #         'Укажите контактный номер телефона для связи с клиентом.',
-    #         reply_markup=buttons.clearbuttons()
-    #     )
-    #     bot.register_next_step_handler(message, NewTask.NeContr6)
 
     def NeContr6(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -1954,7 +1946,7 @@ def callback_handler(call):
         bot.register_next_step_handler(call.message, Task.task4)
 
 if __name__ == '__main__':
-    sendtoall('‼️‼️‼️Сервер бота был перезагружен...‼️‼️‼️\nНажмите кнопку "Перезапустить"', buttons.Buttons(['Перезапустить']), 0, 0, True)
+    sendtoall('‼️‼️‼️Сервер бота был перезагружен...‼️‼️‼️\nНажмите кнопку "/start"', buttons.Buttons(['/start']), 0, 0, True)
     thread = threading.Thread(target=asyncio.run, args=(main(),))
     thread.start()
     # bot.polling()
