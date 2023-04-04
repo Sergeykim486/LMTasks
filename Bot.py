@@ -1892,7 +1892,7 @@ def callback_handler(call):
             markdownt = buttons.Buttons(['Выполнено', 'Дополнить', 'Отказаться от заявки', 'Переназначить', 'Отменить заявку', 'Назад'], 3)
 
         else:
-            markdownt = buttons.Buttons(['Новая заявка', 'Список заявок', 'Дневной отчет', 'Написать всем'],3)
+            markdownt = buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
 
         ActiveUser[call.from_user.id]['sentmes'] = bot.send_message(
             call.from_user.id,

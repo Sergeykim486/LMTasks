@@ -28,10 +28,8 @@ cols2 = [
     "status INTEGER"
 ]
 db.create_table("rev", cols2)
-# Инициализируем токен бота
 bot = telebot.TeleBot(config.TOKENC)
 
-# Расписание для рассылки сообщений по утрам и вечерам
 async def job():
     await schedule_message()
 async def schedule_message():
@@ -62,18 +60,11 @@ def sendtoall(message, markdown, exeptions, nt = 0, notific = False):
     return
 
 def settingsmes(userid):
-    if ActiveUser[userid]['status'] == ActiveUser[userid]['dict']['bcompany']:
-        mes = str(ActiveUser[userid]['dict']['binn']) + ':\n' + str(ActiveUser[userid]['inn'])
-        mes = mes + '\n' + str(ActiveUser[userid]['dict']['bcname']) + ':\n' + str(ActiveUser[userid]['cname'])
+    if ActiveUser[userid]['status'] == 'Организация':
+        print('============= Ф И Р М А =============')
+        mes = str(ActiveUser[userid]['dict']['binn']) + ':\n' + str(ActiveUser[userid]['code'])
+        mes = mes + '\n' + str(ActiveUser[userid]['dict']['bcname']) + ':\n' + str(ActiveUser[userid]['name'])
         mes = mes + '\n' + str(ActiveUser[userid]['dict']['bperson']) + ':\n' + str(ActiveUser[userid]['person'])
-    else:
-        mes = str(ActiveUser[userid]['dict']['bpinfl']) + ':\n' + str(ActiveUser[userid]['pinfl'])
-        mes = mes + '\n' + str(ActiveUser[userid]['dict']['bmyname']) + ':\n' + str(ActiveUser[userid]['myname'])
-    mes = mes + '\n' + str(ActiveUser[userid]['dict']['badr']) + ':\n' + str(ActiveUser[userid]['adr'])
-    mes = mes + '\n' + str(ActiveUser[userid]['dict']['bphone']) + ':\n' + str(ActiveUser[userid]['phone'])
-    mes = mes + '\n' + str(ActiveUser[userid]['dict']['blang']) + ':\n' + str(ActiveUser[userid]['lang']   )
-    mes = mes + '\n\n' + str(ActiveUser[userid]['dict']['qtochange'])
-    if ActiveUser[userid]['status'] == ActiveUser[userid]['dict']['bcompany']:
         but = [
             ActiveUser[userid]['dict']['binn'],
             ActiveUser[userid]['dict']['bcname'],
@@ -85,6 +76,9 @@ def settingsmes(userid):
             ActiveUser[userid]['dict']['bsave']
         ]
     else:
+        print('============= Ф И З Л И Ц О =============')
+        mes = str(ActiveUser[userid]['dict']['bpinfl']) + ':\n' + str(ActiveUser[userid]['code'])
+        mes = mes + '\n' + str(ActiveUser[userid]['dict']['bmyname']) + ':\n' + str(ActiveUser[userid]['name'])
         but = [
             ActiveUser[userid]['dict']['bpinfl'],
             ActiveUser[userid]['dict']['bmyname'],
@@ -94,6 +88,10 @@ def settingsmes(userid):
             ActiveUser[userid]['dict']['bcancel'],
             ActiveUser[userid]['dict']['bsave']
         ]
+    mes = mes + '\n' + str(ActiveUser[userid]['dict']['badr']) + ':\n' + str(ActiveUser[userid]['adr'])
+    mes = mes + '\n' + str(ActiveUser[userid]['dict']['bphone']) + ':\n' + str(ActiveUser[userid]['phone'])
+    mes = mes + '\n' + str(ActiveUser[userid]['dict']['blang']) + ':\n' + str(ActiveUser[userid]['lang']   )
+    mes = mes + '\n\n' + str(ActiveUser[userid]['dict']['qtochange'])
     ActiveUser[userid]['settingsmes'] = bot.send_message(
         userid,
         mes,
@@ -111,24 +109,24 @@ def send_welcome(message):
         logging.info(f'{username} Отправил запрос - {message.text}')
     except Exception as e:
         pass
-    # Проверяем зарегистрирован ли текущий пользователь
     ActiveUser[message.chat.id]["id"] = message.chat.id
     finduser = db.search_record("Clients", "id", user_id)
-    # Если пользователь не зарегистрирован
     if len(finduser) == 0:
+        mesru = "НАШ БОТ БЫЛ ОБНОВЛЕН!\nПожалуйста пройдите короткую регистрацию. Это не займет много времени зато при подаче заявки не нужно каждый раз указывать одну и ту же информацию контактные данные к примеру и т. д.\nТак же Вы можете отслеживать статус своих заявок и какой мастер к вам приедет.\nЕсли есть вопросы - https://t.me/Sergey_kim486"
+        mesuz = "BIZNING BOTIMIZ YANGILANDI!\nIltimos, qisqa ro'yxatdan o'ting. Bu ko'p vaqt olmasa-da, masalan, har safar so'rovnoma topshirishda aloqador ma'lumotlarni kiritingiz kerak emas.\nSiz ham so'rovlaringiz holatini va qaysi usta sizga keladi, kuzatishingiz mumkin.\nAgar savollaringiz bo'lsa, https://t.me/Sergey_kim486 murojaat qiling."
+        mesen = "OUR BOT HAS BEEN UPDATED!\nPlease complete a short registration. It won't take much time but will save you from having to enter the same contact information every time you submit a request, for example.\nYou can also track the status of your requests and which master will come to you.\nIf you have any questions, please visit https://t.me/Sergey_kim486."
         bot.send_message(
             user_id,
-            "Plese select lnguge\nIltimos еilini tnlng\nПожалуйста выберите язык",
+            f'{mesru}\n\n{mesuz}\n\n{mesen}\n\nВыберите язык / Tilini tanlang / Select language',
             reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇸🇮 Русский"])
         )
         bot.register_next_step_handler(message, Reg.reg1)
-    # Если пользователь зарегистрирован отправляем его в главное меню
     else:
-        if db.get_record_by_id("Clients", user_id)[6] == "ru":
+        if db.get_record_by_id("Clients", message.chat.id)[6] == "ru":
             ActiveUser[message.chat.id]["dict"] = config.ru
-        elif db.get_record_by_id("Clients", user_id)[6] == "en":
+        elif db.get_record_by_id("Clients", message.chat.id)[6] == "en":
             ActiveUser[message.chat.id]["dict"] = config.en
-        elif db.get_record_by_id("Clients", user_id)[6] == "uz":
+        elif db.get_record_by_id("Clients", message.chat.id)[6] == "uz":
             ActiveUser[message.chat.id]["dict"] = config.uz
         bot.send_message(
             user_id,
@@ -154,9 +152,12 @@ def check_user_registered(message):
     finduser = db.search_record("Clients", "id", user_id)
     # Если пользователь не зарегистрирован
     if len(finduser) == 0:
+        mesru = "НАШ БОТ БЫЛ ОБНОВЛЕН!\nПожалуйста пройдите короткую регистрацию. Это не займет много времени зато при подаче заявки не нужно каждый раз указывать одну и ту же информацию контактные данные к примеру и т. д.\nТак же Вы можете отслеживать статус своих заявок и какой мастер к вам приедет.\nЕсли есть вопросы - https://t.me/Sergey_kim486"
+        mesuz = "BIZNING BOTIMIZ YANGILANDI!\nIltimos, qisqa ro'yxatdan o'ting. Bu ko'p vaqt olmasa-da, masalan, har safar so'rovnoma topshirishda aloqador ma'lumotlarni kiritingiz kerak emas.\nSiz ham so'rovlaringiz holatini va qaysi usta sizga keladi, kuzatishingiz mumkin.\nAgar savollaringiz bo'lsa, https://t.me/Sergey_kim486 murojaat qiling."
+        mesen = "OUR BOT HAS BEEN UPDATED!\nPlease complete a short registration. It won't take much time but will save you from having to enter the same contact information every time you submit a request, for example.\nYou can also track the status of your requests and which master will come to you.\nIf you have any questions, please visit https://t.me/Sergey_kim486."
         bot.send_message(
             user_id,
-            "Plese select lnguge\nIltimos еilini tnlng\nПожалуйста выберите язык",
+            f'{mesru}\n\n{mesuz}\n\n{mesen}\n\nВыберите язык / Tilini tanlang / Select language',
             reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇸🇮 Русский"])
         )
         bot.register_next_step_handler(message, Reg.reg1)
@@ -229,28 +230,25 @@ class Main():
                 reply_markup=buttons.Buttons(['5️⃣⭐️⭐️⭐️⭐️⭐️','4️⃣⭐️⭐️⭐️⭐️','3️⃣⭐️⭐️⭐️','2️⃣⭐️⭐️','1️⃣⭐️', '0️⃣'], 2)
             )
             bot.register_next_step_handler(message, Main.rate1)
-        # elif message.text == ActiveUser[message.chat.id]["dict"]["settings"]:
-        #     sett = db.get_record_by_id('Clients', message.chat.id)
-        #     if sett[7] == ActiveUser[message.chat.id]['dict']['bcompany']:
-        #         ActiveUser[message.chat.id]['inn'] = sett[1]
-        #         ActiveUser[message.chat.id]['cname'] = sett[2]
-        #         ActiveUser[message.chat.id]['person'] = sett[3]
-        #     else:
-        #         ActiveUser[message.chat.id]['pinfl'] = sett[1]
-        #         ActiveUser[message.chat.id]['myname'] = sett[2]
-        #     ActiveUser[message.chat.id]['adr'] = sett[4]
-        #     ActiveUser[message.chat.id]['phone'] = sett[5]
-        #     ActiveUser[message.chat.id]['lang'] = sett[6]
-        #     ActiveUser[message.chat.id]['status'] = sett[8]
-        #     settingsmes(message.chat.id)
-        #     bot.register_next_step_handler(message, Main.main1)
+        elif message.text == ActiveUser[message.chat.id]["dict"]["settings"]:
+            sett = db.get_record_by_id('Clients', message.chat.id)
+            ActiveUser[message.chat.id]['code'] = sett[1]
+            ActiveUser[message.chat.id]['name'] = sett[2]
+            ActiveUser[message.chat.id]['person'] = sett[3]
+            ActiveUser[message.chat.id]['adr'] = sett[4]
+            ActiveUser[message.chat.id]['phone'] = sett[5]
+            ActiveUser[message.chat.id]['lang'] = sett[6]
+            ActiveUser[message.chat.id]['status'] = sett[7]
+            print(ActiveUser[message.chat.id]['status'])
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
         else:
             bot.send_message(
                 message.chat.id,
                 ActiveUser[message.chat.id]["dict"]["errorcom"],
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, settings.set1)
+            bot.register_next_step_handler(message, Main.main1)
 
     def confirmval1(message):
         global ActiveUser
@@ -438,8 +436,8 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        ActiveUser[message.chat.id]["status"] = message.text
-        if message.text == ActiveUser[message.chat.id]["dict"]['bcompany']:
+        if message.text == 'Организация':
+            ActiveUser[message.chat.id]["status"] = 'Организация'
             bot.send_message(
                 message.chat.id,
                 ActiveUser[message.chat.id]["dict"]["contractifno"],
@@ -447,6 +445,7 @@ class Reg:
             )
             bot.register_next_step_handler(message, Reg.reg2)
         else:
+            ActiveUser[message.chat.id]["status"] = 'Физлицо'
             ActiveUser[message.chat.id]["contract"]
             ActiveUser[message.chat.id]['type'] = 3
             bot.send_message(
@@ -463,7 +462,7 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        if ActiveUser[message.chat.id]["status"] == ActiveUser[message.chat.id]["dict"]['bcompany'] and message.text != ActiveUser[message.chat.id]["dict"]["bskip"]:
+        if ActiveUser[message.chat.id]["status"] == 'Организация' and message.text != ActiveUser[message.chat.id]["dict"]["bskip"]:
             ActiveUser[message.chat.id]["contract"] = message.text
             ActiveUser[message.chat.id]['type'] = 2
         else:
@@ -484,7 +483,7 @@ class Reg:
         except Exception as e:
             pass
         ActiveUser[message.chat.id]["name"] = message.text
-        if ActiveUser[message.chat.id]['status'] == ActiveUser[message.chat.id]["dict"]["bcompany"]:
+        if ActiveUser[message.chat.id]['status'] == 'Организация':
             bot.send_message(
                 message.chat.id,
                 ActiveUser[message.chat.id]["dict"]["enterinn"],
@@ -521,7 +520,7 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        if ActiveUser[message.chat.id]["status"] == ActiveUser[message.chat.id]["dict"]["bcompany"]:
+        if ActiveUser[message.chat.id]["status"] == 'Организация':
             ActiveUser[message.chat.id]["person"] = message.text
         else:
             ActiveUser[message.chat.id]["code"] = message.chat.id
@@ -541,7 +540,7 @@ class Reg:
             logging.error(e)
             pass
         ActiveUser[message.chat.id]["phone"] = message.chat.id
-        if ActiveUser[message.chat.id]["status"] == ActiveUser[message.chat.id]["dict"]["bcompany"]:
+        if ActiveUser[message.chat.id]["status"] == 'Организация':
             mess = "\n" + str(ActiveUser[message.chat.id]["dict"]["scname"]) + " " + str(ActiveUser[message.chat.id]["name"])
             mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["sperson"]) + " " + str(ActiveUser[message.chat.id]["person"])
         else:
@@ -626,8 +625,241 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        # if message.text == ActiveUser[message.chat.id]['dict']['bsave']:
-        
+        if message.text == ActiveUser[message.chat.id]['dict']['bsave']:
+            if ActiveUser[message.chat.id]['status'] == 'Организация':
+                person = ActiveUser[message.chat.id]['person']
+            else:
+                person = '...'
+            db.update_records(
+                'Clients',
+                [
+                    'code',
+                    'name',
+                    'person',
+                    'addr',
+                    'phone',
+                    'lang',
+                    'status'
+                ],
+                [
+                    ActiveUser[message.chat.id]['code'],
+                    ActiveUser[message.chat.id]['name'],
+                    person,
+                    ActiveUser[message.chat.id]['adr'],
+                    ActiveUser[message.chat.id]['phone'],
+                    ActiveUser[message.chat.id]['lang'],
+                    ActiveUser[message.chat.id]['status']
+                ],
+                'id',
+                message.chat.id
+            )
+            if db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code']) == None:
+                db.insert_record(
+                    'Contragents',
+                    [
+                        ActiveUser[message.chat.id]['code'],
+                        ActiveUser[message.chat.id]['name'],
+                        ActiveUser[message.chat.id]['adr'],
+                        person,
+                        ActiveUser[message.chat.id]['phone']
+                    ]
+                )
+            else:
+                db.update_records(
+                    'Contragents',
+                    [
+                        'cadr',
+                        'cperson',
+                        'cphone'
+                    ],
+                    [
+                        ActiveUser[message.chat.id]['adr'],
+                        person,
+                        ActiveUser[message.chat.id]['phone']
+                    ],
+                    'id',
+                    message.chat.id
+                )
+            if db.get_record_by_id("Clients", message.chat.id)[6] == "ru":
+                ActiveUser[message.chat.id]["dict"] = config.ru
+            elif db.get_record_by_id("Clients", message.chat.id)[6] == "en":
+                ActiveUser[message.chat.id]["dict"] = config.en
+            elif db.get_record_by_id("Clients", message.chat.id)[6] == "uz":
+                ActiveUser[message.chat.id]["dict"] = config.uz
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+            bot.register_next_step_handler(message, Main.main1)
+        elif message.text == ActiveUser[message.chat.id]['dict']['bcancel']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["hi"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+            bot.register_next_step_handler(message, Main.main1)
+        elif message.text == ActiveUser[message.chat.id]['dict']['binn']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["enterinn"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, settings.inn)
+        elif message.text == ActiveUser[message.chat.id]['dict']['bpinfl']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["enterpinfl"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, settings.pinfl)
+        elif message.text == ActiveUser[message.chat.id]['dict']['bmyname']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["entername"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, settings.myname)
+        elif message.text == ActiveUser[message.chat.id]['dict']['bcname']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["entercname"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, settings.cname)
+        elif message.text == ActiveUser[message.chat.id]['dict']['bperson']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["enterperson"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, settings.person)
+        elif message.text == ActiveUser[message.chat.id]['dict']['badr']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["enteradr"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, adr)
+        elif message.text == ActiveUser[message.chat.id]['dict']['bphone']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["enterphone"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, settings.phone)
+        elif message.text == ActiveUser[message.chat.id]['dict']['blang']:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["selectlang"],
+                reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇸🇮 Русский"])
+            )
+            bot.register_next_step_handler(message, settings.lang)
+        else:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["errorcom"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+            bot.register_next_step_handler(message, settings.set1)
+
+    def inn(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        ActiveUser[message.chat.id]['code'] = message.text
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
+    def pinfl(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        ActiveUser[message.chat.id]['code'] = message.text
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
+    def myname(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        ActiveUser[message.chat.id]['name'] = message.text
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
+    def cname(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        ActiveUser[message.chat.id]['name'] = message.text
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
+    def person(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        ActiveUser[message.chat.id]['person'] = message.text
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
+    def phone(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        ActiveUser[message.chat.id]['phone'] = message.text
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
+    def lang(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        if message.text == "🇬🇧 Englis":
+            ActiveUser[message.chat.id]["lang"] = 'en'
+        elif message.text == "🇺🇿 O'zbekcha":
+            ActiveUser[message.chat.id]["lang"] = 'uz'
+        elif message.text == "🇸🇮 Русский":
+            ActiveUser[message.chat.id]["lang"] = 'ru'
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
+
 @bot.message_handler(content_types=['text', 'location'])
 
 def reg6(message):
@@ -649,6 +881,25 @@ def reg6(message):
         reply_markup=buttons.clearbuttons()
     )
     bot.register_next_step_handler(message, Reg.reg7)
+
+def adr(message):
+    global ActiveUser
+    try:
+        username = db.get_record_by_id('Clients', message.chat.id)[2]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+    except Exception as e:
+        logging.error(e)
+        pass
+    if message.content_type == 'location':
+        lon, lat = message.location.longitude, message.location.latitude
+        url = f'GOOGLE: https://www.google.com/maps/search/?api=1&query={lat},{lon}'
+        ActiveUser[message.chat.id]['adr'] = url
+    else:
+        ActiveUser[message.chat.id]['adr'] = message.text
+    bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+    settingsmes(message.chat.id)
+    bot.register_next_step_handler(message, settings.set1)
 
 @bot.callback_query_handler(func=lambda call: True)
 # Реакция на кнопки
