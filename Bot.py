@@ -30,21 +30,29 @@ async def job():
 async def schedule_message():
     while True:
         logging.info('Проверка расписания')
-        Tasks = db.select_table_with_filters('Tasks', {'status': 0})
-        if len(Tasks) > 0:
-            for line in Tasks:
-                db.update_records('Tasks', ['status'], [1], 'id', line[0])
-                tid = line[0]
-                sendtoall(functions.curtask(tid), buttons.buttonsinline([['Принять', 'confirm ' + str(tid)], ['Назначить', 'set ' + str(tid)]]), 0)
-        revs = db.select_table_with_filters('rev', {'status': 0})
-        if len(revs) > 0:
-            for line in revs:
-                db.update_records('rev', ['status'], [1], 'id', line[0])
-                mes = 'Поступил отзыв/оценка от клиента\n'
-                mes = mes + '\nКЛИЕНТ - ' + str(db.get_record_by_id('Clients', line[2])[2])
-                mes = mes + '\n\nОТЗЫВ:\n' + str(line[3])
-                mes = mes + '\n\nот ' + str(line[1])
-                sendtoall(mes, '', 0)
+        try:
+            Tasks = db.select_table_with_filters('Tasks', {'status': 0})
+            if len(Tasks) > 0:
+                for line in Tasks:
+                    db.update_records('Tasks', ['status'], [1], 'id', line[0])
+                    tid = line[0]
+                    sendtoall(functions.curtask(tid), buttons.buttonsinline([['Принять', 'confirm ' + str(tid)], ['Назначить', 'set ' + str(tid)]]), 0)
+        except Exception as e:
+            logging.error(e)
+            pass
+        try:
+            revs = db.select_table_with_filters('rev', {'status': 0})
+            if len(revs) > 0:
+                for line in revs:
+                    db.update_records('rev', ['status'], [1], 'id', line[0])
+                    mes = 'Поступил отзыв/оценка от клиента\n'
+                    mes = mes + '\nКЛИЕНТ - ' + str(db.get_record_by_id('Clients', line[2])[2])
+                    mes = mes + '\n\nОТЗЫВ:\n' + str(line[3])
+                    mes = mes + '\n\nот ' + str(line[1])
+                    sendtoall(mes, '', 0)
+        except Exception as e:
+            logging.error(e)
+            pass
         now = datetime.now()
         if now.hour == 8 and now.minute == 0:
             await daylyreport.morning()

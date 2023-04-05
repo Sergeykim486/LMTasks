@@ -118,7 +118,7 @@ def send_welcome(message):
         bot.send_message(
             user_id,
             f'{mesru}\n\n{mesuz}\n\n{mesen}\n\nВыберите язык / Tilini tanlang / Select language',
-            reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇸🇮 Русский"])
+            reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
         )
         bot.register_next_step_handler(message, Reg.reg1)
     else:
@@ -137,44 +137,44 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 
-def check_user_registered(message):
-    user_id = message.chat.id
-    global ActiveUser
-    ActiveUser[message.chat.id] = {}
-    try:
-        username = db.get_record_by_id('Clients', message.chat.id)[2]
-        logging.info(f'{username} Отправил запрос - {message.text}')
-    except Exception as e:
-        logging.error(e)
-        pass
-    # Проверяем зарегистрирован ли текущий пользователь
-    ActiveUser[message.chat.id]["id"] = message.chat.id
-    finduser = db.search_record("Clients", "id", user_id)
-    # Если пользователь не зарегистрирован
-    if len(finduser) == 0:
-        mesru = "НАШ БОТ БЫЛ ОБНОВЛЕН!\nПожалуйста пройдите короткую регистрацию. Это не займет много времени зато при подаче заявки не нужно каждый раз указывать одну и ту же информацию контактные данные к примеру и т. д.\nТак же Вы можете отслеживать статус своих заявок и какой мастер к вам приедет.\nЕсли есть вопросы - https://t.me/Sergey_kim486"
-        mesuz = "BIZNING BOTIMIZ YANGILANDI!\nIltimos, qisqa ro'yxatdan o'ting. Bu ko'p vaqt olmasa-da, masalan, har safar so'rovnoma topshirishda aloqador ma'lumotlarni kiritingiz kerak emas.\nSiz ham so'rovlaringiz holatini va qaysi usta sizga keladi, kuzatishingiz mumkin.\nAgar savollaringiz bo'lsa, https://t.me/Sergey_kim486 murojaat qiling."
-        mesen = "OUR BOT HAS BEEN UPDATED!\nPlease complete a short registration. It won't take much time but will save you from having to enter the same contact information every time you submit a request, for example.\nYou can also track the status of your requests and which master will come to you.\nIf you have any questions, please visit https://t.me/Sergey_kim486."
-        bot.send_message(
-            user_id,
-            f'{mesru}\n\n{mesuz}\n\n{mesen}\n\nВыберите язык / Tilini tanlang / Select language',
-            reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇸🇮 Русский"])
-        )
-        bot.register_next_step_handler(message, Reg.reg1)
-    # Если пользователь зарегистрирован отправляем его в главное меню
-    else:
-        if db.get_record_by_id("Clients", user_id)[6] == "ru":
-            ActiveUser[message.chat.id]["dict"] = config.ru
-        elif db.get_record_by_id("Clients", user_id)[6] == "en":
-            ActiveUser[message.chat.id]["dict"] = config.en
-        elif db.get_record_by_id("Clients", user_id)[6] == "uz":
-            ActiveUser[message.chat.id]["dict"] = config.uz
-        bot.send_message(
-            user_id,
-            ActiveUser[message.chat.id]["dict"]["welcome"],
-            reply_markup=buttons.Buttons([ActiveUser[user_id]["dict"]["newtask"], ActiveUser[user_id]["dict"]["mytasks"], ActiveUser[user_id]["dict"]["review"], ActiveUser[user_id]["dict"]["rate"], ActiveUser[user_id]["dict"]["settings"]],3)
-        )
-        bot.register_next_step_handler(message, Main.main1)
+# def check_user_registered(message):
+#     user_id = message.chat.id
+#     global ActiveUser
+#     ActiveUser[message.chat.id] = {}
+#     try:
+#         username = db.get_record_by_id('Clients', message.chat.id)[2]
+#         logging.info(f'{username} Отправил запрос - {message.text}')
+#     except Exception as e:
+#         logging.error(e)
+#         pass
+#     # Проверяем зарегистрирован ли текущий пользователь
+#     ActiveUser[message.chat.id]["id"] = message.chat.id
+#     finduser = db.search_record("Clients", "id", user_id)
+#     # Если пользователь не зарегистрирован
+#     if len(finduser) == 0:
+#         mesru = "НАШ БОТ БЫЛ ОБНОВЛЕН!\nПожалуйста пройдите короткую регистрацию. Это не займет много времени зато при подаче заявки не нужно каждый раз указывать одну и ту же информацию контактные данные к примеру и т. д.\nТак же Вы можете отслеживать статус своих заявок и какой мастер к вам приедет.\nЕсли есть вопросы - https://t.me/Sergey_kim486"
+#         mesuz = "BIZNING BOTIMIZ YANGILANDI!\nIltimos, qisqa ro'yxatdan o'ting. Bu ko'p vaqt olmasa-da, masalan, har safar so'rovnoma topshirishda aloqador ma'lumotlarni kiritingiz kerak emas.\nSiz ham so'rovlaringiz holatini va qaysi usta sizga keladi, kuzatishingiz mumkin.\nAgar savollaringiz bo'lsa, https://t.me/Sergey_kim486 murojaat qiling."
+#         mesen = "OUR BOT HAS BEEN UPDATED!\nPlease complete a short registration. It won't take much time but will save you from having to enter the same contact information every time you submit a request, for example.\nYou can also track the status of your requests and which master will come to you.\nIf you have any questions, please visit https://t.me/Sergey_kim486."
+#         bot.send_message(
+#             user_id,
+#             f'{mesru}\n\n{mesuz}\n\n{mesen}\n\nВыберите язык / Tilini tanlang / Select language',
+#             reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
+#         )
+#         bot.register_next_step_handler(message, Reg.reg1)
+#     # Если пользователь зарегистрирован отправляем его в главное меню
+#     else:
+#         if db.get_record_by_id("Clients", user_id)[6] == "ru":
+#             ActiveUser[message.chat.id]["dict"] = config.ru
+#         elif db.get_record_by_id("Clients", user_id)[6] == "en":
+#             ActiveUser[message.chat.id]["dict"] = config.en
+#         elif db.get_record_by_id("Clients", user_id)[6] == "uz":
+#             ActiveUser[message.chat.id]["dict"] = config.uz
+#         bot.send_message(
+#             user_id,
+#             ActiveUser[message.chat.id]["dict"]["welcome"],
+#             reply_markup=buttons.Buttons([ActiveUser[user_id]["dict"]["newtask"], ActiveUser[user_id]["dict"]["mytasks"], ActiveUser[user_id]["dict"]["review"], ActiveUser[user_id]["dict"]["rate"], ActiveUser[user_id]["dict"]["settings"]],3)
+#         )
+#         bot.register_next_step_handler(message, Main.main1)
 
 class Main():
     
@@ -343,7 +343,7 @@ class Main():
         ActiveUser[message.chat.id]['task'] = message.text
         bot.send_message(
             message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["confirm"],
+            message.text + '\n' + ActiveUser[message.chat.id]["dict"]["confirm"],
             reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
         )
         bot.register_next_step_handler(message, Main.confirmtask2)
@@ -418,7 +418,7 @@ class Reg:
         elif message.text == "🇺🇿 O'zbekcha":
             ActiveUser[message.chat.id]["lang"] = 'uz'
             ActiveUser[message.chat.id]["dict"] = config.uz
-        elif message.text == "🇸🇮 Русский":
+        elif message.text == "🇷🇺 Русский":
             ActiveUser[message.chat.id]["lang"] = 'ru'
             ActiveUser[message.chat.id]["dict"] = config.ru
         logging.info(f"Для пользователя {message.chat.id} установлен язык {message.text}")
@@ -436,7 +436,8 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        if message.text == 'Организация':
+        if message.text == ActiveUser[message.chat.id]['dict']['bcompany']:
+            logging.info('Выбрана фирма')
             ActiveUser[message.chat.id]["status"] = 'Организация'
             bot.send_message(
                 message.chat.id,
@@ -444,9 +445,10 @@ class Reg:
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]['bskip']])
             )
             bot.register_next_step_handler(message, Reg.reg2)
-        else:
+        elif message.text == ActiveUser[message.chat.id]['dict']['bindivid']:
+            logging.info('Выбрано физ лицо')
             ActiveUser[message.chat.id]["status"] = 'Физлицо'
-            ActiveUser[message.chat.id]["contract"]
+            ActiveUser[message.chat.id]["contract"] = '...'
             ActiveUser[message.chat.id]['type'] = 3
             bot.send_message(
                 message.chat.id,
@@ -454,6 +456,13 @@ class Reg:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, Reg.reg3)
+        else:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["errorcom"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+            bot.register_next_step_handler(message, settings.set1)
     
     def reg2(message):
         global ActiveUser
@@ -539,7 +548,7 @@ class Reg:
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]["phone"] = message.chat.id
+        ActiveUser[message.chat.id]["phone"] = message.text
         if ActiveUser[message.chat.id]["status"] == 'Организация':
             mess = "\n" + str(ActiveUser[message.chat.id]["dict"]["scname"]) + " " + str(ActiveUser[message.chat.id]["name"])
             mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["sperson"]) + " " + str(ActiveUser[message.chat.id]["person"])
@@ -604,10 +613,12 @@ class Reg:
                         'cphone'
                     ],
                     [
-                        cl[2] + '\n' + str(ActiveUser[message.chat.id]['addr']),
-                        cl[3] + ', ' + str(ActiveUser[message.chat.id]['person']),
-                        cl[4] + ', ' + str(ActiveUser[message.chat.id]['phone'])
-                    ]
+                        str(cl[2]) + '\n' + str(ActiveUser[message.chat.id]['addr']),
+                        str(cl[3]) + ', ' + str(ActiveUser[message.chat.id]['person']),
+                        str(cl[4]) + ', ' + str(ActiveUser[message.chat.id]['phone'])
+                    ],
+                    'id',
+                    cl[1]
                 )
             bot.send_message(
                 message.chat.id,
@@ -615,6 +626,15 @@ class Reg:
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
             bot.register_next_step_handler(message, Main.main1)
+        elif message.text == ActiveUser[message.chat.id]["dict"]["bn"]:
+            bot.send_message(
+                message.chat.id,
+                f"Пожалуйста пройдите регистрацию.\nIltimos ro'yxatdan o'ting\nRegister first please/\n\nВыберите язык / Tilini tanlang / Select language",
+                reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
+            )
+            bot.register_next_step_handler(message, Reg.reg1)
+        else:
+            bot.register_next_step_handler(message, Reg.regsave)
 
 class settings:
     def set1(message):
@@ -752,7 +772,7 @@ class settings:
             bot.send_message(
                 message.chat.id,
                 ActiveUser[message.chat.id]["dict"]["selectlang"],
-                reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇸🇮 Русский"])
+                reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
             )
             bot.register_next_step_handler(message, settings.lang)
         else:
@@ -853,7 +873,7 @@ class settings:
             ActiveUser[message.chat.id]["lang"] = 'en'
         elif message.text == "🇺🇿 O'zbekcha":
             ActiveUser[message.chat.id]["lang"] = 'uz'
-        elif message.text == "🇸🇮 Русский":
+        elif message.text == "🇷🇺 Русский":
             ActiveUser[message.chat.id]["lang"] = 'ru'
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
         bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
