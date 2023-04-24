@@ -343,8 +343,8 @@ class MainMenu:
             contragents = db.select_table('Contragents', ['id', 'cname'])
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'Выберите клиента или введите его ИНН.',
-                reply_markup=buttons.Buttons(functions.listgen(contragents, [0, 1], 2), 1, 1)
+                'Введите ИНН клиента.',
+                reply_markup=buttons.Buttons(['Отмена'])
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, NewTask.nt1)
@@ -413,8 +413,8 @@ class MainMenu:
             contragents = db.select_table('Contragents', ['id', 'cname'])
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
-                'Выберите клиента или введите его ИНН.',
-                reply_markup=buttons.Buttons(functions.listgen(contragents, [0, 1], 2), 1, 1)
+                'Введите ИНН клиента.',
+                reply_markup=buttons.Buttons(['Отмена'])
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, editcont.ec1)
@@ -1560,7 +1560,7 @@ class allchats:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
 
-        if message.text == 'Главное меню':
+        if message.text == 'Главное меню' or '/start':
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
