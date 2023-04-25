@@ -112,13 +112,10 @@ def send_welcome(message):
     ActiveUser[message.chat.id]["id"] = message.chat.id
     finduser = db.search_record("Clients", "id", user_id)
     if len(finduser) == 0:
-        mesru = "НАШ БОТ БЫЛ ОБНОВЛЕН!\nПожалуйста пройдите короткую регистрацию. Это не займет много времени зато при подаче заявки не нужно каждый раз указывать одну и ту же информацию контактные данные к примеру и т. д.\nТак же Вы можете отслеживать статус своих заявок и какой мастер к вам приедет.\nЕсли есть вопросы - https://t.me/Sergey_kim486"
-        mesuz = "BIZNING BOTIMIZ YANGILANDI!\nIltimos, qisqa ro'yxatdan o'ting. Bu ko'p vaqt olmasa-da, masalan, har safar so'rovnoma topshirishda aloqador ma'lumotlarni kiritingiz kerak emas.\nSiz ham so'rovlaringiz holatini va qaysi usta sizga keladi, kuzatishingiz mumkin.\nAgar savollaringiz bo'lsa, https://t.me/Sergey_kim486 murojaat qiling."
-        mesen = "OUR BOT HAS BEEN UPDATED!\nPlease complete a short registration. It won't take much time but will save you from having to enter the same contact information every time you submit a request, for example.\nYou can also track the status of your requests and which master will come to you.\nIf you have any questions, please visit https://t.me/Sergey_kim486."
         bot.send_message(
             user_id,
-            f'{mesru}\n\n{mesuz}\n\n{mesen}\n\nВыберите язык / Tilini tanlang / Select language',
-            reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
+            f'Выберите язык / Tilini tanlang / Select language',
+            reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
         )
         bot.register_next_step_handler(message, Reg.reg1)
     else:
@@ -412,7 +409,7 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        if message.text == "🇬🇧 Englis":
+        if message.text == "🇬🇧 English":
             ActiveUser[message.chat.id]["lang"] = 'en'
             ActiveUser[message.chat.id]["dict"] = config.en
         elif message.text == "🇺🇿 O'zbekcha":
@@ -630,7 +627,7 @@ class Reg:
             bot.send_message(
                 message.chat.id,
                 f"Пожалуйста пройдите регистрацию.\nIltimos ro'yxatdan o'ting\nRegister first please/\n\nВыберите язык / Tilini tanlang / Select language",
-                reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
+                reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
             )
             bot.register_next_step_handler(message, Reg.reg1)
         else:
@@ -772,7 +769,7 @@ class settings:
             bot.send_message(
                 message.chat.id,
                 ActiveUser[message.chat.id]["dict"]["selectlang"],
-                reply_markup=buttons.Buttons(["🇬🇧 Englis", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
+                reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
             )
             bot.register_next_step_handler(message, settings.lang)
         else:
@@ -869,7 +866,7 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == "🇬🇧 Englis":
+        if message.text == "🇬🇧 English":
             ActiveUser[message.chat.id]["lang"] = 'en'
         elif message.text == "🇺🇿 O'zbekcha":
             ActiveUser[message.chat.id]["lang"] = 'uz'
