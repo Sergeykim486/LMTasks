@@ -1558,9 +1558,10 @@ class allchats:
     
     def chat1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'{username} Отправил запрос в отправке всем пользователям - {message.text}')
 
-        if message.text == 'Главное меню' or '/start':
+        if message.text == 'Главное меню' or message.text == '/start':
+            logging.info('main')
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -1570,18 +1571,16 @@ class allchats:
             bot.register_next_step_handler(message, MainMenu.Main2)
 
         else:
+            logging.info('message to all')
             users = db.select_table('Users')
             for user in users:
                 try:
                     logging.info(f'sended message to user {user[2]} {user[1]}')
-
                     if user[0] != message.chat.id:
                         bot.forward_message(user[0], message.chat.id, message.message_id)
-
                 except Exception as e:
                     logging.error(e)
                     pass
-
             bot.register_next_step_handler(message, allchats.chat1)
 
 
