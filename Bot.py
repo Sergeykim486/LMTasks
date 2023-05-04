@@ -7,12 +7,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(level
 
 ActiveUser = {}
 sendedmessages = []
-
 dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 db = Database(dbname)
-
 bot = telebot.TeleBot(config.TOKEN)
-
 if db.get_record_by_id('Users', 0) == None:
     db.insert_record(
         'Users',
@@ -26,7 +23,6 @@ if db.get_record_by_id('Users', 0) == None:
 
 async def job():
     await schedule_message()
-
 async def schedule_message():
     while True:
         logging.info('Проверка расписания')
@@ -59,10 +55,8 @@ async def schedule_message():
         elif now.hour == 20 and now.minute == 0:
             await daylyreport.evening()
         await asyncio.sleep(60)
-
 async def main():
     await job()
-
 
 def sendtoall(message, markdown, exeptions, nt = 0, notific = False):
     global sendedmessages
@@ -91,25 +85,20 @@ class daylyreport:
         logging.info('план отправлен.')
         confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
         addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
-        
         if len(confirmedtasks) == 0 and len(addedtasks) == 0:
             sendtoall('Всем доброе утро!\nНа сегодня нет переходящих заявок.', '', 0)
-
         else:
             sendtoall('Всем доброе утро!\nСо вчерашнего дня на сегодня переходят следующие заявки:', '', 0)
-            
         if len(confirmedtasks) != 0:
             sendtoall('ЗАЯВКИ У МАСТЕРОВ:\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
             for line in confirmedtasks:
                 taskid = line.split()[2]
                 sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-                
         if len(addedtasks) != 0:
             sendtoall('НЕ РАСПРЕДЕЛЕННЫЕ ЗАЯВКИ:\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
             for line in addedtasks:
                 taskid = line.split()[2]
                 sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-                
         sendtoall('🟥🟥🟥🟥🟥🟥🟥🟥\nСписок заявок на сегодня\n🟥🟥🟥🟥🟥🟥🟥🟥', '', 0)
 
     async def evening():
@@ -119,52 +108,42 @@ class daylyreport:
         confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
         addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
         canceledtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}, ['canceled'], [daten+' 00:00'], [daten+' 23:59']), [0, 1, 3, 4, 6], 1)
-
         if len(confirmedtasks) != 0 and len(addedtasks) != 0:
             sendtoall('ИТОГИ ДНЯ:\nНа завтра остаются следующие заявки:', '', 0)
-
         if len(donetasks) != 0:
             sendtoall('Выполненные заявки\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
             for line in donetasks:
                 taskid = line.split()[2]
                 sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-
         if len(confirmedtasks) != 0:
             sendtoall('Заявки у мастеров\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
             for line in confirmedtasks:
                 taskid = line.split()[2]
                 sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-
         if len(addedtasks) != 0:
             sendtoall('Не принятые заявки\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
             for line in addedtasks:
                 taskid = line.split()[2]
                 sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-
         if len(canceledtasks) != 0:
             sendtoall('Отмененные\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
             for line in canceledtasks:
                 taskid = line.split()[2]
                 sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
         reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
-
         if len(donetasks) == 0:
             reports = reports + '\n\nВыполненных заявок нет.'
-
         else:
             reports = reports + '\n\nКоличество заявок выполненных мастерами:\n'
             users = db.select_table('Users')
             usersrep = []
-
             for i in users:
                 tasks = len(db.select_table_with_filters('Tasks', {'master': i[0]}, ['done'], [daten+' 00:00'], [daten+' 23:59']))
                 usersrep.append([i[2] + ' ' + i[1], tasks])
             sorted_usersrep = sorted(usersrep, key=lambda x: x[1], reverse=True)
             for j in sorted_usersrep:
-
                 if j[1] != 0:
                     reports = reports + '\n' + j[0] + ' - ' + str(j[1])
-
         sendtoall('ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports, '', 0)
 
 @bot.message_handler(commands=['start'])
@@ -176,7 +155,6 @@ def check_user_id(message):
     logging.info(f'{username} Отправил запрос - {message.text}')
     ActiveUser[user_id] = {'id': user_id}
     finduser = db.search_record("Users", "id", user_id)
-
     if len(finduser) == 0:
         bot.send_message(
             user_id,
@@ -184,7 +162,6 @@ def check_user_id(message):
             reply_markup=buttons.Buttons(['Регистрация'])
         )
         bot.register_next_step_handler(message, Reg.reg1)
-
     else:
         bot.send_message(
             user_id,
@@ -225,7 +202,6 @@ class Reg:
     def reg1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-
         if message.text == 'Регистрация':
             bot.send_message(
                 message.chat.id,
@@ -283,7 +259,6 @@ class Reg:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-
         if message.text == 'Да':
             valuedict = [
                 ActiveUser[message.chat.id]['id'],
@@ -299,7 +274,6 @@ class Reg:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
-
         elif message.text == 'Нет':
             bot.send_message(
                 message.chat.id,
@@ -307,7 +281,6 @@ class Reg:
                 reply_markup=buttons.Buttons(['Регистрация'])
             )
             bot.register_next_step_handler(message, Reg.reg1)
-
         else:
             bot.send_message(
                 message.chat.id,
@@ -324,7 +297,6 @@ class MainMenu:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-        
         if message.text == 'Главное меню' or message.text == 'Вернуться':
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
@@ -338,9 +310,9 @@ class MainMenu:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-
         if message.text == 'Новая заявка':
             contragents = db.select_table('Contragents', ['id', 'cname'])
+            ActiveUser[message.chat.id]['nt'] = 1
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
                 'Введите ИНН клиента.',
@@ -348,15 +320,12 @@ class MainMenu:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, NewTask.nt1)
-
         elif message.text == 'Обновить список заявок':
             daterep = str(datetime.now().strftime("%d.%m.%Y"))
             report.rep(message, daterep, 0, 1, 1, 0, 0)
-
         elif message.text == 'Мои заявки':
             daterep = str(datetime.now().strftime("%d.%m.%Y"))
             report.rep(message, daterep, 0, 1, 0, 1, 0, message.chat.id, 1)
-
         elif message.text == 'Список заявок':
             ActiveUser[message.chat.id]['filter'] = {
                 'from': '01.01.2000 00:00',
@@ -374,9 +343,7 @@ class MainMenu:
             )
             if message.message_id is not None:
                 bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-
             bot.register_next_step_handler(message, TL.tl1)
-
         elif message.text == '/start':
             bot.send_message(
                 message.chat.id,
@@ -384,31 +351,25 @@ class MainMenu:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
             )
             bot.register_next_step_handler(message, MainMenu.Main2)
-
         elif message.text == 'Написать всем':
             bot.send_message(
                 message.chat.id,
                 'Напишите Ваше сообщение и оно будет разослано всем.\nчтобы вернуться в главное меню нажмите [Главное меню]',
                 reply_markup=buttons.Buttons(['Главное меню'])
             )
-
             if message.message_id is not None:
                 bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
             bot.register_next_step_handler(message, allchats.chat1)
-
         elif message.text == 'Дневной отчет':
             bot.send_message(
                 message.chat.id,
                 'Выберите какой отчет Вам нужен\nПоказать все не выполненные заявки, или показать итоги дня.',
                 reply_markup=buttons.Buttons(['Заявки у мастеров', 'Итоги дня'])
             )
-
             if message.message_id is not None:
                 bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-
             bot.register_next_step_handler(message, report.reportall)
-
         elif message.text == 'Редактировать контрагента':
             contragents = db.select_table('Contragents', ['id', 'cname'])
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -418,18 +379,16 @@ class MainMenu:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, editcont.ec1)
-
         else:
             bot.register_next_step_handler(message, MainMenu.Main2)
 
 
 class editcont():
-    
+
     def ec1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-        
         if message.text == 'Отмена':
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -439,7 +398,6 @@ class editcont():
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
             )
             bot.register_next_step_handler(message, MainMenu.Main2)
-
         elif message.text.split()[0].isdigit() or message.text.split()[1].isdigit():
             if message.text.split()[0].isdigit():
                 inn = message.text.split()[0]
@@ -455,7 +413,6 @@ class editcont():
                     ActiveUser[message.chat.id]['contnew'].append(None)
                 else:
                     ActiveUser[message.chat.id]['contnew'].append(line)
-                    
             if client is not None:
                 editcontragent(message)
                 bot.register_next_step_handler(message, editcont.ec2)
@@ -475,7 +432,7 @@ class editcont():
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, editcont.ec1)
-            
+
     def ec2(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
@@ -585,20 +542,6 @@ class editcont():
         editcontragent(message)
         bot.register_next_step_handler(message, editcont.ec2)
     
-    # def CADR(message):
-    #     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    #     logging.info(f'{username} Отправил запрос - {message.text}')
-    #     global ActiveUser
-    #     if message.content_type == types.ContentType.LOCATION:
-    #         lon, lat = message.location.longitude, message.location.latitude
-    #         url = f'https://www.google.com/maps/search/?api=1&query={lat},{lon}'
-    #         ActiveUser[message.chat.id]['contnew'][2] = url
-    #     else:
-    #         ActiveUser[message.chat.id]['contnew'][2] = message.chat.id
-        
-    #     editcontragent(message)
-    #     bot.register_next_step_handler(message, editcont.ec2)
-    
     def CPERSON(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
@@ -606,7 +549,7 @@ class editcont():
         ActiveUser[message.chat.id]['contnew'][3] = message.text
         editcontragent(message)
         bot.register_next_step_handler(message, editcont.ec2)
-    
+
     def CPHONE(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
@@ -614,7 +557,7 @@ class editcont():
         ActiveUser[message.chat.id]['contnew'][4] = message.text
         editcontragent(message)
         bot.register_next_step_handler(message, editcont.ec2)
-    
+
     def CCONTRACT(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
@@ -622,7 +565,7 @@ class editcont():
         ActiveUser[message.chat.id]['contnew'][6] = message.text
         editcontragent(message)
         bot.register_next_step_handler(message, editcont.ec2)
-    
+
 def editcontragent(message):
     try:
         bot.delete_message(chat_id=ActiveUser[message.chat.id]['edcon'].chat.id, message_id=ActiveUser[message.chat.id]['edcon'].message_id)
@@ -660,7 +603,6 @@ class NewTask:
         ActiveUser[message.chat.id]['added'] = datetime.now().strftime("%d.%m.%Y %H:%M")
         ActiveUser[message.chat.id]['manager'] = message.chat.id
         ActiveUser[message.chat.id]['status'] = 1
-
         if message.text == 'Отмена':
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -670,7 +612,6 @@ class NewTask:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
             )
             bot.register_next_step_handler(message, MainMenu.Main2)
-
         elif message.text.split()[0].isdigit() or message.text.split()[1].isdigit():
             if message.text.split()[0].isdigit():
                 inn = message.text.split()[0]
@@ -678,7 +619,6 @@ class NewTask:
                 inn = message.text.split()[1]
             ActiveUser[message.chat.id]['inn'] = inn
             findcont = db.get_record_by_id('Contragents', inn)
-            
             if findcont == None:
                 bot.send_message(
                     message.chat.id,
@@ -686,16 +626,24 @@ class NewTask:
                     reply_markup=buttons.Buttons(['Разовый', 'Долгосрочный', 'Физ. лицо'])
                 )
                 bot.register_next_step_handler(message, NewTask.NeContr1)
-
             else:
                 client = db.get_record_by_id('Contragents', inn)
-                if client[5] is not None:
+                if client[5] is not None and ActiveUser[message.chat.id]['nt'] == 1:
                     bot.send_message(
                         message.chat.id,
                         'Выбран клиент - ' + str(client[1]) + '\nКоротко опишите проблему клиента.',
                         reply_markup=buttons.clearbuttons()
                     )
                     bot.register_next_step_handler(message, NewTask.nt2)
+                elif ActiveUser[message.chat.id]['nt'] == 0:
+                    ActiveUser[message.chat.id]['changecontrintask'] = inn
+                    bot.send_message(
+                        message.chat.id,
+                        f'Контрагент заявки будет изменен на {str(client[1])}',
+                        reply_markup=buttons.Buttons(['Да', 'Нет'])
+                    )
+                    bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                    bot.register_next_step_handler(message, Task.task6)
                 else:
                     bot.send_message(
                         message.chat.id,
@@ -703,7 +651,6 @@ class NewTask:
                         reply_markup=buttons.Buttons(['Разовый', 'Долгосрочный', 'Физ. лицо'])
                     )
                     bot.register_next_step_handler(message, NewTask.type1)
-
         else:
             contragents = db.select_table('Contragents', ['id', 'cname'])
             bot.send_message(
@@ -717,7 +664,6 @@ class NewTask:
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-        
         if message.text == 'Разовый':
             ActiveUser[message.chat.id]['ds'] = 1
             bot.send_message(
@@ -726,7 +672,6 @@ class NewTask:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, NewTask.nt2)
-
         elif message.text == 'Долгосрочный':
             ActiveUser[message.chat.id]['ds'] = 2
             bot.send_message(
@@ -735,7 +680,6 @@ class NewTask:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, NewTask.type2)
-
         elif message.text == 'Физ. лицо':
             ActiveUser[message.chat.id]['ds'] = 3
             bot.send_message(
@@ -744,7 +688,6 @@ class NewTask:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, NewTask.nt2)
-
         else:
             bot.send_message(
                 message.chat.id,
@@ -752,7 +695,7 @@ class NewTask:
                 reply_markup=buttons.Buttons(['Разовый', 'Долгосрочный', 'Физ. лицо'])
             )
             bot.register_next_step_handler(message, NewTask.type1)
-    
+
     def type2(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -775,7 +718,6 @@ class NewTask:
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-
         if message.text == 'Ввести снова':
             contragents = db.select_table('Contragents', ['id', 'cname'])
             bot.send_message(
@@ -785,7 +727,6 @@ class NewTask:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, NewTask.nt1)
-
         elif message.text == 'Главное меню':
             ActiveUser[message.chat.id].clear()
             bot.send_message(
@@ -800,7 +741,6 @@ class NewTask:
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-
         if message.text == 'Разовый':
             ActiveUser[message.chat.id]['ds'] = 1
             ActiveUser[message.chat.id]['contract'] = '...'
@@ -810,7 +750,6 @@ class NewTask:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, NewTask.NeContr3)
-
         elif message.text == 'Долгосрочный':
             ActiveUser[message.chat.id]['ds'] = 2
             bot.send_message(
@@ -819,7 +758,6 @@ class NewTask:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, NewTask.NeContr2)
-
         elif message.text == 'Физ. лицо':
             ActiveUser[message.chat.id]['ds'] = 3
             ActiveUser[message.chat.id]['contract'] = '...'
@@ -829,7 +767,6 @@ class NewTask:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, NewTask.NeContr3)
-
         else:
             bot.send_message(
                 message.chat.id,
@@ -893,7 +830,7 @@ class NewTask:
             reply_markup=buttons.Buttons(['Да', 'Нет'])
         )
         bot.register_next_step_handler(message, NewTask.NeContr7)
-    
+
     def NeContr7(message):
         if message.text == 'Да':
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -909,12 +846,22 @@ class NewTask:
                 ActiveUser[message.chat.id]['contract']
             ]
             db.insert_record('Contragents', contragent)
-            bot.send_message(
-                message.chat.id,
-                'Кратко опишите проблему клиента',
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, NewTask.nt2)
+            if ActiveUser[message.chat.id]['nt'] == 0:
+                ActiveUser[message.chat.id]['changecontrintask'] = ActiveUser[message.chat.id]['inn']
+                bot.send_message(
+                    message.chat.id,
+                    f'Контрагент заявки будет изменен на {str(client[1])}',
+                    reply_markup=buttons.Buttons(['Да', 'Нет'])
+                )
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                bot.register_next_step_handler(message, Task.task6)
+            elif ActiveUser[message.chat.id]['nt'] == 1:
+                bot.send_message(
+                    message.chat.id,
+                    'Кратко опишите проблему клиента',
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, NewTask.nt2)
         elif message.text == 'Нет':
             bot.send_message(
                 message.chat.id,
@@ -955,7 +902,6 @@ class NewTask:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-
         if message.text == 'Да':
             task = [
                 None,
@@ -981,7 +927,6 @@ class NewTask:
             sendtoall(functions.curtask(tid), buttons.buttonsinline([['Принять', 'confirm ' + str(tid)], ['Назначить', 'set ' + str(tid)]]), message.chat.id, 1)
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
-
         elif message.text == 'Нет':
             bot.send_message(
                 message.chat.id,
@@ -990,7 +935,6 @@ class NewTask:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main1)
-
         else:
             bot.send_message(
                 message.chat.id,
@@ -1006,15 +950,12 @@ class Task:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-
         if message.text == 'Принять':
-
             if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] != 1:
                 bot.send_message(
                     message.chat.id,
                     "Вы не можете принять эту заявку!"
                 )
-
             db.update_records(
                 'Tasks',
                 [
@@ -1032,14 +973,12 @@ class Task:
             mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\nПринял заявку:\n\n' + tk
             mark = ''
             exn = message.chat.id
-
             if sendedmessages is not None:
                 for line in sendedmessages:
                     try:
                         bot.delete_message(line[0], line[1])
                     except Exception as e:
                         logging.error(e)
-
             bot.send_message(
                 message.chat.id,
                 'Вы приняли заявку.\n\nВыберите операцию',
@@ -1047,7 +986,6 @@ class Task:
             )
             sendtoall(mes, mark, exn)
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-
         elif message.text == 'Дополнить':
             bot.send_message(
                 message.chat.id,
@@ -1056,7 +994,6 @@ class Task:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Task.task5)
-
         elif message.text == 'Переназначить' or message.text == 'Назначить':
             users = db.select_table('Users')
             bot.send_message(
@@ -1066,10 +1003,8 @@ class Task:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Task.task4)
-
         elif message.text == 'Выполнено':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
-
             if manager == str(message.chat.id):
                 db.update_records(
                     'Tasks',[
@@ -1092,10 +1027,8 @@ class Task:
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
                 )
                 sendtoall(mes, mark, exn)
-
         elif message.text == 'Отказаться от заявки':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
-
             if manager == str(message.chat.id):
                 confdate = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[5]
                 db.update_records(
@@ -1122,7 +1055,6 @@ class Task:
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
                 )
                 sendtoall(mes, mark, exn)
-
             else:
                 master = db.get_record_by_id('Users', manager)[1]
                 bot.send_message(
@@ -1132,7 +1064,6 @@ class Task:
                 )
                 bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
                 bot.register_next_step_handler(message, MainMenu.Main1)
-
         elif message.text == 'Отменить заявку':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[2])
             bot.send_message(
@@ -1142,7 +1073,6 @@ class Task:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Task.task2)
-
         elif message.text == 'Назад':
             bot.send_message(
                 message.chat.id,
@@ -1150,11 +1080,27 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        elif message.text == 'Изменить контрагента':
+            bot.send_message(
+                message.chat.id,
+                'введите ИНН контрагента',
+                reply_markup=buttons.clearbuttons()
+            )
+            ActiveUser[message.chat.id]['nt'] = 0
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, NewTask.nt1)
+        elif message.text ==  'Изменить текст заявки':
+            bot.send_message(
+                message.chat.id,
+                'Введите новый текст заявки.\n\n‼️ ВНИМАНИЕ ‼️\nУчтите что старый текст будет заменен новым поэтому скопируйте старый и отредактируйте.',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, Task.task7_1)
 
     def task2(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-
         if message.text == 'Да':
             bot.send_message(
                 message.chat.id,
@@ -1163,7 +1109,6 @@ class Task:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Task.task3)
-
         elif message.text == 'Нет':
             bot.send_message(
                 message.chat.id,
@@ -1205,7 +1150,6 @@ class Task:
     def task4(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-
         if message.text.split()[1] is None:
             users = db.select_table('Users')
             bot.send_message(
@@ -1215,7 +1159,6 @@ class Task:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Task.task4)
-
         else:
             userm = message.text.split()[1]
             db.update_records(
@@ -1231,7 +1174,6 @@ class Task:
                 'id',
                 ActiveUser[message.chat.id]['task']
             )
-
             if sendedmessages is not None:
                 for line in sendedmessages:
                     try:
@@ -1255,21 +1197,21 @@ class Task:
         tasktext = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
         db.update_records(
             'Tasks',
-            ['task'], [tasktext + '\n\n ' + username + ' дополнил(а) заявку...\n' + message.text],
-            'id', ActiveUser[message.chat.id]['task']
+            ['task'],
+            [tasktext + '\n\n ' + username + ' дополнил(а) заявку...\n' + message.text],
+            'id',
+            ActiveUser[message.chat.id]['task']
         )
         tk = functions.curtask(ActiveUser[message.chat.id]['task'])
         mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n дополнил(а) заявку:\n\n' + tk
         mark = ''
         exn = message.chat.id
-
         if sendedmessages is not None:
             for line in sendedmessages:
                 try:
                     bot.delete_message(line[0], line[1])
                 except Exception as e:
                     logging.error(e)
-
         bot.send_message(
             message.chat.id,
             'Заявка дополнена.\n\nВыберите операцию',
@@ -1277,37 +1219,117 @@ class Task:
         )
         sendtoall(mes, mark, exn)
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        
+
+    def task6(message):
+        global ActiveUser
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+        if message.text == 'Да':
+            db.update_records(
+                'Tasks',
+                ['contragent'],
+                [ActiveUser[message.chat.id]['changecontrintask']],
+                'id',
+                ActiveUser[message.chat.id]['task']
+            )
+            client = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['changecontrintask'])[1]
+            bot.send_message(
+                message.chat.id,
+                f'Клиент в заявке изменен на {client}.\n\nВыберите операцию',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
+            )
+            tk = functions.curtask(ActiveUser[message.chat.id]['task'])
+            mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n Изменил(а) клиента в заявке:\n\n' + tk
+            mark = ''
+            sendtoall(mes, mark, message.chat.id)
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        elif message.text == 'Нет':
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, MainMenu.Main1)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Неверная команда',
+                reply_markup=buttons.Buttons(['Да', 'Нет'])
+            )
+            bot.register_next_step_handler(message, Task.task6)
+
+    def task7_1(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+        taskt = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
+        ActiveUser[message.chat.id]['newtasktext'] = message.text
+        bot.send_message(
+            message.chat.id,
+            f'Текст заявку будет изменен с:\n{taskt}\nНа:\n{message.text}\n\n Подтвердите информацию...',
+            reply_markup=buttons.Buttons(['Да','Нет'])
+        )
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.register_next_step_handler(message, Task.task7_2)
+
+    def task7_2(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+        if message.text == 'Да':
+            print(ActiveUser[message.chat.id]['newtasktext'])
+            db.update_records(
+                'Tasks',
+                ['task'],
+                [ActiveUser[message.chat.id]['newtasktext']],
+                'id',
+                ActiveUser[message.chat.id]['task']
+            )
+            bot.send_message(
+                message.chat.id,
+                'Заявка успешно измненена.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
+            )
+            tk = functions.curtask(ActiveUser[message.chat.id]['task'])
+            mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n внес изменения в заявку\n\n' + tk
+            mark = ''
+            sendtoall(mes, mark, message.chat.id)
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        elif message.text == 'Нет':
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.register_next_step_handler(message, MainMenu.Main1)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Вы не подтвердили информацию.\nЗаменить старый текст заявки на новый',
+                reply_markup=buttons.Buttons(['Да','Нет'])
+            )
+            bot.register_next_step_handler(message, Task.task7_2)
 
 def filters(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
     logging.info(f'{username} Отправил запрос - {message.text}')
     global ActiveUser
     messagetouser = 'По каким параметрам формировать список\n'
-
     if ActiveUser[message.chat.id]['filter']['from'] == '01.01.2000 00:00':
         messagetouser = messagetouser + '📅 Будут показаны все заявки за весь период.\n'
-
     else:
         messagetouser = messagetouser + '📅 Выбран период:\n c' + str(ActiveUser[message.chat.id]['filter']['from']) + ' по ' + str(ActiveUser[message.chat.id]['filter']['to']) + '\n'
-
     messagetouser = messagetouser + '\n📍 СТАТУС:\n'
-
     if ActiveUser[message.chat.id]['filter']['added'] == 1:
         messagetouser = messagetouser + '🔵 Зарегистрированные\n'
-
     if ActiveUser[message.chat.id]['filter']['confirmed'] == 1:
         messagetouser = messagetouser + '🟡 В работе\n'
-
     if ActiveUser[message.chat.id]['filter']['done'] == 1:
         messagetouser = messagetouser + '🟢 Завершенные\n'
-
     if ActiveUser[message.chat.id]['filter']['canceled'] == 1:
         messagetouser = messagetouser + '🔴 Отмененные'
-
     if ActiveUser[message.chat.id]['filter']['justmy'] == 1:
         messagetouser = messagetouser + '\n👤 Показать только мои заявки.'
-
     return messagetouser
 
 
@@ -1317,39 +1339,27 @@ class TL:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-
         if message.text == 'Сформировать':
             statuses = []
-
             if ActiveUser[message.chat.id]['filter']['added'] == 1:
                 statuses.append(1)
-
             if ActiveUser[message.chat.id]['filter']['confirmed'] == 1:
                 statuses.append(2)
-
             if ActiveUser[message.chat.id]['filter']['done'] == 1:
                 statuses.append(3)
-
             if ActiveUser[message.chat.id]['filter']['canceled'] == 1:
                 statuses.append(4)
-
             if ActiveUser[message.chat.id]['filter']['justmy'] == 1:
                 tasks = db.select_table_with_filters('Tasks', {'status': statuses, 'master': message.chat.id})
-
             else:
                 tasks = db.select_table_with_filters('Tasks', {'status': statuses})
-
             if ActiveUser[message.chat.id]['filter']['from'] != '01.01.2000 00:00':
                 for line in tasks[:]:
-
                     if datetime.strptime(ActiveUser[message.chat.id]['filter']['from'], '%d.%m.%Y %H:%M') <= datetime.strptime(line[1], '%d.%m.%Y %H:%M') <= datetime.strptime(ActiveUser[message.chat.id]['filter']['to'], '%d.%m.%Y %H:%M'):
                         logging.info('Запись найдена: Заявка №' + str(line[0]) + ' от ' + str(line[1]))
-
                     else:
                         tasks.remove(line)
-
             taskslist = functions.listgen(tasks, [0, 1, 3, 4, 6], 1)
-
             if len(taskslist) != 0:
                 bot.send_message(
                     message.chat.id,
@@ -1368,18 +1378,15 @@ class TL:
                     '🟥🟥🟥🟥🟥🟥🟥🟥\n‼️ Список заявок ‼️\n🟥🟥🟥🟥🟥🟥🟥🟥\nВыберите операцию.',
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
                 )
-
             else:
                 bot.send_message(
                     message.chat.id,
                     'Заявок по вашему запросу не найдено.',
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
                 )
-
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
-
         elif message.text == 'Указать период':
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -1389,15 +1396,11 @@ class TL:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl2)
-
         elif message.text == '⬜️ Зарегистрированные' or message.text == '🔳 Зарегистрированные':
-
             if ActiveUser[message.chat.id]['filter']['added'] == 1:
                 ActiveUser[message.chat.id]['filter']['added'] = 0
-
             else:
                 ActiveUser[message.chat.id]['filter']['added'] = 1
-
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -1406,15 +1409,11 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-
         elif message.text == '⬜️ В работе' or message.text == '🔳 В работе':
-
             if ActiveUser[message.chat.id]['filter']['confirmed'] == 1:
                 ActiveUser[message.chat.id]['filter']['confirmed'] = 0
-
             else:
                 ActiveUser[message.chat.id]['filter']['confirmed'] = 1
-
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -1423,15 +1422,11 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-
         elif message.text == '⬜️ Завершенные' or message.text == '🔳 Завершенные':
-
             if ActiveUser[message.chat.id]['filter']['done'] == 1:
                 ActiveUser[message.chat.id]['filter']['done'] = 0
-
             else:
                 ActiveUser[message.chat.id]['filter']['done'] = 1
-
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -1440,15 +1435,11 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-
         elif message.text == '⬜️ Отмененные' or message.text == '🔳 Отмененные':
-
             if ActiveUser[message.chat.id]['filter']['canceled'] == 1:
                 ActiveUser[message.chat.id]['filter']['canceled'] = 0
-
             else:
                 ActiveUser[message.chat.id]['filter']['canceled'] = 1
-
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -1457,19 +1448,15 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-
         elif message.text == '⬜️ Только мои' or message.text == '🔳 Только мои':
-
             if ActiveUser[message.chat.id]['filter']['justmy'] == 1:
                 ActiveUser[message.chat.id]['filter']['justmy'] = 0
-
             else:
                 ActiveUser[message.chat.id]['filter']['justmy'] = 1
                 ActiveUser[message.chat.id]['filter']['added'] = 0
                 ActiveUser[message.chat.id]['filter']['confirmed'] = 1
                 ActiveUser[message.chat.id]['filter']['done'] = 1
                 ActiveUser[message.chat.id]['filter']['canceled'] = 0
-
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -1478,7 +1465,6 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-
         elif message.text == 'Отмена':
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -1496,7 +1482,6 @@ class TL:
         m1 = m1.replace(' ', '.')
         m1 = m1.replace(',', '.')
         m = m1.split('.')
-
         if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -1507,7 +1492,6 @@ class TL:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl3)
-
         else:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -1521,7 +1505,6 @@ class TL:
     def tl3(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-
         if len(message.text.split('.')) == 3 and len(message.text.split('.')[0]) == 2 and len(message.text.split('.')[1]) == 2 and len(message.text.split('.')[2]) == 4 and datetime.strptime(ActiveUser[message.chat.id]['filter']['from'], '%d.%m.%Y %H:%M') < datetime.strptime(message.text + ' 23:00', '%d.%m.%Y %H:%M'):
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -1532,7 +1515,6 @@ class TL:
                 reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
             )
             bot.register_next_step_handler(message, TL.tl1)
-
         elif datetime.strptime(ActiveUser[message.chat.id]['filter']['from'], '%d.%m.%Y %H:%M') > datetime.strptime(message.text + ' 23:00', '%d.%m.%Y %H:%M'):
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -1542,7 +1524,6 @@ class TL:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, TL.tl3)
-
         else:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -1555,11 +1536,10 @@ class TL:
 
 
 class allchats:
-    
+
     def chat1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос в отправке всем пользователям - {message.text}')
-
         if message.text == 'Главное меню' or message.text == '/start':
             logging.info('main')
             bot.send_message(
@@ -1569,7 +1549,6 @@ class allchats:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
-
         else:
             logging.info('message to all')
             users = db.select_table('Users')
@@ -1591,50 +1570,38 @@ class report:
         confirmedtasks = []
         addedtasks = []
         canceledtasks = []
-
         if done == 1:
-            
             if my == 1:
                 filt = {'status': 3, 'master': master}
             else:
                 filt = {'status': 3}
-            
             logging.info(f'Запрос в базу на выполненные заявки за {daterep}')
             donetasks = functions.listgen(db.select_table_with_filters('Tasks', filt, ['done'], [daterep+' 00:00'], [daterep+' 23:59']), [0, 1, 3, 4, 6], 1)
-
         if conf == 1:
             logging.info(f'Запрос в базу на принятые заявки за {daterep}')
-
             if master == 0:
                 filt = {'status': 2}
-
             else:
                 filt = {'status': 2, 'master': master}
-
             confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', filt), [0, 1, 3, 4, 6], 1)
-
             if master != 0 and len(confirmedtasks) == 0:
                 bot.send_message(
                     message.chat.id,
                     'У вас нет заявок в работе.',
                     reply_markup=''
                 )
-
         if added == 1:
             logging.info(f'Запрос в базу на зарегистрированные заявки за {daterep}')
             addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
-
         if canc == 1:
             logging.info(f'Запрос в базу на отмененные заявки за {daterep}')
             canceledtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}, ['canceled'], [daterep+' 00:00'], [daterep+' 23:59']), [0, 1, 3, 4, 6], 1)
-
         if len(confirmedtasks) != 0 and len(addedtasks) != 0:
             bot.send_message(
                 message.chat.id,
                 '🟥🟥🟥🟥🟥🟥🟥🟥\nСписок заявок на сегодня\n🟥🟥🟥🟥🟥🟥🟥🟥',
                 reply_markup=''
             )
-
         if len(donetasks) != 0:
             bot.send_message(
                 message.chat.id,
@@ -1648,7 +1615,6 @@ class report:
                     line,
                     reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                 )
-
         if len(confirmedtasks) != 0:
             bot.send_message(
                 message.chat.id,
@@ -1662,7 +1628,6 @@ class report:
                     line,
                     reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                 )
-
         if len(addedtasks) != 0:
             bot.send_message(
                 message.chat.id,
@@ -1676,7 +1641,6 @@ class report:
                     line,
                     reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                 )
-
         if len(canceledtasks) != 0:
             bot.send_message(
                 message.chat.id,
@@ -1690,7 +1654,6 @@ class report:
                     line,
                     reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                 )
-
         if dr == 1:
             reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
             reports = reports + '\n\nКоличество заявок выполненных мастерами:\n\n'
@@ -1701,35 +1664,28 @@ class report:
                 usersrep.append([i[2] + ' ' + i[1], tasks])
             sorted_usersrep = sorted(usersrep, key=lambda x: x[1], reverse=True)
             for j in sorted_usersrep:
-
                 if j[1] != 0:
                     reports = reports + '\n' + j[0] + ' - ' + str(j[1])
-
             bot.send_message(
                 message.chat.id,
                 'ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports,
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
             )
-
         else:
-
             if len(addedtasks) != 0 and len(confirmedtasks) != 0 and len(donetasks) != 0 and len(canceledtasks) != 0:
                 bot.send_message(
                     message.chat.id,
                     '🟥🟥🟥🟥🟥🟥🟥🟥\nСписок заявок\n🟥🟥🟥🟥🟥🟥🟥🟥',
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
                 )
-
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
         bot.register_next_step_handler(message, MainMenu.Main2)
 
     def reportall(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-
         if message.text == 'Заявки у мастеров':
             logging.info('план отправлен.')
-
             users = db.select_table('Users')
             res = ''
             bot.send_message(
@@ -1748,27 +1704,27 @@ class report:
                 )
             for u in users:
                 userid = u[0]
-                print(f'{u[2]} {u[1]}')
                 daterep = str(datetime.now().strftime("%d.%m.%Y"))
                 confirmed = db.select_table_with_filters('Tasks', {'status': 2, 'master': userid})
                 done = db.select_table_with_filters('Tasks', {'status': 3, 'master': userid}, ['done'], [daterep+' 00:00'], [daterep+' 23:59'])
                 canceled = db.select_table_with_filters('Tasks', {'status': 4, 'master': userid}, ['canceled'], [daterep+' 00:00'], [daterep+' 23:59'])
                 if len(confirmed) > 0 or len(done) > 0 or len(canceled) > 0:
-                    print('<<<< O K >>>>')
                     res = res + f'\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\n👤 {u[2]} {u[1]}\n\nЗАЯВКИ В РАБОТЕ:\n'
                     if len(confirmed) > 0:
                         for i in confirmed:
-                            contr = db.get_record_by_id('Contragents', i[3])[2]
-                            res = res + f'\n🟡 - №{i[0]} от {i[1]} | {contr}'
+                            contr = db.get_record_by_id('Contragents', i[3])[1]
+                            adr = db.get_record_by_id('Contragents', i[3])[2]
+                            res = res + f'\n🟡 - №{i[0]} от {i[1]} | {contr}\n{adr}'
                     if len(done) > 0:
-                        print('done is')
                         for j in done:
-                            contr = db.get_record_by_id('Contragents', j[3])[2]
-                            res = res + f'\n🟢 - №{j[0]} от {j[1]} | {contr}'
+                            contr = db.get_record_by_id('Contragents', j[3])[1]
+                            adr = db.get_record_by_id('Contragents', j[3])[2]
+                            res = res + f'\n🟢 - №{j[0]} от {j[1]} | {contr}\n{adr}'
                     if len(canceled) > 0:
                         for k in canceled:
-                            contr = db.get_record_by_id('Contragents', k[3])[2]
-                            res = res + f'\n🔴 - №{k[0]} от {k[1]} | {contr}'
+                            contr = db.get_record_by_id('Contragents', k[3])[1]
+                            adr = db.get_record_by_id('Contragents', k[3])[2]
+                            res = res + f'\n🔴 - №{k[0]} от {k[1]} | {contr}\n{adr}'
                     bot.send_message(
                         message.chat.id,
                         res,
@@ -1777,7 +1733,6 @@ class report:
                     res = ''
                 else:
                     print('Пустые списки...')
-                        
             bot.send_message(
                 message.chat.id,
                 'Выберите действие',
@@ -1785,7 +1740,6 @@ class report:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
-
         elif message.text == 'Итоги дня':
             bot.send_message(
                 message.chat.id,
@@ -1798,7 +1752,6 @@ class report:
     def reportall1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-
         if message.text == 'Сегодня':
             try:
                 logging.info(f'Формирование отчета для {message.chat.id}')
@@ -1806,7 +1759,6 @@ class report:
                 report.rep(message, daterep, 1, 1, 1, 1, 1)
             except Exception as e:
                 logging.error(e)
-
         elif message.text == 'Другой день':
             bot.send_message(
                 message.chat.id,
@@ -1823,7 +1775,6 @@ class report:
         m1 = m1.replace(' ', '.')
         m1 = m1.replace(',', '.')
         m = m1.split('.')
-
         if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
             daterep = m1
             try:
@@ -1886,25 +1837,19 @@ def NeContr5(message):
     bot.register_next_step_handler(message, NewTask.NeContr6)
 
 
-
 @bot.callback_query_handler(func=lambda call: True)
 
 
 def callback_handler(call):
     global ActiveUser, sendedmessages
-
     if call.data.split()[0] == 'tasklist':
         status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
-
         if status[11] == 1:
-            markdownt = buttons.Buttons(['Принять', 'Дополнить', 'Назначить', 'Отменить заявку', 'Назад'])
-
+            markdownt = buttons.Buttons(['Принять', 'Дополнить', 'Назначить', 'Изменить контрагента', 'Изменить текст заявки', 'Отменить заявку', 'Назад'])
         elif status[11] == 2:
-            markdownt = buttons.Buttons(['Выполнено', 'Дополнить', 'Отказаться от заявки', 'Переназначить', 'Отменить заявку', 'Назад'], 3)
-
+            markdownt = buttons.Buttons(['Выполнено', 'Дополнить', 'Отказаться от заявки', 'Переназначить', 'Изменить контрагента', 'Изменить текст заявки', 'Отменить заявку', 'Назад'], 3)
         else:
-            markdownt = buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Написать всем'],3)
-
+            markdownt = buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Изменить текст заявки', 'Дневной отчет', 'Написать всем'],3)
         ActiveUser[call.from_user.id]['sentmes'] = bot.send_message(
             call.from_user.id,
             functions.curtask(call.data.split()[1]),
@@ -1912,15 +1857,12 @@ def callback_handler(call):
         )
         ActiveUser[call.from_user.id]['task'] = call.data.split()[1]
         bot.register_next_step_handler(call.message, Task.task1)
-
     elif call.data.split()[0] == 'confirm':
-
         if db.get_record_by_id('Tasks', call.data.split()[1])[11] != 1:
             bot.send_message(
                 call.from_user.id,
                 "Вы не можете принять эту заявку! ее уже принял " + db.get_record_by_id('Users', db.get_record_by_id('Tasks', ActiveUser[call.from_user.id]['task'])[6])[2] + ' ' + db.get_record_by_id('Users', db.get_record_by_id('Tasks', ActiveUser[call.from_user.id]['task'])[6])[1]
             )
-
         else:
             db.update_records(
                 'Tasks',
@@ -1944,7 +1886,6 @@ def callback_handler(call):
             bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
             for line in sendedmessages:
                 bot.delete_message(line[0], line[1])
-
     elif call.data.split()[0] == 'set':
         users = db.select_table('Users')
         bot.send_message(

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_6c094e9a2ebc0657704fe4a414f8c15a {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_6c094e9a2ebc0657704fe4a414f8c15a" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_6c094e9a2ebc0657704fe4a414f8c15a = L.map(
+                "map_6c094e9a2ebc0657704fe4a414f8c15a",
+                {
+                    center: [41.2985, 69.2401],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 12,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_f6ca6d328438ccbda7cd794ee866e281 = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca target=\"_blank\" href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca target=\"_blank\" href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_6c094e9a2ebc0657704fe4a414f8c15a);
+        
+    
+            var marker_582de502eceaf70170a6245a65f90d88 = L.marker(
+                [41.289297687806375, 69.31312977320049],
+                {}
+            ).addTo(map_6c094e9a2ebc0657704fe4a414f8c15a);
+        
+    
+            var icon_67e9c1ade2e414b20fc1099314e46215 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_582de502eceaf70170a6245a65f90d88.setIcon(icon_67e9c1ade2e414b20fc1099314e46215);
+        
+    
+        var popup_ea4312cd753c38dbe59ecc9a427b4257 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_99558fc0a9006e3796c69b31bf1f714e = $(`<div id="html_99558fc0a9006e3796c69b31bf1f714e" style="width: 100.0%; height: 100.0%;">Task 1 Иванов Иван</div>`)[0];
+                popup_ea4312cd753c38dbe59ecc9a427b4257.setContent(html_99558fc0a9006e3796c69b31bf1f714e);
+            
+        
+
+        marker_582de502eceaf70170a6245a65f90d88.bindPopup(popup_ea4312cd753c38dbe59ecc9a427b4257)
+        ;
+
+        
+    
+    
+            marker_582de502eceaf70170a6245a65f90d88.bindTooltip(
+                `<div>
+                     Task 1
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_f6f2c39f525eb7f25784c0c376876924 = L.marker(
+                [41.298001448293185, 69.27348497797075],
+                {}
+            ).addTo(map_6c094e9a2ebc0657704fe4a414f8c15a);
+        
+    
+            var icon_105489292513602afa500153c8eac2d4 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            );
+            marker_f6f2c39f525eb7f25784c0c376876924.setIcon(icon_105489292513602afa500153c8eac2d4);
+        
+    
+        var popup_4b95710dccf3878dde9401e28ab2c651 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_0d16dfb6d2ed7308506dcc9d6dfe7311 = $(`<div id="html_0d16dfb6d2ed7308506dcc9d6dfe7311" style="width: 100.0%; height: 100.0%;">Task 2 Иванов Иван</div>`)[0];
+                popup_4b95710dccf3878dde9401e28ab2c651.setContent(html_0d16dfb6d2ed7308506dcc9d6dfe7311);
+            
+        
+
+        marker_f6f2c39f525eb7f25784c0c376876924.bindPopup(popup_4b95710dccf3878dde9401e28ab2c651)
+        ;
+
+        
+    
+    
+            marker_f6f2c39f525eb7f25784c0c376876924.bindTooltip(
+                `<div>
+                     Task 2
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_520a396b9991caf75e1c3938e9880cb7 = L.marker(
+                [41.34714071373335, 69.25982429570736],
+                {}
+            ).addTo(map_6c094e9a2ebc0657704fe4a414f8c15a);
+        
+    
+            var icon_790bf78f8246139a8abca56bee8716d9 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            );
+            marker_520a396b9991caf75e1c3938e9880cb7.setIcon(icon_790bf78f8246139a8abca56bee8716d9);
+        
+    
+        var popup_ba730be679d38ed302919ce987b79996 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_0a7e6b0bfcefd8b01654a00e6447e4d8 = $(`<div id="html_0a7e6b0bfcefd8b01654a00e6447e4d8" style="width: 100.0%; height: 100.0%;">Task 3 Иванов Иван</div>`)[0];
+                popup_ba730be679d38ed302919ce987b79996.setContent(html_0a7e6b0bfcefd8b01654a00e6447e4d8);
+            
+        
+
+        marker_520a396b9991caf75e1c3938e9880cb7.bindPopup(popup_ba730be679d38ed302919ce987b79996)
+        ;
+
+        
+    
+    
+            marker_520a396b9991caf75e1c3938e9880cb7.bindTooltip(
+                `<div>
+                     Task 3
+                 </div>`,
+                {"sticky": true}
+            );
+        
+</script>
+</html>

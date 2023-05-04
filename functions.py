@@ -72,7 +72,7 @@ def curtask(id):
     messtext = ''
     task = db.get_record_by_id('Tasks', id)
     messtext = 'Заявка №' + str(task[0]) + ' от ' + str(task[1])
-    messtext = messtext + '\nЗаявку зарегистрировал: ' + str(db.get_record_by_id('Users', task[2])[1])
+    messtext = messtext + '\nЗаявку зарегистрировал(а): ' + str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
 
     if task[11] == 2 or task[10] == 3:
         messtext = messtext + '\nМастер ' + str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
