@@ -1,5 +1,6 @@
 from db import Database
-import os
+from folium import IFrame
+import os, folium, logging
 
 dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 db = Database(dbname)
@@ -27,7 +28,13 @@ def listgen(table, cols, tasks = 0):
                     curline = curline + ' от ' + str(line[i]) + '\n'
 
                 elif i == 3:
-                    cname = str(db.get_record_by_id('Contragents', line[i])[0]) + " " + str(db.get_record_by_id('Contragents', line[i])[1]) + "\nДоговор: " + str(db.get_record_by_id('Contragents', line[i])[6])
+                    try:
+                        location = db.get_record_by_id('Locations', line[12])[2]
+                    except Exception as e:
+                        logging.error(e)
+                        location = ''
+                        pass
+                    cname = str(db.get_record_by_id('Contragents', line[i])[0]) + " " + str(db.get_record_by_id('Contragents', line[i])[1]) + "\n Локация - " + location + "\nДоговор: " + str(db.get_record_by_id('Contragents', line[i])[6])
                     curline = curline + str(cname) + '\n'
 
                 elif i == 6 and line[i]:
@@ -83,8 +90,13 @@ def curtask(id):
 
     if task[10] is not None:
         messtext = messtext + '\n❗️ ' + str(task[10])
-
-    messtext = messtext + '\n\nПоступила от: ' + str(db.get_record_by_id('Contragents', task[3])[0]) + " " + str(db.get_record_by_id('Contragents', task[3])[1]) + "\nДоговор: " +str(db.get_record_by_id('Contragents', task[3])[6])
+    try:
+        location = db.get_record_by_id('Locations', task[12])[2]
+    except Exception as e:
+        logging.error(e)
+        location = ''
+        pass
+    messtext = messtext + '\n\nПоступила от: ' + str(db.get_record_by_id('Contragents', task[3])[0]) + " " + str(db.get_record_by_id('Contragents', task[3])[1]) + " \nЛокация - " + location + "\nДоговор: " +str(db.get_record_by_id('Contragents', task[3])[6])
     messtext = messtext + '\n\nЗАПРОС:\n' + str(task[4])
     messtext = messtext + '\n\nКОНТАКТЫ ЗАКАЗЧИКА:\n' + str(db.get_record_by_id('Contragents', task[3])[3]) + ' - ' + str(db.get_record_by_id('Contragents', task[3])[4])
     messtext = messtext + f'\nАдрес: ' + str(db.get_record_by_id('Contragents', task[3])[2])
@@ -97,3 +109,53 @@ def getuserlist():
     for line in users:
         userlist.append(line[0])
     return userlist
+
+# def mapgen(locations):
+#     # Создание объекта карты
+#     map = folium.Map(location=[41.28927613679946, 69.31295641163192], zoom_start=12)
+
+#     # Перебор списка локаций и добавление маркеров на карту
+#     for location in locations:
+#         name = location[0]
+#         description = location[1]
+#         lat = float(location[2])
+#         lon = float(location[3])
+#         color = 'blue'
+#         if location[4] == 2:
+#             color = 'orange'
+#         elif location[4] == 3:
+#             color = 'green'
+#         elif location[4] == 4:
+#             color = 'red'
+#         marker = folium.Marker([lat, lon], popup=name + '\n' + description, icon=folium.Icon(color=color))
+#         marker.add_to(map)
+
+#     # Сохранение карты в HTML-файл
+#     map.save('public/map.html')
+
+def mapgen(locations):
+    # Создание объекта карты
+    map = folium.Map(location=[41.28927613679946, 69.31295641163192], zoom_start=12)
+
+    # Перебор списка локаций и добавление маркеров на карту
+    for location in locations:
+        name = location[0]
+        description = location[1]
+        lat = float(location[2])
+        lon = float(location[3])
+        color = 'blue'
+        if location[4] == 2:
+            color = 'orange'
+        elif location[4] == 3:
+            color = 'green'
+        elif location[4] == 4:
+            color = 'red'
+        current_max_width = 350
+        increased_max_width = int(current_max_width)  # Увеличение на 20%
+        popup_content = f'<div style="font-size: 16px;"><b><span style="color: #0057B5;">{name}</span></b></div><div>{description}</div>'
+        popup = folium.Popup(popup_content, max_width=increased_max_width, show=False)
+        marker = folium.Marker([lat, lon], popup=popup, icon=folium.Icon(color=color))
+        marker.add_to(map)
+
+    # Сохранение карты в HTML-файл
+    map.save('public/map.html')

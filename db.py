@@ -122,3 +122,15 @@ class Database:
             self.cur.execute(query, filter_values)
             rows = self.cur.fetchall()
             return rows
+
+    def add_column_to_table(self, table_name, column_name, column_type):
+        with self.lock:
+            try:
+                self.cur.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}")
+                self.conn.commit()
+                print(f"Column '{column_name}' added to table '{table_name}'")
+            except sqlite3.OperationalError as e:
+                if "duplicate column name" in str(e):
+                    print(f"Column '{column_name}' already exists in table '{table_name}'. Skipping column creation.")
+                else:
+                    raise e
