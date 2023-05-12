@@ -79,15 +79,15 @@ async def schedule_message():
             for task in addedlocs:
                 company = db.get_record_by_id('Contragents', task[3])[1]
                 status = db.get_record_by_id('Statuses', task[11])[1]
-                name = '№ ' + str(task[0]) + '\n====================================\n' + str(company)
+                name = '№ ' + str(task[0]) + '\n=======================================\n' + str(company)
                 description = status + '\n | \n' + task[4]
                 location = db.get_record_by_id('Locations', task[12])
                 if task[12] is not None and location is not None:
                     lat = location[3]
                     lon = location[4]
                 else:
-                    lat = 0
-                    lon = 0
+                    lat = 41.28921489333344
+                    lon = 69.31288111459628
                 locations.append([name, description, lat, lon, task[11]])
         except Exception as e:
             logging.info(e)
@@ -99,11 +99,11 @@ async def schedule_message():
                 status = db.get_record_by_id('Statuses', task[11])[1]
                 user = db.get_record_by_id('Users', task[6])
                 master = str(user[2]) + ' ' + str(user[1])
-                name = '№ ' + str(task[0]) + '\n====================================\n' + str(company)
+                name = '№ ' + str(task[0]) + '\n=======================================\n' + str(company)
                 description = status + ' - ' + master + '\n | \n' + task[4]
                 if task[12] is None:
-                    lat = 0
-                    lon = 0
+                    lat = 41.28921489333344
+                    lon = 69.31288111459628
                 else:
                     lat = db.get_record_by_id('Locations', task[12])[3]
                     lon = db.get_record_by_id('Locations', task[12])[4]
@@ -118,11 +118,11 @@ async def schedule_message():
                 status = db.get_record_by_id('Statuses', task[11])[1]
                 user = db.get_record_by_id('Users', task[6])
                 master = str(user[2]) + ' ' + str(user[1])
-                name = '№ ' + str(task[0]) + '\n====================================\n' + str(company)
+                name = '№ ' + str(task[0]) + '\n=======================================\n' + str(company)
                 description = status + ' - ' + master + '\n | \n' + task[4]
                 if task[12] is None:
-                    lat = 0
-                    lon = 0
+                    lat = 41.28921489333344
+                    lon = 69.31288111459628
                 else:
                     lat = db.get_record_by_id('Locations', task[12])[3]
                     lon = db.get_record_by_id('Locations', task[12])[4]
@@ -135,11 +135,11 @@ async def schedule_message():
             for task in canceled:
                 company = db.get_record_by_id('Contragents', task[3])[1]
                 status = db.get_record_by_id('Statuses', task[11])[1]
-                name = '№ ' + str(task[0]) + '\n====================================\n' + str(company)
+                name = '№ ' + str(task[0]) + '\n=======================================\n' + str(company)
                 description = status + '\n | \n' + task[4]
                 if task[12] is None:
-                    lat = 0
-                    lon = 0
+                    lat = 41.28921489333344
+                    lon = 69.31288111459628
                 else:
                     lat = db.get_record_by_id('Locations', task[12])[3]
                     lon = db.get_record_by_id('Locations', task[12])[4]
@@ -276,6 +276,19 @@ def check_user_id(message):
             'Выберите операцию.',
             reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
         )
+        if message.text.isdigit() or message.text.split()[1].isdigit():
+            if message.text.isdigit():
+                taskid = message.text
+            elif message.text.split()[1].isdigit():
+                taskid = message.text.split()[1]
+            task = db.get_record_by_id('Tasks', taskid)
+            tasks = functions.listgen([task], [0, 1, 3, 4, 6], 1)
+            if task is not None:
+                bot.send_message(
+                    message.chat.id,
+                    tasks[0],
+                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                )
         bot.register_next_step_handler(message, MainMenu.Main2)
 
 @bot.message_handler(func=lambda message: True)
@@ -485,22 +498,25 @@ class MainMenu:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, editcont.ec1)
-        elif message.text.isdigit():
-            task = db.get_record_by_id('Tasks', message.text)
-            tasks = functions.listgen([task], [0, 1, 3, 4, 6], 1)
-            if task is not None:
-                taskid = message.text
-                bot.send_message(
-                    message.chat.id,
-                    tasks[0],
-                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                )
         elif message.text == 'Карта':
             bot.send_message(
                 message.chat.id,
                 'http://81.200.149.148/map.html',
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
+        elif message.text.isdigit() or message.text.split()[1].isdigit():
+            if message.text.isdigit():
+                taskid = message.text
+            elif message.text.split()[1].isdigit():
+                taskid = message.text.split()[1]
+            task = db.get_record_by_id('Tasks', taskid)
+            tasks = functions.listgen([task], [0, 1, 3, 4, 6], 1)
+            if task is not None:
+                bot.send_message(
+                    message.chat.id,
+                    tasks[0],
+                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                )
         else:
             bot.register_next_step_handler(message, MainMenu.Main2)
 # Редактирование контрагента

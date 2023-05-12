@@ -110,6 +110,10 @@ def getuserlist():
         userlist.append(line[0])
     return userlist
 
+
+# from folium import IFrame
+# from urllib.parse import quote
+
 # def mapgen(locations):
 #     # Создание объекта карты
 #     map = folium.Map(location=[41.28927613679946, 69.31295641163192], zoom_start=12)
@@ -117,6 +121,7 @@ def getuserlist():
 #     # Перебор списка локаций и добавление маркеров на карту
 #     for location in locations:
 #         name = location[0]
+#         taskid = name.split()[1]
 #         description = location[1]
 #         lat = float(location[2])
 #         lon = float(location[3])
@@ -127,19 +132,37 @@ def getuserlist():
 #             color = 'green'
 #         elif location[4] == 4:
 #             color = 'red'
-#         marker = folium.Marker([lat, lon], popup=name + '\n' + description, icon=folium.Icon(color=color))
+#         current_max_width = 350
+#         increased_max_width = int(current_max_width)  # Увеличение на 20%
+#         encoded_name = quote(name)  # Кодирование названия для URL
+#         link = f'https://t.me/labmonotasktelebot?start={taskid}'
+#         popup_content = f'<div style="font-size: 16px; color: #0057B5;"><b>{name}</b></div><div style="font-size: 12px; color: black;">{description}</div><div><a href="{link}" target="_blank"><button style="margin-top: 10px;">Перейти к заявке</button></a></div>'
+#         iframe = folium.IFrame(html=popup_content, width=increased_max_width, height=200)
+#         popup = folium.Popup(iframe, max_width=increased_max_width)
+#         marker = folium.Marker([lat, lon], popup=popup, icon=folium.Icon(color=color))
 #         marker.add_to(map)
 
 #     # Сохранение карты в HTML-файл
 #     map.save('public/map.html')
 
+
+
+from folium.plugins import MarkerCluster
+from folium import IFrame
+from urllib.parse import quote
+
 def mapgen(locations):
     # Создание объекта карты
     map = folium.Map(location=[41.28927613679946, 69.31295641163192], zoom_start=12)
 
-    # Перебор списка локаций и добавление маркеров на карту
+    # Создание группы маркеров
+    marker_cluster = MarkerCluster().add_to(map)
+
+    # Создание списка точек с попапами
+    popup_content = ""
     for location in locations:
         name = location[0]
+        taskid = name.split()[1]
         description = location[1]
         lat = float(location[2])
         lon = float(location[3])
@@ -152,10 +175,19 @@ def mapgen(locations):
             color = 'red'
         current_max_width = 350
         increased_max_width = int(current_max_width)  # Увеличение на 20%
-        popup_content = f'<div style="font-size: 16px;"><b><span style="color: #0057B5;">{name}</span></b></div><div>{description}</div>'
-        popup = folium.Popup(popup_content, max_width=increased_max_width, show=False)
-        marker = folium.Marker([lat, lon], popup=popup, icon=folium.Icon(color=color))
-        marker.add_to(map)
+        encoded_name = quote(name)  # Кодирование названия для URL
+        link = f'https://t.me/labmonotasktelebot?start={taskid}'
+        point_content = f'<div style="font-size: 16px; color: #0057B5;"><b>{name}</b></div><div style="font-size: 12px; color: black;">{description}</div><div><button style="margin-top: 10px;" onclick="window.open(\'{link}\', \'_blank\')">Перейти к заявке</button></div><br/>'
+        point_popup = folium.Popup(IFrame(html=point_content, width=400, height=200), max_width=400)
+        folium.Marker([lat, lon], popup=point_popup, icon=folium.Icon(color=color)).add_to(marker_cluster)
+
+        # Добавление точки в список попапов
+        popup_content += f'<div style="margin-bottom: 10px;"><b>{name}</b> - <button onclick="window.open(\'{link}\', \'_blank\')">Перейти к заявке</button></div>'
+
+    # Создание маркера с иконкой информации
+    legend_marker = folium.Marker(location=[41.28921489333344, 69.31288111459628], icon=folium.Icon(color='gray', icon='info-sign'))
+    folium.Popup(IFrame(html=popup_content, width=400, height=600), max_width=400).add_to(legend_marker)
+    legend_marker.add_to(map)
 
     # Сохранение карты в HTML-файл
     map.save('public/map.html')
