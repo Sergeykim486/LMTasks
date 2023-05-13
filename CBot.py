@@ -372,7 +372,8 @@ class Main():
                 None,
                 None,
                 None,
-                0
+                0,
+                None
             ]
             db.insert_record('Tasks',task)
             tasknum = db.get_last_record("Tasks")[0]

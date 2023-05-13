@@ -110,43 +110,6 @@ def getuserlist():
         userlist.append(line[0])
     return userlist
 
-
-# from folium import IFrame
-# from urllib.parse import quote
-
-# def mapgen(locations):
-#     # Создание объекта карты
-#     map = folium.Map(location=[41.28927613679946, 69.31295641163192], zoom_start=12)
-
-#     # Перебор списка локаций и добавление маркеров на карту
-#     for location in locations:
-#         name = location[0]
-#         taskid = name.split()[1]
-#         description = location[1]
-#         lat = float(location[2])
-#         lon = float(location[3])
-#         color = 'blue'
-#         if location[4] == 2:
-#             color = 'orange'
-#         elif location[4] == 3:
-#             color = 'green'
-#         elif location[4] == 4:
-#             color = 'red'
-#         current_max_width = 350
-#         increased_max_width = int(current_max_width)  # Увеличение на 20%
-#         encoded_name = quote(name)  # Кодирование названия для URL
-#         link = f'https://t.me/labmonotasktelebot?start={taskid}'
-#         popup_content = f'<div style="font-size: 16px; color: #0057B5;"><b>{name}</b></div><div style="font-size: 12px; color: black;">{description}</div><div><a href="{link}" target="_blank"><button style="margin-top: 10px;">Перейти к заявке</button></a></div>'
-#         iframe = folium.IFrame(html=popup_content, width=increased_max_width, height=200)
-#         popup = folium.Popup(iframe, max_width=increased_max_width)
-#         marker = folium.Marker([lat, lon], popup=popup, icon=folium.Icon(color=color))
-#         marker.add_to(map)
-
-#     # Сохранение карты в HTML-файл
-#     map.save('public/map.html')
-
-
-
 from folium.plugins import MarkerCluster
 from folium import IFrame
 from urllib.parse import quote
@@ -173,16 +136,16 @@ def mapgen(locations):
             color = 'green'
         elif location[4] == 4:
             color = 'red'
-        current_max_width = 350
-        increased_max_width = int(current_max_width)  # Увеличение на 20%
-        encoded_name = quote(name)  # Кодирование названия для URL
         link = f'https://t.me/labmonotasktelebot?start={taskid}'
         point_content = f'<div style="font-size: 16px; color: #0057B5;"><b>{name}</b></div><div style="font-size: 12px; color: black;">{description}</div><div><button style="margin-top: 10px;" onclick="window.open(\'{link}\', \'_blank\')">Перейти к заявке</button></div><br/>'
         point_popup = folium.Popup(IFrame(html=point_content, width=400, height=200), max_width=400)
         folium.Marker([lat, lon], popup=point_popup, icon=folium.Icon(color=color)).add_to(marker_cluster)
 
         # Добавление точки в список попапов
-        popup_content += f'<div style="margin-bottom: 10px;"><b>{name}</b> - <button onclick="window.open(\'{link}\', \'_blank\')">Перейти к заявке</button></div>'
+        # popup_content += f'<div style="margin-bottom: 10px;"><b>{name}</b> - <button onclick="window.open(\'{link}\', \'_blank\')">Перейти к заявке</button></div>'
+        # popup_content += f'<div style="margin-bottom: 10px; color: {color};"><b>{name}</b><br/>{description}<br/><button onclick="window.open(\'{link}\', \'_blank\')">Перейти к заявке</button><br/><br/></div>'
+        # popup_content += f'<div style="margin-bottom: 10px; color: {color};"><b style="color: {color};">{name}</b><br/>{description}<br/><button onclick="window.open(\'{link}\', \'_blank\')">Перейти к заявке</button><br/><br/></div>'
+        popup_content += f'<div style="margin-bottom: 10px; color: {color};"><b style="color: {color};">{name}</b><br/><span style="color: black;">{description}</span><br/><button onclick="window.open(\'{link}\', \'_blank\')">Перейти к заявке</button><br/><br/></div>'
 
     # Создание маркера с иконкой информации
     legend_marker = folium.Marker(location=[41.28921489333344, 69.31288111459628], icon=folium.Icon(color='gray', icon='info-sign'))
