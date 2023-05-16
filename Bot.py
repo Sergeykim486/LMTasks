@@ -10,6 +10,7 @@ sendedmessages = []
 dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 db = Database(dbname)
 bot = telebot.TeleBot(config.TOKEN)
+continue_polling = True
 # Добавление в список пользователей клиентского бота
 if db.get_record_by_id('Users', 0) == None:
     db.insert_record(
@@ -258,50 +259,84 @@ class daylyreport:
 # проверка пользователя при первом запуске
 def check_user_id(message):
     user_id = message.from_user.id
-    global ActiveUser
-    username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    global ActiveUser, continue_polling
+    try:
+        username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+    except Exception as e:
+        logging.error(e)
+        pass
+    continue_polling = True
     ActiveUser[user_id] = {'id': user_id}
-    finduser = db.search_record("Users", "id", user_id)
-    if len(finduser) == 0:
+    # finduser = db.search_record("Users", "id", user_id)
+    user = db.get_record_by_id('Users', user_id)
+    if user is None:
         bot.send_message(
             user_id,
             'Вам нужно пройти регистрацию',
             reply_markup=buttons.Buttons(['Регистрация'])
         )
         bot.register_next_step_handler(message, Reg.reg1)
+
     else:
         bot.send_message(
             user_id,
             'Выберите операцию.',
             reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
         )
-        if message.text.isdigit() or message.text.split()[1].isdigit():
-            if message.text.isdigit():
-                taskid = message.text
-            elif message.text.split()[1].isdigit():
-                taskid = message.text.split()[1]
-            task = db.get_record_by_id('Tasks', taskid)
-            tasks = functions.listgen([task], [0, 1, 3, 4, 6], 1)
-            if task is not None:
-                bot.send_message(
-                    message.chat.id,
-                    tasks[0],
-                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                )
         bot.register_next_step_handler(message, MainMenu.Main2)
+
+# def check_user_id(message):
+#     user_id = message.from_user.id
+#     global ActiveUser
+#     username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
+#     logging.info(f'{username} Отправил запрос - {message.text}')
+#     ActiveUser[user_id] = {'id': user_id}
+#     finduser = db.search_record("Users", "id", user_id)
+#     if len(finduser) == 0:
+#         bot.send_message(
+#             user_id,
+#             'Вам нужно пройти регистрацию',
+#             reply_markup=buttons.Buttons(['Регистрация'])
+#         )
+#         bot.register_next_step_handler(message, Reg.reg1)
+#     else:
+#         bot.send_message(
+#             user_id,
+#             'Выберите операцию.',
+#             reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+#         )
+#         if message.text.isdigit() or message.text.split()[1].isdigit():
+#             if message.text.isdigit():
+#                 taskid = message.text
+#             elif message.text.split()[1].isdigit():
+#                 taskid = message.text.split()[1]
+#             task = db.get_record_by_id('Tasks', taskid)
+#             tasks = functions.listgen([task], [0, 1, 3, 4, 6], 1)
+#             if task is not None:
+#                 bot.send_message(
+#                     message.chat.id,
+#                     tasks[0],
+#                     reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+#                 )
+#         bot.register_next_step_handler(message, MainMenu.Main2)
 
 @bot.message_handler(func=lambda message: True)
-# проверка пользователя при перезапуске бота
+# проверка пользователя при первом запуске
 def check_user_id(message):
     user_id = message.from_user.id
-    global ActiveUser
-    username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    global ActiveUser, continue_polling
+    try:
+        username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+    except Exception as e:
+        logging.error(e)
+        pass
+    continue_polling = True
     ActiveUser[user_id] = {'id': user_id}
-    finduser = db.search_record("Users", "id", user_id)
-
-    if len(finduser) == 0:
+    # finduser = db.search_record("Users", "id", user_id)
+    user = db.get_record_by_id('Users', user_id)
+    if user is None:
         bot.send_message(
             user_id,
             'Вам нужно пройти регистрацию',
@@ -309,19 +344,43 @@ def check_user_id(message):
         )
         bot.register_next_step_handler(message, Reg.reg1)
 
-    else:
-        bot.send_message(
-            user_id,
-            'Выберите операцию.',
-            reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
-        )
-        bot.register_next_step_handler(message, MainMenu.Main2)
+
+# проверка пользователя при перезапуске бота
+# def check_user_id(message):
+#     user_id = message.from_user.id
+#     global ActiveUser
+#     username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
+#     logging.info(f'{username} Отправил запрос - {message.text}')
+#     ActiveUser[user_id] = {'id': user_id}
+#     finduser = db.search_record("Users", "id", user_id)
+
+#     if len(finduser) == 0:
+#         bot.send_message(
+#             user_id,
+#             'Вам нужно пройти регистрацию',
+#             reply_markup=buttons.Buttons(['Регистрация'])
+#         )
+#         bot.register_next_step_handler(message, Reg.reg1)
+
+#     else:
+#         bot.send_message(
+#             user_id,
+#             'Выберите операцию.',
+#             reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+#         )
+#         bot.register_next_step_handler(message, MainMenu.Main2)
+
+
 # Регистрация нового пользователя
 class Reg:
     # Запрос имени у пользователя
     def reg1(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        try:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
         if message.text == 'Регистрация':
             bot.send_message(
                 message.chat.id,
@@ -340,8 +399,12 @@ class Reg:
             bot.register_next_step_handler(message, Reg.reg1)
     # Сохранение имени и запрос фамилии
     def reg2(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        try:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
         global ActiveUser
         ActiveUser[message.chat.id]['FirstName'] = message.text
         bot.send_message(
@@ -352,8 +415,12 @@ class Reg:
         bot.register_next_step_handler(message, Reg.reg3)
     # Сохранение фамилии и запрос номера телефона
     def reg3(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        try:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
         global ActiveUser
         ActiveUser[message.chat.id]['LastName'] = message.text
         bot.send_message(
@@ -364,8 +431,12 @@ class Reg:
         bot.register_next_step_handler(message, Reg.reg4)
     # Сохранение телефона и запрос на подтверждение сохраненных данных
     def reg4(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        try:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
         global ActiveUser
         ActiveUser[message.chat.id]['PhoneNumber'] = message.text
         bot.send_message(
@@ -376,8 +447,12 @@ class Reg:
         bot.register_next_step_handler(message, Reg.reg5)
     # Проверка подтверждения данных
     def reg5(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        try:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
         global ActiveUser
         if message.text == 'Да':
             valuedict = [
@@ -428,9 +503,9 @@ class MainMenu:
     def Main2(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser
+        global ActiveUser, continue_polling
+        continue_polling = True
         if message.text == 'Новая заявка':
-            contragents = db.select_table('Contragents', ['id', 'cname'])
             ActiveUser[message.chat.id]['nt'] = 1
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
@@ -499,12 +574,16 @@ class MainMenu:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, editcont.ec1)
         elif message.text == 'Карта':
+            markup = types.InlineKeyboardMarkup()
+            button = types.InlineKeyboardButton(text='Открыть карту', url='http://81.200.149.148/map.html')
+            markup.add(button)
             bot.send_message(
                 message.chat.id,
-                'http://81.200.149.148/map.html',
-                reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+                'Вы можете посмотреть все теущие заявки за сегодня, на карте',
+                reply_markup=markup
             )
-        elif message.text.isdigit() or message.text.split()[1].isdigit():
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        elif message.text.isdigit() or (len(message.text.split()) > 1 and message.text.split()[1].isdigit()):
             if message.text.isdigit():
                 taskid = message.text
             elif message.text.split()[1].isdigit():
@@ -517,6 +596,12 @@ class MainMenu:
                     tasks[0],
                     reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                 )
+                ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
+                    message.chat.id,
+                    'Выберите операцию.',
+                    reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+                )
+            bot.register_next_step_handler(message, MainMenu.Main2)
         else:
             bot.register_next_step_handler(message, MainMenu.Main2)
 # Редактирование контрагента
@@ -619,7 +704,7 @@ class editcont():
                 reply_markup=buttons.clearbuttons()
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.register_next_step_handler(message, CADR)
+            bot.register_next_step_handler(message, CADR1)
         elif message.text == 'ЛОКАЦИИ':
             # ИЗМЕНЕНИЕ ЛОКАЦИЙ КОНТРАГЕНТА
             sendlocations(ActiveUser[message.chat.id]['inn'], message)
@@ -1254,13 +1339,16 @@ class Task:
     def task1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser
+        global ActiveUser, continue_polling
         if message.text == 'Принять':
             if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] != 1:
                 bot.send_message(
                     message.chat.id,
-                    "Вы не можете принять эту заявку!"
+                    "Вы не можете принять эту заявку!",
+                    reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
                 )
+                continue_polling = True
+                # bot.register_next_step_handler(message, MainMenu.Main2)
             db.update_records(
                 'Tasks',
                 [
@@ -1291,6 +1379,8 @@ class Task:
             )
             sendtoall(mes, mark, exn)
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            continue_polling = True
+            # bot.register_next_step_handler(message, MainMenu.Main2) 
         elif message.text == 'Дополнить':
             bot.send_message(
                 message.chat.id,
@@ -1332,6 +1422,8 @@ class Task:
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
                 )
                 sendtoall(mes, mark, exn)
+                continue_polling = True
+                # bot.register_next_step_handler(message, MainMenu.Main2) 
         elif message.text == 'Отказаться от заявки':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
             if manager == str(message.chat.id):
@@ -1360,6 +1452,8 @@ class Task:
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
                 )
                 sendtoall(mes, mark, exn)
+                continue_polling = True
+                # bot.register_next_step_handler(message, MainMenu.Main2) 
             else:
                 master = db.get_record_by_id('Users', manager)[1]
                 bot.send_message(
@@ -1385,6 +1479,8 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            continue_polling = True
+            # bot.register_next_step_handler(message, MainMenu.Main2) 
         elif message.text == 'Изменить контрагента':
             bot.send_message(
                 message.chat.id,
@@ -1394,7 +1490,7 @@ class Task:
             ActiveUser[message.chat.id]['nt'] = 0
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, NewTask.nt1)
-        elif message.text ==  'Изменить текст заявки':
+        elif message.text == 'Изменить текст заявки':
             bot.send_message(
                 message.chat.id,
                 'Введите новый текст заявки.\n\n‼️ ВНИМАНИЕ ‼️\nУчтите что старый текст будет заменен новым поэтому скопируйте старый и отредактируйте.',
@@ -1413,15 +1509,21 @@ class Task:
                     'Выберите операцию',
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
                 )
+                continue_polling = True
+                # bot.register_next_step_handler(message, MainMenu.Main2) 
             else:
                 bot.send_message(
                     message.chat.id,
                     'Прошу прощения но указанная локаия либо не была добавлена, или была удалена.\nВыберите операцию',
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
                 )
+                continue_polling = True
+                # bot.register_next_step_handler(message, MainMenu.Main2) 
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        # continue_polling = True
 
     def task2(message):
+        global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Да':
@@ -1439,9 +1541,11 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.register_next_step_handler(message, MainMenu.Main1)
+            continue_polling = True
+            # bot.register_next_step_handler(message, MainMenu.Main2) 
 
     def task3(message):
+        global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         db.update_records(
@@ -1469,8 +1573,11 @@ class Task:
             reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
         )
         sendtoall(mes, mark, exn)
+        continue_polling = True
+        # bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task4(message):
+        global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text.split()[1] is None:
@@ -1513,8 +1620,11 @@ class Task:
             )
             sendtoall(mes, '', exn)
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            continue_polling = True
+            # bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task5(message):
+        global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         tasktext = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
@@ -1542,9 +1652,11 @@ class Task:
         )
         sendtoall(mes, mark, exn)
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        continue_polling = True
+        # bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task6(message):
-        global ActiveUser
+        global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Да':
@@ -1566,6 +1678,8 @@ class Task:
             mark = ''
             sendtoall(mes, mark, message.chat.id)
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            continue_polling = True
+            # bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == 'Нет':
             bot.send_message(
                 message.chat.id,
@@ -1573,7 +1687,8 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.register_next_step_handler(message, MainMenu.Main1)
+            continue_polling = True
+            # bot.register_next_step_handler(message, MainMenu.Main2)
         else:
             bot.send_message(
                 message.chat.id,
@@ -1583,6 +1698,7 @@ class Task:
             bot.register_next_step_handler(message, Task.task6)
 
     def task7_1(message):
+        global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         taskt = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
@@ -1596,6 +1712,7 @@ class Task:
         bot.register_next_step_handler(message, Task.task7_2)
 
     def task7_2(message):
+        global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Да':
@@ -1617,6 +1734,8 @@ class Task:
             mark = ''
             sendtoall(mes, mark, message.chat.id)
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            continue_polling = True
+            # bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == 'Нет':
             bot.send_message(
                 message.chat.id,
@@ -1624,7 +1743,8 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.register_next_step_handler(message, MainMenu.Main1)
+            continue_polling = True
+            # bot.register_next_step_handler(message, MainMenu.Main2)
         else:
             bot.send_message(
                 message.chat.id,
@@ -2113,7 +2233,7 @@ class report:
 
 @bot.message_handler(content_types=['text', 'location'])
 # формирование гугл ссылки на карты по локации для адреса компании
-def CADR(message):
+def CADR1(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
     logging.info(f'{username} Отправил запрос - {message.text}')
     global ActiveUser
@@ -2122,7 +2242,7 @@ def CADR(message):
         url = f'GOOGLE: https://www.google.com/maps/search/?api=1&query={lat},{lon}'
         ActiveUser[message.chat.id]['contnew'][2] = url
     else:
-        ActiveUser[message.chat.id]['contnew'][2] = message.chat.id
+        ActiveUser[message.chat.id]['contnew'][2] = message.text
     editcontragent(message)
     bot.register_next_step_handler(message, editcont.ec2)
 # Формирование гугл ссылки на карты по локации для адреса при добавлении нового контрагента
@@ -2288,7 +2408,8 @@ def newlocationintask2(message):
 @bot.callback_query_handler(func=lambda call: True)
 # реакция на инлайновые кнопки
 def callback_handler(call):
-    global ActiveUser, sendedmessages
+    global ActiveUser, sendedmessages, continue_polling
+    continue_polling = False
     if call.data.split()[0] == 'tasklist':# Подробности заявки
         status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
         if status[11] == 1:
@@ -2331,6 +2452,8 @@ def callback_handler(call):
             )
             sendtoall(str(db.get_record_by_id('Users', call.from_user.id)[2]) + ' ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nПринял заявку:\n\n' + functions.curtask(call.data.split()[1]), '', call.from_user.id)
             bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
+            continue_polling = True
+            # bot.register_next_step_handler(call.message, MainMenu.Main2)
             for line in sendedmessages:
                 bot.delete_message(line[0], line[1])
     elif call.data.split()[0] == 'set':# Назначение мастера
@@ -2351,13 +2474,16 @@ def callback_handler(call):
             reply_markup=buttons.Buttons(['Локацию','Название','Удалить', 'Отмена'])
         )
         bot.register_next_step_handler(call.message, editcont.locations2)
+    else:
+        continue_polling = True
+        
 # Запуск бота
 if __name__ == '__main__':
     sendtoall('‼️‼️‼️Сервер бота был перезагружен...‼️‼️‼️\nНажмите кнопку "/start"', buttons.Buttons(['/start']), 0, 0, True)
     thread = threading.Thread(target=asyncio.run, args=(main(),))
     thread.start()
     # bot.polling()
-    while True:
+    while continue_polling is True:
         try:
             bot.polling(none_stop=True, interval=0)
             logging.info()

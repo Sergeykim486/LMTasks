@@ -68,7 +68,13 @@ ru = {
     "bsave": "Сохранить",
     "blang": "Язык",
     "bcancel": "Отмена",
-    "selectlang": 'Выберите язык'
+    "selectlang": 'Выберите язык',
+    "locleave": "Пропустить",
+    "locadd": "Добавить локацию",
+    "locwhere": "Куда должен подъехать мастер? Выберите локацию из списка, добавьте новую или пропустите этот шаг",
+    "locsendloc": "Отправьте локацию",
+    "locerrorloc": "Вы не отправили локацию.\nПожалуйста отправьте локацию",
+    "locentername": "Укажите название для новой локации.\nНапример:\nгГоловной офис или филиал мирабадского района."
 }
 
 # АНГЛИЙСКИЙ ЯЗЫК КНОПКИ И СООБЩЕНИЯ
@@ -127,7 +133,13 @@ en = {
     "bsave": "Save",
     "blang": "Language",
     "bcancel": "Cancel",
-    "selectlang": "Select a language"
+    "selectlang": "Select a language",
+    "locleave": "Skip",
+    "locadd": "Add location",
+    "locwhere": "Where should the master come? Choose a location from the list, add a new one, or skip this step",
+    "locsendloc": "Send location",
+    "locerrorloc": "You haven't sent a location.\nPlease send a location",
+    "locentername": "Specify a name for the new location.\nFor example:\nMain office or Mirabad district branch."
 }
 
 # УЗБЕКСКИЙ ЯЗЫК КНОПКИ И СООБЩЕНИЯ
@@ -186,5 +198,11 @@ uz = {
     "bsave": "Saqlash",
     "blang": "Til",
     "bcancel": "Bekor qilish",
-    "selectlang": "Tilni tanlang"
+    "selectlang": "Tilni tanlang",
+    "locleave": "O'tkazib yuborish",
+    "locadd": "Lokatsiya qo'shish",
+    "locwhere": "Usta qayerga kelishi kerak? Ro'yxatdan bir lokatsiyani tanlang, yangi qo'shing yoki bu qadamni o'tkazing",
+    "locsendloc": "Lokatsiyani yuboring",
+    "locerrorloc": "Siz lokatsiyani yubormadingiz.\nIltimos, lokatsiyani yuboring",
+    "locentername": "Yangi lokatsiyaga nom berin.\nMisol uchun:\nAsosiy ofis yoki Mirabad tumani filiali."
 }
