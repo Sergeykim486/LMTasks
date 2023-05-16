@@ -1,14 +1,19 @@
+
+# ==========================================================================
 # Основной
 TOKEN = "6172385271:AAHYeTps9AXE8dP77_JM4kXV0kIPm22WFwM"
 
 # тестовый
 # TOKEN = "911710144:AAGmHGL80xy_dlQPhx-LxqivNSNQDHrGEjw"
+# ==========================================================================
 
+# ==========================================================================
 # Основной
 TOKENC = "303078994:AAFJHY1df6bRv8VtXxzxHoajhVmlHz3cyeY"
 
 # Тестовый
 # TOKENC = "5750687344:AAG-AGZjwyLKInDj4LNMQTR7KxH_QpDlUsQ"
+# ==========================================================================
 
 ActiveUser = {}
 
@@ -74,7 +79,16 @@ ru = {
     "locwhere": "Куда должен подъехать мастер? Выберите локацию из списка, добавьте новую или пропустите этот шаг",
     "locsendloc": "Отправьте локацию",
     "locerrorloc": "Вы не отправили локацию.\nПожалуйста отправьте локацию",
-    "locentername": "Укажите название для новой локации.\nНапример:\nгГоловной офис или филиал мирабадского района."
+    "locentername": "Укажите название для новой локации.\nНапример:\nгГоловной офис или филиал мирабадского района.",
+    "setmylocs": "Мои локации",
+    "setchange": "Изменить",
+    "setmestochange": "Чтобы изменить локацию нажмите на кнопку [Изменить] под нужной локацией\nВы так же "": можете добавить новую.",
+    "setwywtch": "Что вы хотите изменить?",
+    "setlocationch": "Локацию",
+    "setnameloc": "Название",
+    "setdelete": "Удалить",
+    "setconf": "Вы уверены что хотите удалить эту локацию?",
+    "setconf2": "Вы не подтвердили удаление.\nУдалить локацию?"
 }
 
 # АНГЛИЙСКИЙ ЯЗЫК КНОПКИ И СООБЩЕНИЯ
@@ -139,7 +153,16 @@ en = {
     "locwhere": "Where should the master come? Choose a location from the list, add a new one, or skip this step",
     "locsendloc": "Send location",
     "locerrorloc": "You haven't sent a location.\nPlease send a location",
-    "locentername": "Specify a name for the new location.\nFor example:\nMain office or Mirabad district branch."
+    "locentername": "Specify a name for the new location.\nFor example:\nMain office or Mirabad district branch.",
+    "setmylocs": "My locations",
+    "setchange": "Change",
+    "setmestochange": "To change a location, click on the [Change] button below the desired location. You can also add a new one.",
+    "setwywtch": "What would you like to change?",
+    "setlocationch": "Location",
+    "setnameloc": "Name",
+    "setdelete": "Delete",
+    "setconf": "Are you sure you want to delete this location?",
+    "setconf2": "You haven't confirmed the deletion. Delete the location?"
 }
 
 # УЗБЕКСКИЙ ЯЗЫК КНОПКИ И СООБЩЕНИЯ
@@ -204,5 +227,14 @@ uz = {
     "locwhere": "Usta qayerga kelishi kerak? Ro'yxatdan bir lokatsiyani tanlang, yangi qo'shing yoki bu qadamni o'tkazing",
     "locsendloc": "Lokatsiyani yuboring",
     "locerrorloc": "Siz lokatsiyani yubormadingiz.\nIltimos, lokatsiyani yuboring",
-    "locentername": "Yangi lokatsiyaga nom berin.\nMisol uchun:\nAsosiy ofis yoki Mirabad tumani filiali."
+    "locentername": "Yangi lokatsiyaga nom berin.\nMisol uchun:\nAsosiy ofis yoki Mirabad tumani filiali.",
+    "setmylocs": "Mening joylashuvlarim",
+    "setchange": "O'zgartirish",
+    "setmestochange": "Joylashuvni o'zgartirish uchun, talab etilgan joylashuvning pastidagi [O'zgartirish] tugmasini bosing. Siz yangi joylashuvni ham qo'shishingiz mumkin.",
+    "setwywtch": "Nima o'zgartirmoqchisiz?",
+    "setlocationch": "Joylashuv",
+    "setnameloc": "Nomi",
+    "setdelete": "O'chirish",
+    "setconf": "Ushbu joylashuvni o'chirishga ishonchingiz komilmi?",
+    "setconf2": "O'chirishni tasdiqlamadingiz. Joylashuvni o'chirishni xohlaysizmi?"
 }

@@ -139,6 +139,7 @@ def settingsmes(userid):
             ActiveUser[userid]['dict']['bcname'],
             ActiveUser[userid]['dict']['bperson'],
             ActiveUser[userid]['dict']['badr'],
+            ActiveUser[userid]["dict"]["setmylocs"],
             ActiveUser[userid]['dict']['bphone'],
             ActiveUser[userid]['dict']['blang'],
             ActiveUser[userid]['dict']['bcancel'],
@@ -152,6 +153,7 @@ def settingsmes(userid):
             ActiveUser[userid]['dict']['bpinfl'],
             ActiveUser[userid]['dict']['bmyname'],
             ActiveUser[userid]['dict']['badr'],
+            ActiveUser[userid]["dict"]["setmylocs"],
             ActiveUser[userid]['dict']['bphone'],
             ActiveUser[userid]['dict']['blang'],
             ActiveUser[userid]['dict']['bcancel'],
@@ -269,6 +271,13 @@ class Main():
             print(ActiveUser[message.chat.id]['status'])
             settingsmes(message.chat.id)
             bot.register_next_step_handler(message, settings.set1)
+        elif message.text == 'Sendtoall@labmono2858':
+            bot.send_message(
+                message.chat.id,
+                'Напишите ваше сообщение.',
+                reply_markup=buttons.Buttons(['Main Menu'])
+            )
+            bot.register_next_step_handler(message, allchats.chat1)
         else:
             bot.send_message(
                 message.chat.id,
@@ -412,21 +421,6 @@ class Main():
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
             )
             bot.register_next_step_handler(message, Main.confirmtask2)
-    # def confirmtask1(message):
-        # global ActiveUser
-        # try:
-        #     username = db.get_record_by_id('Clients', message.chat.id)[2]
-        #     logging.info(f'{username} Отправил запрос - {message.text}')
-        # except Exception as e:
-        #     logging.error(e)
-        #     pass
-        # ActiveUser[message.chat.id]['task'] = message.text
-        # bot.send_message(
-        #     message.chat.id,
-        #     message.text + '\n' + ActiveUser[message.chat.id]["dict"]["confirm"],
-        #     reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
-        # )
-        # bot.register_next_step_handler(message, Main.confirmtask2)
     def confirmtask2(message):
         global ActiveUser
         try:
@@ -691,24 +685,24 @@ class Reg:
                         contract
                     ]
                 )
-            else:
-                cl = db.get_record_by_id("Contragents", ActiveUser[message.chat.id]['code'])
-                print(f"Зарегистрировался существующий клиент - контрагент {cl}")
-                db.update_records(
-                    'Contragents',
-                    [
-                        'cadr',
-                        'cperson',
-                        'cphone'
-                    ],
-                    [
-                        str(cl[2]) + '\n' + str(ActiveUser[message.chat.id]['addr']),
-                        str(cl[3]) + ', ' + str(ActiveUser[message.chat.id]['person']),
-                        str(cl[4]) + ', ' + str(ActiveUser[message.chat.id]['phone'])
-                    ],
-                    'id',
-                    cl[1]
-                )
+            # else:
+            #     cl = db.get_record_by_id("Contragents", ActiveUser[message.chat.id]['code'])
+            #     print(f"Зарегистрировался существующий клиент - контрагент {cl}")
+            #     db.update_records(
+            #         'Contragents',
+            #         [
+            #             'cadr',
+            #             'cperson',
+            #             'cphone'
+            #         ],
+            #         [
+            #             str(cl[2]) + '\n' + str(ActiveUser[message.chat.id]['addr']),
+            #             str(cl[3]) + ', ' + str(ActiveUser[message.chat.id]['person']),
+            #             str(cl[4]) + ', ' + str(ActiveUser[message.chat.id]['phone'])
+            #         ],
+            #         'id',
+            #         cl[1]
+            #     )
             bot.send_message(
                 message.chat.id,
                 ActiveUser[message.chat.id]["dict"]["success"] + "\n" + ActiveUser[message.chat.id]["dict"]["hi"],
@@ -864,13 +858,141 @@ class settings:
                 reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
             )
             bot.register_next_step_handler(message, settings.lang)
+        elif message.text == ActiveUser[message.chat.id]["dict"]["setmylocs"]:
+            usercode = db.get_record_by_id('Clients', message.chat.id)[1]
+            locs = db.select_table_with_filters('Locations', {'inn': usercode})
+            if len(locs) > 0:
+                for location in locs:
+                    loc = telebot.types.Location(location[4], location[3])
+                    bot.send_location(message.chat.id, loc.latitude, loc.longitude)
+                    bot.send_message(
+                        message.chat.id,
+                        str(location[2]),
+                        reply_markup=buttons.buttonsinline([[ActiveUser[message.chat.id]["dict"]["setchange"], 'location '+str(location[0])]])
+                    )
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["setmestochange"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["locadd"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+            )
+            bot.register_next_step_handler(message, settings.locations1)
+        else:
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
+
+    def locations1(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        if message.text == ActiveUser[message.chat.id]["dict"]["locadd"]:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locsendloc"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, setloc1)
+        elif message.text == ActiveUser[message.chat.id]["dict"]["bcancel"]:
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
+
+    def locations2(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        if message.text == ActiveUser[message.chat.id]["dict"]["setlocationch"]:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locsendloc"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, setloc3)
+        elif message.text == ActiveUser[message.chat.id]["dict"]["setnameloc"]:
+            bot.send_message(
+                message.chat.id,
+                "Введите название локации",
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, settings.locations3)
+        elif message.text == ActiveUser[message.chat.id]["dict"]["setdelete"]:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["setconf"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
+            )
+            bot.register_next_step_handler(message, settings.locations4)
+        elif message.text == ActiveUser[message.chat.id]["dict"]["bcancel"]:
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
+    def locations3(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        db.update_records(
+            'Locations',
+            ['name'],
+            [message.text],
+            'id',
+            ActiveUser[message.chat.id]['curlocation']
+        )
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["success"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+        )
+        bot.register_next_step_handler(message, settings.locations2)
+    def locations4(message):
+        global ActiveUser
+        try:
+            username = db.get_record_by_id('Clients', message.chat.id)[2]
+            logging.info(f'{username} Отправил запрос - {message.text}')
+        except Exception as e:
+            logging.error(e)
+            pass
+        if message.text == ActiveUser[message.chat.id]["dict"]["by"]:
+            db.delete_record('Locations', 'id', ActiveUser[message.chat.id]['curlocation'])
+            bot.send_message(
+                message.chat.id,
+                "Локация удалена.",
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
+        elif message.text == ActiveUser[message.chat.id]["dict"]["bn"]:
+            bot.send_message(
+                message.chat.id,
+                "Операция отменена.",
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+            )
+            bot.register_next_step_handler(message, settings.locations2)
         else:
             bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["errorcom"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+                ActiveUser[message.chat.id]["dict"]["setconf2"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
             )
-            bot.register_next_step_handler(message, settings.set1)
+            bot.register_next_step_handler(message, settings.locations4)
+
+# =----
 
     def inn(message):
         global ActiveUser
@@ -968,6 +1090,43 @@ class settings:
         bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
         settingsmes(message.chat.id)
         bot.register_next_step_handler(message, settings.set1)
+
+# общий чат (пересылка сообщения всем пользователям)
+class allchats:
+    # пересылка пользовательского сообщения всем
+    def chat1(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос в отправке всем пользователям - {message.text}')
+        if message.text == 'Main Menu' or message.text == '/start':
+            logging.info('main')
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+            bot.register_next_step_handler(message, Main.main1)
+        else:
+            logging.info('message to all')
+            users = db.select_table('Clients')
+            # for user in users:
+            #     try:
+            #         logging.info(f'sended message to user {user[3]} from {user[2]}')
+            #         if user[0] != message.chat.id:
+            #             bot.forward_message(user[0], message.chat.id, message.message_id)
+            #     except Exception as e:
+            #         logging.error(e)
+            #         pass
+            for user in users:
+                try:
+                    bot.forward_message(user[0], message.chat.id, message.message_id)
+                    if message.from_user.id == 65241621 or message.from_user.id == 1669785252:
+                        bot.unpin_chat_message(user[0])
+                        bot.pin_chat_message(user[0], message.message_id)
+                    logging.info(f'sent message to user {user[3]} from {user[2]}')
+                except Exception as e:
+                    logging.error(e)
+                    pass
+            bot.register_next_step_handler(message, allchats.chat1)
 
 @bot.message_handler(content_types=['text', 'location'])
 
@@ -1086,12 +1245,117 @@ def ntnl1(message):
         )
         bot.register_next_step_handler(message, Main.confirmtask01)
 
+def setloc1(message):
+    global ActiveUser
+    try:
+        username = db.get_record_by_id('Clients', message.chat.id)[2]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+    except Exception as e:
+        logging.error(e)
+        pass
+    if message.content_type == 'location':
+        ActiveUser[message.chat.id]['lon'], ActiveUser[message.chat.id]['lat'] = message.location.longitude, message.location.latitude
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["locentername"],
+            reply_markup=buttons.clearbuttons()
+        )
+        bot.register_next_step_handler(message, setloc2)
+    else:
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["locerrorloc"],
+            reply_markup=buttons.clearbuttons()
+        )
+        bot.register_next_step_handler(message, setloc1)
+def setloc2(message):
+    global ActiveUser
+    try:
+        username = db.get_record_by_id('Clients', message.chat.id)[2]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+    except Exception as e:
+        logging.error(e)
+        pass
+    ActiveUser[message.chat.id]['locationname'] = message.text
+    inn = db.get_record_by_id('Clients', message.chat.id)[1]
+    db.insert_record(
+        'Locations',
+        [
+            None,
+            inn,
+            message.text,
+            ActiveUser[message.chat.id]['lat'],
+            ActiveUser[message.chat.id]['lon']
+        ]
+    )
+    usercode = db.get_record_by_id('Clients', message.chat.id)[1]
+    locs = db.select_table_with_filters('Locations', {'inn': usercode})
+    if len(locs) > 0:
+        for location in locs:
+            loc = telebot.types.Location(location[4], location[3])
+            bot.send_location(message.chat.id, loc.latitude, loc.longitude)
+            bot.send_message(
+                message.chat.id,
+                str(location[2]),
+                reply_markup=buttons.buttonsinline([[ActiveUser[message.chat.id]["dict"]["setchange"], 'location '+str(location[0])]])
+            )
+    bot.send_message(
+        message.chat.id,
+        ActiveUser[message.chat.id]["dict"]["setmestochange"],
+        reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["locadd"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+    )
+    bot.register_next_step_handler(message, settings.locations1)
+def setloc3(message):
+    global ActiveUser
+    try:
+        username = db.get_record_by_id('Clients', message.chat.id)[2]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+    except Exception as e:
+        logging.error(e)
+        pass
+    if message.content_type == 'location':
+        lon, lat = message.location.longitude, message.location.latitude
+        db.update_records(
+            'Locations',
+            [
+                'lon',
+                'lat'
+            ],
+            [
+                lon,
+                lat
+            ],
+            'id',
+            ActiveUser[message.chat.id]['curlocation']
+        )
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["success"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+        )
+        bot.register_next_step_handler(message, settings.locations2)
+    else:
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["locerrorloc"],
+            reply_markup=buttons.clearbuttons
+        )
+        bot.register_next_step_handler(message, setloc3)
+
 @bot.callback_query_handler(func=lambda call: True)
 # Реакция на кнопки
 def callback_handler(call):
     # Реакция на инлайновые кнопки
-    username = db.get_record_by_id("Clients", call.from_user.id)[1]
-    logging.info(f"{username} нажал на кнопку {str(call)}")
+    # username = db.get_record_by_id("Clients", call.from_user.id)[1]
+    # logging.info(f"{username} нажал на кнопку {str(call)}")
+    if call.data.split()[0] == 'location':# Редактирование локации
+        ActiveUser[call.from_user.id]['curlocation'] = call.data.split()[1]
+        bot.send_message(
+            call.from_user.id,
+            ActiveUser[call.from_user.id]["dict"]["setwywtch"],
+            reply_markup=buttons.Buttons([ActiveUser[call.from_user.id]["dict"]["setlocationch"], ActiveUser[call.from_user.id]["dict"]["setnameloc"], ActiveUser[call.from_user.id]["dict"]["setdelete"], ActiveUser[call.from_user.id]["dict"]["bcancel"]])
+        )
+        bot.register_next_step_handler(call.message, settings.locations2)
 
 # Запуск бота
 if __name__ == '__main__':
@@ -1101,6 +1365,7 @@ if __name__ == '__main__':
     # bot.polling()
     while True:
         try:
+            bot.stop_polling()
             bot.polling(none_stop=True, interval=0)
             logging.info()
         except Exception as e:
