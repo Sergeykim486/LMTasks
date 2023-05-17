@@ -136,7 +136,7 @@ def settingsmes(userid):
         mes = mes + '\n' + str(ActiveUser[userid]['dict']['bperson']) + ':\n' + str(ActiveUser[userid]['person'])
         but = [
             ActiveUser[userid]['dict']['binn'],
-            ActiveUser[userid]['dict']['bcname'],
+            # ActiveUser[userid]['dict']['bcname'],
             ActiveUser[userid]['dict']['bperson'],
             ActiveUser[userid]['dict']['badr'],
             ActiveUser[userid]["dict"]["setmylocs"],
@@ -183,6 +183,20 @@ def send_welcome(message):
     ActiveUser[message.chat.id]["id"] = message.chat.id
     finduser = db.search_record("Clients", "id", user_id)
     if len(finduser) == 0:
+        ActiveUser[message.chat.id]["code"] = None
+        ActiveUser[message.chat.id]["name"] = None
+        ActiveUser[message.chat.id]["person"] = None
+        ActiveUser[message.chat.id]["addr"] = None
+        ActiveUser[message.chat.id]["phone"] = None
+        ActiveUser[message.chat.id]["lang"] = None
+        ActiveUser[message.chat.id]["status"] = None
+        ActiveUser[message.chat.id]['code'] = None
+        ActiveUser[message.chat.id]['name'] = None
+        ActiveUser[message.chat.id]['addr'] = None
+        ActiveUser[message.chat.id]['person'] = None
+        ActiveUser[message.chat.id]['phone'] = None
+        ActiveUser[message.chat.id]['type'] = None
+        ActiveUser[message.chat.id]["contract"] = None
         bot.send_message(
             user_id,
             f'Выберите язык / Tilini tanlang / Select language',
@@ -268,6 +282,9 @@ class Main():
             ActiveUser[message.chat.id]['phone'] = sett[5]
             ActiveUser[message.chat.id]['lang'] = sett[6]
             ActiveUser[message.chat.id]['status'] = sett[7]
+            cont = db.get_record_by_id('Contragents', sett[1])
+            ActiveUser[message.chat.id]['type'] = cont[5]
+            ActiveUser[message.chat.id]["contract"] = cont[6]
             print(ActiveUser[message.chat.id]['status'])
             settingsmes(message.chat.id)
             bot.register_next_step_handler(message, settings.set1)
@@ -554,12 +571,8 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        if ActiveUser[message.chat.id]["status"] == 'Организация' and message.text != ActiveUser[message.chat.id]["dict"]["bskip"]:
-            ActiveUser[message.chat.id]["contract"] = message.text
-            ActiveUser[message.chat.id]['type'] = 2
-        else:
-            ActiveUser[message.chat.id]["contract"] = None
-            ActiveUser[message.chat.id]["type"] = 1
+        ActiveUser[message.chat.id]["contract"] = message.text
+        ActiveUser[message.chat.id]['type'] = 2
         bot.send_message(
             message.chat.id,
             ActiveUser[message.chat.id]["dict"]["entercname"],
@@ -615,7 +628,8 @@ class Reg:
         if ActiveUser[message.chat.id]["status"] == 'Организация':
             ActiveUser[message.chat.id]["person"] = message.text
         else:
-            ActiveUser[message.chat.id]["code"] = message.chat.id
+            ActiveUser[message.chat.id]["code"] = message.text
+            ActiveUser[message.chat.id]["person"] = '...'
         bot.send_message(
             message.chat.id,
             ActiveUser[message.chat.id]["dict"]["enteradr"],
@@ -656,6 +670,7 @@ class Reg:
             logging.error(e)
             pass
         if message.text == ActiveUser[message.chat.id]["dict"]["by"]:
+                
             db.insert_record(
                 "Clients",
                 [
@@ -667,12 +682,11 @@ class Reg:
                     ActiveUser[message.chat.id]["phone"],
                     ActiveUser[message.chat.id]["lang"],
                     ActiveUser[message.chat.id]["status"],
-                    ""
+                    None
                 ]
             )
             contragent = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]["code"])
             if contragent is None:
-                contract = ActiveUser[message.chat.id]["contract"]
                 db.insert_record(
                     'Contragents',
                     [
@@ -682,7 +696,7 @@ class Reg:
                         ActiveUser[message.chat.id]['person'],
                         ActiveUser[message.chat.id]['phone'],
                         ActiveUser[message.chat.id]['type'],
-                        contract
+                        ActiveUser[message.chat.id]["contract"]
                     ]
                 )
             # else:
@@ -730,7 +744,7 @@ class settings:
             pass
         if message.text == ActiveUser[message.chat.id]['dict']['bsave']:
             if ActiveUser[message.chat.id]['status'] == 'Организация':
-                person = ActiveUser[message.chat.id]['person']
+                person = str(ActiveUser[message.chat.id]['person'])
             else:
                 person = '...'
             db.update_records(
@@ -756,7 +770,7 @@ class settings:
                 'id',
                 message.chat.id
             )
-            if db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code']) == None:
+            if db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code']) is None:
                 db.insert_record(
                     'Contragents',
                     [
@@ -764,10 +778,17 @@ class settings:
                         ActiveUser[message.chat.id]['name'],
                         ActiveUser[message.chat.id]['adr'],
                         person,
-                        ActiveUser[message.chat.id]['phone']
+                        ActiveUser[message.chat.id]['phone'],
+                        None,
+                        None
                     ]
                 )
             else:
+                cont = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code'])
+                if cont[3] is None:
+                    contrp = ''
+                else:
+                    contrp = cont[3]
                 db.update_records(
                     'Contragents',
                     [
@@ -776,12 +797,12 @@ class settings:
                         'cphone'
                     ],
                     [
-                        ActiveUser[message.chat.id]['adr'],
-                        person,
-                        ActiveUser[message.chat.id]['phone']
+                        cont[2] + '\n' + ActiveUser[message.chat.id]['adr'],
+                        contrp + '\n' + person,
+                        cont[4] + '\n' + ActiveUser[message.chat.id]['phone']
                     ],
                     'id',
-                    message.chat.id
+                    cont[0]
                 )
             if db.get_record_by_id("Clients", message.chat.id)[6] == "ru":
                 ActiveUser[message.chat.id]["dict"] = config.ru
@@ -823,13 +844,13 @@ class settings:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, settings.myname)
-        elif message.text == ActiveUser[message.chat.id]['dict']['bcname']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["entercname"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, settings.cname)
+        # elif message.text == ActiveUser[message.chat.id]['dict']['bcname']:
+        #     bot.send_message(
+        #         message.chat.id,
+        #         ActiveUser[message.chat.id]["dict"]["entercname"],
+        #         reply_markup=buttons.clearbuttons()
+        #     )
+        #     bot.register_next_step_handler(message, settings.cname)
         elif message.text == ActiveUser[message.chat.id]['dict']['bperson']:
             bot.send_message(
                 message.chat.id,
@@ -992,8 +1013,6 @@ class settings:
             )
             bot.register_next_step_handler(message, settings.locations4)
 
-# =----
-
     def inn(message):
         global ActiveUser
         try:
@@ -1003,10 +1022,22 @@ class settings:
             logging.error(e)
             pass
         ActiveUser[message.chat.id]['code'] = message.text
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-        settingsmes(message.chat.id)
-        bot.register_next_step_handler(message, settings.set1)
+        if db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code']) is None:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["entercname"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, settings.cname)
+        else:
+            cont = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code'])
+            if cont is not None:
+                ActiveUser[message.chat.id]['cname'] = cont[1]
+                ActiveUser[message.chat.id]['name'] = cont[1]
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
     def pinfl(message):
         global ActiveUser
         try:
