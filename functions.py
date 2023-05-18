@@ -355,6 +355,7 @@ def getuserlist():
 import folium
 from folium.plugins import MarkerCluster
 from jinja2 import Template
+import io
 
 def generate_popup(location):
     name = location[0].replace('|', '<br>')
@@ -445,6 +446,7 @@ def mapgen(locations):
     template = Template('''
         <html>
         <head>
+            <meta charset="UTF-8">
             <title>Активные заявки</title>
             <style>
                 .button {
@@ -518,5 +520,5 @@ def mapgen(locations):
     folium_map = map_object._repr_html_()
     html = template.render(folium_map=folium_map, locations=locations, generate_marker_html=generate_marker_html)
 
-    with open('public/map.html', 'w', encoding='utf-8') as file:
+    with io.open('public/map.html', 'w', encoding='utf-8') as file:
         file.write(html)

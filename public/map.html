@@ -1,31 +1,85 @@
-<!DOCTYPE html>
-<html>
-<head>
+
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Активные заявки</title>
+            <style>
+                .button {
+                    padding: 10px 20px;
+                    display: inline-block;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    justify-self: flex-start;
+                }
+                .blue {
+                    color: blue;
+                }
+                .orange {
+                    color: orange;
+                }
+                .green {
+                    color: green;
+                }
+                .red {
+                    color: red;
+                }
+                .map-container {
+                    height: calc(100% - 130px);
+                    overflow: auto;
+                }
+                header {
+                    height: 100px;
+                    display: flex;
+                    align-items: flex-start;
+                    justify-content: space-between;
+                }
+                .logo {
+                    margin-top: 20px;
+                    margin-right: 20px;
+                    align-self: flex-start;
+                    justify-self: flex-end;
+                }
+            </style>
+        </head>
+        <body>
+            <header>
+                <div style="align-self: flex-start;">
+                    <h1 style="margin-top: 0; margin-left: 20px;">Активные заявки</h1>
+                    <button onclick="location.reload();" style="background-color: green; color: white; font-weight: bold; font-size: 18px; margin-top: -10px; margin-left: 20px;">Обновить страницу</button>
+                </div>
+                <div class="logo">
+                    <img src="Logo.png" alt="Logo" style="height: 56px;">
+                </div>
+            </header>
+            <div class="map-container" style="width: 70%; float: right;">
+                <div style="width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:60%;"><span style="color:#565656">Make this Notebook Trusted to load map: File -> Trust Notebook</span><iframe srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
     
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
     
-        <script>
+        &lt;script&gt;
             L_NO_TOUCH = false;
             L_DISABLE_3D = false;
-        </script>
+        &lt;/script&gt;
     
-    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
-    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    &lt;style&gt;html, body {width: 100%;height: 100%;margin: 0;padding: 0;}&lt;/style&gt;
+    &lt;style&gt;#map {position:absolute;top:0;bottom:0;right:0;left:0;}&lt;/style&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://code.jquery.com/jquery-1.12.4.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css&quot;/&gt;
     
-            <meta name="viewport" content="width=device-width,
-                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <style>
-                #map_2437020f0b059ec4e9610faf58c8ed68 {
+            &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;
+            &lt;style&gt;
+                #map_5bba855860fe00b55cb20b5f0b9f0d96 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -33,26 +87,23 @@
                     top: 0.0%;
                 }
                 .leaflet-container { font-size: 1rem; }
-            </style>
+            &lt;/style&gt;
         
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
-</head>
-<body>
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css&quot;/&gt;
+&lt;/head&gt;
+&lt;body&gt;
     
     
-        <button onclick="location.reload();" style="position: absolute; top: 10px; right: 10px; z-index: 9999; background-color: green; color: white;">Обновить страницу</button>
-    
-    
-            <div class="folium-map" id="map_2437020f0b059ec4e9610faf58c8ed68" ></div>
+            &lt;div class=&quot;folium-map&quot; id=&quot;map_5bba855860fe00b55cb20b5f0b9f0d96&quot; &gt;&lt;/div&gt;
         
-</body>
-<script>
+&lt;/body&gt;
+&lt;script&gt;
     
     
-            var map_2437020f0b059ec4e9610faf58c8ed68 = L.map(
-                "map_2437020f0b059ec4e9610faf58c8ed68",
+            var map_5bba855860fe00b55cb20b5f0b9f0d96 = L.map(
+                &quot;map_5bba855860fe00b55cb20b5f0b9f0d96&quot;,
                 {
                     center: [41.28927613679946, 69.31295641163192],
                     crs: L.CRS.EPSG3857,
@@ -66,907 +117,1401 @@
 
         
     
-            var tile_layer_84cc3f2082d309a148a4c90bec7b721a = L.tileLayer(
-                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {"attribution": "Data by \u0026copy; \u003ca target=\"_blank\" href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca target=\"_blank\" href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
-            ).addTo(map_2437020f0b059ec4e9610faf58c8ed68);
+            var tile_layer_79c013285c46260289dc2a3a8b4fcecd = L.tileLayer(
+                &quot;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&quot;,
+                {&quot;attribution&quot;: &quot;Data by \u0026copy; \u003ca target=\&quot;_blank\&quot; href=\&quot;http://openstreetmap.org\&quot;\u003eOpenStreetMap\u003c/a\u003e, under \u003ca target=\&quot;_blank\&quot; href=\&quot;http://www.openstreetmap.org/copyright\&quot;\u003eODbL\u003c/a\u003e.&quot;, &quot;detectRetina&quot;: false, &quot;maxNativeZoom&quot;: 18, &quot;maxZoom&quot;: 18, &quot;minZoom&quot;: 0, &quot;noWrap&quot;: false, &quot;opacity&quot;: 1, &quot;subdomains&quot;: &quot;abc&quot;, &quot;tms&quot;: false}
+            ).addTo(map_5bba855860fe00b55cb20b5f0b9f0d96);
         
     
-            var marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030 = L.markerClusterGroup(
+            var marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c = L.markerClusterGroup(
                 {}
             );
-            map_2437020f0b059ec4e9610faf58c8ed68.addLayer(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            map_5bba855860fe00b55cb20b5f0b9f0d96.addLayer(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var marker_79854f291b480db934085aec1c4f6f7d = L.marker(
+            var marker_b263f023412e2745f3d0a5726a56470b = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_cd08aed277a152d4a40d82d07956fef0 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_a655abd8542907de77be67ff6527d375 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_79854f291b480db934085aec1c4f6f7d.setIcon(icon_cd08aed277a152d4a40d82d07956fef0);
+            marker_b263f023412e2745f3d0a5726a56470b.setIcon(icon_a655abd8542907de77be67ff6527d375);
         
     
-        var popup_1808ef607d3fd65184dc270079d69847 = L.popup({"maxWidth": 370});
+        var popup_357de227b60dd8f43060208e58509b1a = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_5dcea04b3aa137d36a43a77696841893 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcxNAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KT09PICJGSUxVRVQgU0lMSyBXQVkgTE9HSVNUSUNTIjwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IApocCBtIDYwOC01Cgog0JDRhdC80LXQtNC+0LLQsCDQqNCw0LjRgNCwINC00L7Qv9C+0LvQvdC40Lso0LApINC30LDRj9Cy0LrRgy4uLgrQu9C+0LrQsNGG0LjRjjwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcxNCcsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_1808ef607d3fd65184dc270079d69847.setContent(i_frame_5dcea04b3aa137d36a43a77696841893);
+                var html_bb8d5118f502fc74c8c2ed3aad311321 = $(`&lt;div id=&quot;html_bb8d5118f502fc74c8c2ed3aad311321&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 714 =============================&lt;br&gt; OOO &quot;FILUET SILK WAY LOGISTICS&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  hp m 608-5   Ахмедова Шаира дополнил(а) заявку... локацию&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=714&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_357de227b60dd8f43060208e58509b1a.setContent(html_bb8d5118f502fc74c8c2ed3aad311321);
             
         
 
-        marker_79854f291b480db934085aec1c4f6f7d.bindPopup(popup_1808ef607d3fd65184dc270079d69847)
+        marker_b263f023412e2745f3d0a5726a56470b.bindPopup(popup_357de227b60dd8f43060208e58509b1a)
         ;
 
         
     
     
-            var marker_ce733059dbd0b912a8e6ce35af02cef0 = L.marker(
+            var marker_87636c43b0e6d68a444b450d48e2498c = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_b1a80868593755389d3df2e64c559867 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_fe57a24cec2eb903e8577be10c3ea3cc = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_ce733059dbd0b912a8e6ce35af02cef0.setIcon(icon_b1a80868593755389d3df2e64c559867);
+            marker_87636c43b0e6d68a444b450d48e2498c.setIcon(icon_fe57a24cec2eb903e8577be10c3ea3cc);
         
     
-        var popup_303f443476868ef54620fa9b460e1a9f = L.popup({"maxWidth": 370});
+        var popup_dfa045f15c6907961ed05f86d9d24661 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_f56d89c0c226aba598e9483bbbd83bc8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcyNAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KHQnyDQntCe0J4gwqtBRE0tQVNURVLCuzwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IAowNTcgLSAyINC30LDQv9GA0LDQstC60LggLiAwNTEg0YHQsNC80YHRg9C90LMgLSAzINC30LDQv9GA0LDQstC60Lg8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MjQnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_303f443476868ef54620fa9b460e1a9f.setContent(i_frame_f56d89c0c226aba598e9483bbbd83bc8);
+                var html_3b5d3a0dfef594854577292558043d60 = $(`&lt;div id=&quot;html_3b5d3a0dfef594854577292558043d60&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 724 =============================&lt;br&gt; СП ООО «ADM-ASTER»&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  057 - 2 заправки . 051 самсунг - 3 заправки&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=724&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_dfa045f15c6907961ed05f86d9d24661.setContent(html_3b5d3a0dfef594854577292558043d60);
             
         
 
-        marker_ce733059dbd0b912a8e6ce35af02cef0.bindPopup(popup_303f443476868ef54620fa9b460e1a9f)
+        marker_87636c43b0e6d68a444b450d48e2498c.bindPopup(popup_dfa045f15c6907961ed05f86d9d24661)
         ;
 
         
     
     
-            var marker_2c0c512218e621d2da3f410268df7d17 = L.marker(
+            var marker_5f76e44725582cb9d4c6549301522532 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_dde5ee065e5e8e49d4dbdcef161b907c = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_94c6e0797bd812c3f4b7ab96be53925c = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_2c0c512218e621d2da3f410268df7d17.setIcon(icon_dde5ee065e5e8e49d4dbdcef161b907c);
+            marker_5f76e44725582cb9d4c6549301522532.setIcon(icon_94c6e0797bd812c3f4b7ab96be53925c);
         
     
-        var popup_83973103ad3992675d4940522f7eb839 = L.popup({"maxWidth": 370});
+        var popup_8df5831d0336f42fa63926a8e348f8f1 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_e93065004f8221af8e5d86462d206685 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczMAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J7QntCeICJBVkEtVEVOIjwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IArQl9Cw0L/RgNCw0LLQutCwINC60LDRgNGC0YDQuNC00LbQtdC5CtC90LAgMTksMDUsMjAyMyDRgSDRg9GC0YDQsAo5MDkwODgzMzMg0JrQsNGA0LjQvdCwPC9kaXY+PGRpdj48YnV0dG9uIHN0eWxlPSJtYXJnaW4tdG9wOiAxMHB4OyIgb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzMwJywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48L2Rpdj48YnIvPg==" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_83973103ad3992675d4940522f7eb839.setContent(i_frame_e93065004f8221af8e5d86462d206685);
+                var html_a0fac0b769fbced87335206fdbfa99fa = $(`&lt;div id=&quot;html_a0fac0b769fbced87335206fdbfa99fa&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 730 =============================&lt;br&gt; ООО &quot;AVA-TEN&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заправка картриджей на 19,05,2023 с утра 909088333 Карина&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=730&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_8df5831d0336f42fa63926a8e348f8f1.setContent(html_a0fac0b769fbced87335206fdbfa99fa);
             
         
 
-        marker_2c0c512218e621d2da3f410268df7d17.bindPopup(popup_83973103ad3992675d4940522f7eb839)
+        marker_5f76e44725582cb9d4c6549301522532.bindPopup(popup_8df5831d0336f42fa63926a8e348f8f1)
         ;
 
         
     
     
-            var marker_46a445e312823ed15e0e59c37c676fee = L.marker(
+            var marker_3429ee3d4e141330a6315633c6067b2b = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_d0f4b4723fcc2a9ca8869cc991f48481 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_0618c98d26bd473ae544241391e02f68 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_46a445e312823ed15e0e59c37c676fee.setIcon(icon_d0f4b4723fcc2a9ca8869cc991f48481);
+            marker_3429ee3d4e141330a6315633c6067b2b.setIcon(icon_0618c98d26bd473ae544241391e02f68);
         
     
-        var popup_d59f8ad060ae9eb6c0e0625af1514b19 = L.popup({"maxWidth": 370});
+        var popup_0509b319302ef9d2db740150ece13543 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_c13c267318bcce64e4e6e0d99e62839b = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczMgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIk5VUi1FTCBCSVpORVMiPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JfQsNGA0LXQs9C40YHRgtGA0LjRgNC+0LLQsNC90LAKIHwgCtCf0YDQvtCx0LvQtdC80Ysg0YEg0LrQvtC80L/RjNGO0YLQtdGA0L7QvDwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTczMicsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_d59f8ad060ae9eb6c0e0625af1514b19.setContent(i_frame_c13c267318bcce64e4e6e0d99e62839b);
+                var html_722aeb612434f01167179c188e4f9838 = $(`&lt;div id=&quot;html_722aeb612434f01167179c188e4f9838&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 732 =============================&lt;br&gt; &quot;NUR-EL BIZNES&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Проблемы с компьютером&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=732&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_0509b319302ef9d2db740150ece13543.setContent(html_722aeb612434f01167179c188e4f9838);
             
         
 
-        marker_46a445e312823ed15e0e59c37c676fee.bindPopup(popup_d59f8ad060ae9eb6c0e0625af1514b19)
+        marker_3429ee3d4e141330a6315633c6067b2b.bindPopup(popup_0509b319302ef9d2db740150ece13543)
         ;
 
         
     
     
-            var marker_652f51ab88e76f7dddf23cb9c6a24e80 = L.marker(
+            var marker_065a7cc842d41a0cfef7728c2f1cd44c = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_b123c404d3ee3bd80c5a2053dc511f61 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_056747dc198a8ff68db6bfc1e455b2d1 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_652f51ab88e76f7dddf23cb9c6a24e80.setIcon(icon_b123c404d3ee3bd80c5a2053dc511f61);
+            marker_065a7cc842d41a0cfef7728c2f1cd44c.setIcon(icon_056747dc198a8ff68db6bfc1e455b2d1);
         
     
-        var popup_aaffe0036ebd3d2c3fa1a06aae7683e1 = L.popup({"maxWidth": 370});
+        var popup_e756ceea979ed7df88f327ac11954865 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_856c5e25e76ea80ab00292cb320ec71f = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczMwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIkVWRVJFU1QgVU5JVkVSU0FMIFRSQURFIEdST1VQIiBtYXNgdWxpeWF0aSBjaGVrbGFuZ2FuIGphbWl5YXRpPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JfQsNGA0LXQs9C40YHRgtGA0LjRgNC+0LLQsNC90LAKIHwgCjMwMTAgLSAyINC30L/RgNCw0LLQutC4LCA0NDMgLSAyINC30LDQv9GA0LDQstC60Lg8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MzMnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_aaffe0036ebd3d2c3fa1a06aae7683e1.setContent(i_frame_856c5e25e76ea80ab00292cb320ec71f);
+                var html_ca4ef01c4e75b9ff116dda4e30a12e98 = $(`&lt;div id=&quot;html_ca4ef01c4e75b9ff116dda4e30a12e98&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 740 =============================&lt;br&gt; ЧП &quot;LUX OPTIX&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  для IT отдела надо проверить офисные программы филиал на М. Горьком 974600338 Екатерина&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=740&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_e756ceea979ed7df88f327ac11954865.setContent(html_ca4ef01c4e75b9ff116dda4e30a12e98);
             
         
 
-        marker_652f51ab88e76f7dddf23cb9c6a24e80.bindPopup(popup_aaffe0036ebd3d2c3fa1a06aae7683e1)
+        marker_065a7cc842d41a0cfef7728c2f1cd44c.bindPopup(popup_e756ceea979ed7df88f327ac11954865)
         ;
 
         
     
     
-            var marker_54aa7a3c1ef5fb56c5cffe481e3b1e2a = L.marker(
+            var marker_987e4266a32f08ae7ce7519e14b14d59 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_9981b5535056ab0ebd995a35aa59e22b = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_8752613989346ae6e6fa1dd6591a2678 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_54aa7a3c1ef5fb56c5cffe481e3b1e2a.setIcon(icon_9981b5535056ab0ebd995a35aa59e22b);
+            marker_987e4266a32f08ae7ce7519e14b14d59.setIcon(icon_8752613989346ae6e6fa1dd6591a2678);
         
     
-        var popup_70cdc021edfc0bc248ce5be7627f53f3 = L.popup({"maxWidth": 370});
+        var popup_80a9639f70836b0df2b7a4e520fe9727 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_f55a064892bbd79818bf402ec27a87d1 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczNAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIk1FTE9OIEZBU0hJT04gQyBBIiBtYXNgdWxpeWF0aSBjaGVrbGFuZ2FuIGphbWl5YXRpPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JfQsNGA0LXQs9C40YHRgtGA0LjRgNC+0LLQsNC90LAKIHwgCtC90YPQttC90LAgMSDQt9Cw0L/RgNCw0LLQutCwIDI2OSDQvNGEINC4INGC0LDQutC20LUgMSDQvdC+0LLRi9C5INC60LDRgtGA0LjQtNC2Cgog0KHQsNC70LjRhdC+0LIg0JDQu9C10LrRgdCw0L3QtNGAINC00L7Qv9C+0LvQvdC40Lso0LApINC30LDRj9Cy0LrRgy4uLgrQndC+0LLRi9C5INC60LvQuNC10L3RgiDQtNC+INC+0LHQtdC00LAg0LrRgtC+INC80L7QttC10YIg0YHQtNC10LvQsNGC0Yw/PzwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTczNCcsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_70cdc021edfc0bc248ce5be7627f53f3.setContent(i_frame_f55a064892bbd79818bf402ec27a87d1);
+                var html_2152ad4eb9351a3759fa3d88044f7cf1 = $(`&lt;div id=&quot;html_2152ad4eb9351a3759fa3d88044f7cf1&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 741 =============================&lt;br&gt; &quot;DAVLAT EKOLOGIK EKSPERTIZASI MARKAZI&quot; DUK&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заправка картриджей&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=741&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_80a9639f70836b0df2b7a4e520fe9727.setContent(html_2152ad4eb9351a3759fa3d88044f7cf1);
             
         
 
-        marker_54aa7a3c1ef5fb56c5cffe481e3b1e2a.bindPopup(popup_70cdc021edfc0bc248ce5be7627f53f3)
+        marker_987e4266a32f08ae7ce7519e14b14d59.bindPopup(popup_80a9639f70836b0df2b7a4e520fe9727)
         ;
 
         
     
     
-            var marker_8e6f09c4d84a131576eb48ef141aa2f1 = L.marker(
+            var marker_15d0ab97850db422cc9109485df5dfd5 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_d853fafce54e892eb6eb9d7e8c1b2fcd = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_e496d30c97a3d0a629eda50ce29d5f47 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_8e6f09c4d84a131576eb48ef141aa2f1.setIcon(icon_d853fafce54e892eb6eb9d7e8c1b2fcd);
+            marker_15d0ab97850db422cc9109485df5dfd5.setIcon(icon_e496d30c97a3d0a629eda50ce29d5f47);
         
     
-        var popup_c33f48d53e30e879dce77a0d46f17157 = L.popup({"maxWidth": 370});
+        var popup_9b64c387fc3e9aa37ebfcce61c862b5c = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_91b1927d01de85f8b04d856806bf78cf = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczNwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J7QntCeIMKrQU5PUiBBR1JPIEdMT0JBTCBHUk9VUMK7PC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JfQsNGA0LXQs9C40YHRgtGA0LjRgNC+0LLQsNC90LAKIHwgCmNhbm9uIDY0My3QvdC1INC/0LXRh9Cw0YLQsNC10YIg0YfQtdGA0L3Ri9C5INGG0LLQtdGCPC9kaXY+PGRpdj48YnV0dG9uIHN0eWxlPSJtYXJnaW4tdG9wOiAxMHB4OyIgb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzM3JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48L2Rpdj48YnIvPg==" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_c33f48d53e30e879dce77a0d46f17157.setContent(i_frame_91b1927d01de85f8b04d856806bf78cf);
+                var html_de59d6b22d4ae08f574e3d766897ecce = $(`&lt;div id=&quot;html_de59d6b22d4ae08f574e3d766897ecce&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 742 =============================&lt;br&gt; OOO &quot;QUALITY PHARM&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заправка  Canon i-SENSYS MF643Cdw цветное/лазерное - 1 заправка. и пару чёрно белых модель не знают&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=742&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_9b64c387fc3e9aa37ebfcce61c862b5c.setContent(html_de59d6b22d4ae08f574e3d766897ecce);
             
         
 
-        marker_8e6f09c4d84a131576eb48ef141aa2f1.bindPopup(popup_c33f48d53e30e879dce77a0d46f17157)
+        marker_15d0ab97850db422cc9109485df5dfd5.bindPopup(popup_9b64c387fc3e9aa37ebfcce61c862b5c)
         ;
 
         
     
     
-            var marker_1148bbf7f6fc64b41b574ed5b3acf40c = L.marker(
+            var marker_311f894b15fa2488cb80a61f5a2a46dc = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_22bc4ae2674f01fca0b8e3b4c1d54136 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_9dca1bf397a554920b224d27ab2f706d = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_1148bbf7f6fc64b41b574ed5b3acf40c.setIcon(icon_22bc4ae2674f01fca0b8e3b4c1d54136);
+            marker_311f894b15fa2488cb80a61f5a2a46dc.setIcon(icon_9dca1bf397a554920b224d27ab2f706d);
         
     
-        var popup_a721837fe4ac338c95e0396b78369680 = L.popup({"maxWidth": 370});
+        var popup_beab9ff00ab91b6ba40ab5041b29e8b6 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_809feff2818292e335b001e825b3fe31 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDc0MAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KfQnyAiTFVYIE9QVElYIjwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IArQtNC70Y8gSVQg0L7RgtC00LXQu9CwINC90LDQtNC+INC/0YDQvtCy0LXRgNC40YLRjCDQvtGE0LjRgdC90YvQtSDQv9GA0L7Qs9GA0LDQvNC80YsK0YTQuNC70LjQsNC7INC90LAg0JwuINCT0L7RgNGM0LrQvtC8Cjk3NDYwMDMzOCDQldC60LDRgtC10YDQuNC90LA8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03NDAnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_a721837fe4ac338c95e0396b78369680.setContent(i_frame_809feff2818292e335b001e825b3fe31);
+                var html_a71f179de7ade633af4c6a6c227309c8 = $(`&lt;div id=&quot;html_a71f179de7ade633af4c6a6c227309c8&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 744 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заказчик: Ц1 Номер заявки: 000000052198 Вид заявки: Заправка принтера* Телефон инициатора: 974907726 Инициатор: Эргашев Шахбос Тема заявки: Заправка принтера Задача (сокр): Необходимо заправить принтеры юридического отдела Canon MF 3010 и Canon MF 443dw.&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=744&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_beab9ff00ab91b6ba40ab5041b29e8b6.setContent(html_a71f179de7ade633af4c6a6c227309c8);
             
         
 
-        marker_1148bbf7f6fc64b41b574ed5b3acf40c.bindPopup(popup_a721837fe4ac338c95e0396b78369680)
+        marker_311f894b15fa2488cb80a61f5a2a46dc.bindPopup(popup_beab9ff00ab91b6ba40ab5041b29e8b6)
         ;
 
         
     
     
-            var marker_11cc3d4fe5a0d59a675522be7c8deb76 = L.marker(
+            var marker_a5f67b8b76dafc13f9e504cfc08ccae8 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_e66c9899c9d86e0dea243177b0632b3e = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_e6f649bed848669c5e6c2e8b6bad5b80 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;orange&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_11cc3d4fe5a0d59a675522be7c8deb76.setIcon(icon_e66c9899c9d86e0dea243177b0632b3e);
+            marker_a5f67b8b76dafc13f9e504cfc08ccae8.setIcon(icon_e6f649bed848669c5e6c2e8b6bad5b80);
         
     
-        var popup_d46a8496174bf284cd4203eeb8454f64 = L.popup({"maxWidth": 370});
+        var popup_50c60e6a8555bd42b22b47891313fe6c = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_e9e88d8d2efcc308e945e5452789b4f7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDc0MQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIkRBVkxBVCBFS09MT0dJSyBFS1NQRVJUSVpBU0kgTUFSS0FaSSIgRFVLPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JfQsNGA0LXQs9C40YHRgtGA0LjRgNC+0LLQsNC90LAKIHwgCtCX0LDQv9GA0LDQstC60LAg0LrQsNGA0YLRgNC40LTQttC10Lk8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03NDEnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_d46a8496174bf284cd4203eeb8454f64.setContent(i_frame_e9e88d8d2efcc308e945e5452789b4f7);
+                var html_976ed35f2c91580e91f3a8a9cb9eb811 = $(`&lt;div id=&quot;html_976ed35f2c91580e91f3a8a9cb9eb811&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 710 =============================&lt;br&gt; ИП ООО Fashion Star&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - Холмухамедов Азамат  &lt;br&gt;  заправка L3100 - 1 шт. Наргиза 935056067&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=710&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_50c60e6a8555bd42b22b47891313fe6c.setContent(html_976ed35f2c91580e91f3a8a9cb9eb811);
             
         
 
-        marker_11cc3d4fe5a0d59a675522be7c8deb76.bindPopup(popup_d46a8496174bf284cd4203eeb8454f64)
+        marker_a5f67b8b76dafc13f9e504cfc08ccae8.bindPopup(popup_50c60e6a8555bd42b22b47891313fe6c)
         ;
 
         
     
     
-            var marker_dd6809dfa9609021d89841964a5efc13 = L.marker(
+            var marker_6fcf88a7e3542ce9c1b49cb7cbfae079 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_706017aebd9eb12e0415aa6a1ea663cd = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            var icon_4a111cc12844e2de4bdc01f273216935 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;orange&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_dd6809dfa9609021d89841964a5efc13.setIcon(icon_706017aebd9eb12e0415aa6a1ea663cd);
+            marker_6fcf88a7e3542ce9c1b49cb7cbfae079.setIcon(icon_4a111cc12844e2de4bdc01f273216935);
         
     
-        var popup_a0ae5a46fad2fc355b05f7451c4cfc88 = L.popup({"maxWidth": 370});
+        var popup_1fb82685b4fe38b4535d033b836e2fb0 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_c730fef4393447ad358de267224ff278 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDc0Mgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KT09PICJRVUFMSVRZIFBIQVJNIjwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IArQl9Cw0L/RgNCw0LLQutCwICBDYW5vbiBpLVNFTlNZUyBNRjY0M0NkdyDRhtCy0LXRgtC90L7QtS/Qu9Cw0LfQtdGA0L3QvtC1IC0gMSDQt9Cw0L/RgNCw0LLQutCwLiDQuCDQv9Cw0YDRgyDRh9GR0YDQvdC+INCx0LXQu9GL0YUg0LzQvtC00LXQu9GMINC90LUg0LfQvdCw0Y7RgjwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTc0MicsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_a0ae5a46fad2fc355b05f7451c4cfc88.setContent(i_frame_c730fef4393447ad358de267224ff278);
+                var html_4b1095b57a2b1e5313007488aea31865 = $(`&lt;div id=&quot;html_4b1095b57a2b1e5313007488aea31865&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 738 =============================&lt;br&gt; СП ООО &quot; CENTRAL ASIA FERTILIZERS &quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - Холмухамедов Азамат  &lt;br&gt;  canon 453&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=738&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_1fb82685b4fe38b4535d033b836e2fb0.setContent(html_4b1095b57a2b1e5313007488aea31865);
             
         
 
-        marker_dd6809dfa9609021d89841964a5efc13.bindPopup(popup_a0ae5a46fad2fc355b05f7451c4cfc88)
+        marker_6fcf88a7e3542ce9c1b49cb7cbfae079.bindPopup(popup_1fb82685b4fe38b4535d033b836e2fb0)
         ;
 
         
     
     
-            var marker_1f7d9dca205996c83adbf598625003a8 = L.marker(
+            var marker_56b227cec9a01764f9f5f8d983013317 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_e403a6b3d5a373870a966940efef7c67 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            var icon_57f6978e3c052ed621e8fd9025562415 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_1f7d9dca205996c83adbf598625003a8.setIcon(icon_e403a6b3d5a373870a966940efef7c67);
+            marker_56b227cec9a01764f9f5f8d983013317.setIcon(icon_57f6978e3c052ed621e8fd9025562415);
         
     
-        var popup_b6215b0ba37c8af371e706faa0d54ed5 = L.popup({"maxWidth": 370});
+        var popup_f8ec1070f1bfb8c08a5142662115821b = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_58f5e5157071975dce75cf1d5052d8fa = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcxMAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0JjQnyDQntCe0J4gRmFzaGlvbiBTdGFyPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0J/RgNC40L3Rj9GC0LAg0LzQsNGB0YLQtdGA0L7QvCAtINCl0L7Qu9C80YPRhdCw0LzQtdC00L7QsiDQkNC30LDQvNCw0YIKIHwgCtC30LDQv9GA0LDQstC60LAgTDMxMDAgLSAxINGI0YIuINCd0LDRgNCz0LjQt9CwIDkzNTA1NjA2NzwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcxMCcsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_b6215b0ba37c8af371e706faa0d54ed5.setContent(i_frame_58f5e5157071975dce75cf1d5052d8fa);
+                var html_3169093deb60c2a0726072f8730a1e13 = $(`&lt;div id=&quot;html_3169093deb60c2a0726072f8730a1e13&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 683 =============================&lt;br&gt; ООО &quot;DELI TORG&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  canon 6030-1 933818284 Камола   Собитов Рахматилла дополнил(а) заявку... Выполнено вчера&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=683&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_f8ec1070f1bfb8c08a5142662115821b.setContent(html_3169093deb60c2a0726072f8730a1e13);
             
         
 
-        marker_1f7d9dca205996c83adbf598625003a8.bindPopup(popup_b6215b0ba37c8af371e706faa0d54ed5)
+        marker_56b227cec9a01764f9f5f8d983013317.bindPopup(popup_f8ec1070f1bfb8c08a5142662115821b)
         ;
 
         
     
     
-            var marker_43bf5674f8f0b4ca8a767f19b97557b7 = L.marker(
+            var marker_1e024307cf3359e7d9bc2150640d34e9 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_d792cbcd657f4c2338edd17425014574 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            var icon_5a9b182b6c83c0da778e94783bf25995 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_43bf5674f8f0b4ca8a767f19b97557b7.setIcon(icon_d792cbcd657f4c2338edd17425014574);
+            marker_1e024307cf3359e7d9bc2150640d34e9.setIcon(icon_5a9b182b6c83c0da778e94783bf25995);
         
     
-        var popup_bb4cec136453b0ee3eebaf1d77e42382 = L.popup({"maxWidth": 370});
+        var popup_97d4a632eea3d0cad1f78b7e76f9796d = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_03d469c4315e980ee80ca2429faa1bd7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcxMQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KfQnyAiSVYgU1RBTCBJTlZFU1QiPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0J/RgNC40L3Rj9GC0LAg0LzQsNGB0YLQtdGA0L7QvCAtINCh0L7QsdC40YLQvtCyINCg0LDRhdC80LDRgtC40LvQu9CwCiB8IApjYW5vbiAyMzIKY2Fub24gbGJwMzAxMDwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcxMScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_bb4cec136453b0ee3eebaf1d77e42382.setContent(i_frame_03d469c4315e980ee80ca2429faa1bd7);
+                var html_5eaecffa8025ec9e60667f05472f76ff = $(`&lt;div id=&quot;html_5eaecffa8025ec9e60667f05472f76ff&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 692 =============================&lt;br&gt; СП ООО &quot;Lama Standart&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  canon mf 4018&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=692&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_97d4a632eea3d0cad1f78b7e76f9796d.setContent(html_5eaecffa8025ec9e60667f05472f76ff);
             
         
 
-        marker_43bf5674f8f0b4ca8a767f19b97557b7.bindPopup(popup_bb4cec136453b0ee3eebaf1d77e42382)
+        marker_1e024307cf3359e7d9bc2150640d34e9.bindPopup(popup_97d4a632eea3d0cad1f78b7e76f9796d)
         ;
 
         
     
     
-            var marker_0be1efb4a64d9d94eb7d7f0bd78c665d = L.marker(
+            var marker_f74ec3f2fbdd1985659d6f78ca475d6e = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_2ff7cca673e47325ce88deb1eaa4da4f = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            var icon_c8721c9d3811dc3b92590b47557ab31d = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_0be1efb4a64d9d94eb7d7f0bd78c665d.setIcon(icon_2ff7cca673e47325ce88deb1eaa4da4f);
+            marker_f74ec3f2fbdd1985659d6f78ca475d6e.setIcon(icon_c8721c9d3811dc3b92590b47557ab31d);
         
     
-        var popup_1c050ca2a98a644f9219864495d681e4 = L.popup({"maxWidth": 370});
+        var popup_3efd33c3358bfa1ab1c08d5edf0b7de4 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_fecd2753eead7e982e76516c0fd4a121 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcxOQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J7QntCeICJUZWNobm9wYWsgU3lzdGVtcyI8L2I+PC9kaXY+PGRpdiBzdHlsZT0iZm9udC1zaXplOiAxMnB4OyBjb2xvcjogYmxhY2s7Ij7Qn9GA0LjQvdGP0YLQsCDQvNCw0YHRgtC10YDQvtC8IC0g0KHQvtCx0LjRgtC+0LIg0KDQsNGF0LzQsNGC0LjQu9C70LAKIHwgCtC30LDQv9GA0LDQstC60LAgNDAxOCAtIDIg0YjRgi4g0JrQsNGA0LjQvdCwIDkzNTk3OTcyNTwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcxOScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_1c050ca2a98a644f9219864495d681e4.setContent(i_frame_fecd2753eead7e982e76516c0fd4a121);
+                var html_28dd542879fa065aef3a179200377ce7 = $(`&lt;div id=&quot;html_28dd542879fa065aef3a179200377ce7&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 700 =============================&lt;br&gt; УЗ ЛИДЕП&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Холмухамедов Азамат  &lt;br&gt;  Горсовет 1536- 1 зп, 231 - 1 зп, 2135 - 1 зр&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=700&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_3efd33c3358bfa1ab1c08d5edf0b7de4.setContent(html_28dd542879fa065aef3a179200377ce7);
             
         
 
-        marker_0be1efb4a64d9d94eb7d7f0bd78c665d.bindPopup(popup_1c050ca2a98a644f9219864495d681e4)
+        marker_f74ec3f2fbdd1985659d6f78ca475d6e.bindPopup(popup_3efd33c3358bfa1ab1c08d5edf0b7de4)
         ;
 
         
     
     
-            var marker_9a5cda6dc9cafbb4598dc67e292afe14 = L.marker(
+            var marker_b2b4c5e019bc3712f710a13a0decf5ef = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_a4f0bcbf7ea33ba6e373d63cef3c759d = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            var icon_49d2b066d0913116188bb5ae0beba6d7 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_9a5cda6dc9cafbb4598dc67e292afe14.setIcon(icon_a4f0bcbf7ea33ba6e373d63cef3c759d);
+            marker_b2b4c5e019bc3712f710a13a0decf5ef.setIcon(icon_49d2b066d0913116188bb5ae0beba6d7);
         
     
-        var popup_4954f3c6b8c9ff676360cd23c03972a9 = L.popup({"maxWidth": 370});
+        var popup_6d4ad48ac06953d89c3dac1507c6445f = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_5afb8fece3a07cc504db7579880d0bac = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczNgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KT09PICJJeGxvcyBJbnZlc3QiPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0J/RgNC40L3Rj9GC0LAg0LzQsNGB0YLQtdGA0L7QvCAtINCh0L7QsdC40YLQvtCyINCg0LDRhdC80LDRgtC40LvQu9CwCiB8IApjYW5vbiAyMzItN9GI0YI8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MzYnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_4954f3c6b8c9ff676360cd23c03972a9.setContent(i_frame_5afb8fece3a07cc504db7579880d0bac);
+                var html_5040619b0d7e9d8011f2ceaf08e6a92f = $(`&lt;div id=&quot;html_5040619b0d7e9d8011f2ceaf08e6a92f&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 704 =============================&lt;br&gt; ООО “NADEJNIY BUXGALTER”&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  canon 264-1 + 1 нов картридж&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=704&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_6d4ad48ac06953d89c3dac1507c6445f.setContent(html_5040619b0d7e9d8011f2ceaf08e6a92f);
             
         
 
-        marker_9a5cda6dc9cafbb4598dc67e292afe14.bindPopup(popup_4954f3c6b8c9ff676360cd23c03972a9)
+        marker_b2b4c5e019bc3712f710a13a0decf5ef.bindPopup(popup_6d4ad48ac06953d89c3dac1507c6445f)
         ;
 
         
     
     
-            var marker_03903eae5a5aba5d3d7b9f26fdd71152 = L.marker(
+            var marker_9d35d6ba84b140c731cdb7642b0e9b01 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_5cab93dd837efc65d348ebe0c31c45da = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "orange", "prefix": "glyphicon"}
+            var icon_2398534b8c72bdafe23c7b0d1daa36cc = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_03903eae5a5aba5d3d7b9f26fdd71152.setIcon(icon_5cab93dd837efc65d348ebe0c31c45da);
+            marker_9d35d6ba84b140c731cdb7642b0e9b01.setIcon(icon_2398534b8c72bdafe23c7b0d1daa36cc);
         
     
-        var popup_5223fd019f554557b4d4c4eca04f7c01 = L.popup({"maxWidth": 370});
+        var popup_f9ef891381cce6ab502fdd9b39faec36 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_da7b8fa3e647565e69a87d3fa7054e34 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczOAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KHQnyDQntCe0J4gIiBDRU5UUkFMIEFTSUEgRkVSVElMSVpFUlMgIjwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCf0YDQuNC90Y/RgtCwINC80LDRgdGC0LXRgNC+0LwgLSDQpdC+0LvQvNGD0YXQsNC80LXQtNC+0LIg0JDQt9Cw0LzQsNGCCiB8IApjYW5vbiA0NTM8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MzgnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_5223fd019f554557b4d4c4eca04f7c01.setContent(i_frame_da7b8fa3e647565e69a87d3fa7054e34);
+                var html_18cf559c86995e2d9de54c236e687e3f = $(`&lt;div id=&quot;html_18cf559c86995e2d9de54c236e687e3f&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 706 =============================&lt;br&gt; Представительство ТОО GOODRICH CENTRAL ASIA&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Галимов Дамир  &lt;br&gt;  для IT отдела  Настройка WIFI Бобур 77, 314-хона https://maps.google.com/maps?q=41.271587,69.260585&amp;ll=41.271587,69.260585&amp;z=16&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=706&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_f9ef891381cce6ab502fdd9b39faec36.setContent(html_18cf559c86995e2d9de54c236e687e3f);
             
         
 
-        marker_03903eae5a5aba5d3d7b9f26fdd71152.bindPopup(popup_5223fd019f554557b4d4c4eca04f7c01)
+        marker_9d35d6ba84b140c731cdb7642b0e9b01.bindPopup(popup_f9ef891381cce6ab502fdd9b39faec36)
         ;
 
         
     
     
-            var marker_4a77c1e9c0dc4a995c6077e4f9863c4f = L.marker(
+            var marker_1fb781ac7a65427441fb2adbe54123f9 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_0d28b00bf3f84060e741ee30bad63167 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_2f524afbc8d2d7c4cd58d87e35897184 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_4a77c1e9c0dc4a995c6077e4f9863c4f.setIcon(icon_0d28b00bf3f84060e741ee30bad63167);
+            marker_1fb781ac7a65427441fb2adbe54123f9.setIcon(icon_2f524afbc8d2d7c4cd58d87e35897184);
         
     
-        var popup_6451e83a86608f8e0a66502193459990 = L.popup({"maxWidth": 370});
+        var popup_74924fe0b0a84350468e43dd4d6fc338 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_097993a80f2912a29c6a7767d991b727 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDY4Mwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J7QntCeICJERUxJIFRPUkciPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KLQo9Cg0JDQkdCV0JrQntCSINCi0JXQnNCj0KAKIHwgCmNhbm9uIDYwMzAtMQo5MzM4MTgyODQg0JrQsNC80L7Qu9CwCgog0KHQvtCx0LjRgtC+0LIg0KDQsNGF0LzQsNGC0LjQu9C70LAg0LTQvtC/0L7Qu9C90LjQuyjQsCkg0LfQsNGP0LLQutGDLi4uCtCS0YvQv9C+0LvQvdC10L3QviDQstGH0LXRgNCwPC9kaXY+PGRpdj48YnV0dG9uIHN0eWxlPSJtYXJnaW4tdG9wOiAxMHB4OyIgb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NjgzJywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48L2Rpdj48YnIvPg==" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_6451e83a86608f8e0a66502193459990.setContent(i_frame_097993a80f2912a29c6a7767d991b727);
+                var html_0fa4dc8b4a99748e994d9cbd6eddc8ff = $(`&lt;div id=&quot;html_0fa4dc8b4a99748e994d9cbd6eddc8ff&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 711 =============================&lt;br&gt; ЧП &quot;IV STAL INVEST&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  canon 232 canon lbp3010&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=711&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_74924fe0b0a84350468e43dd4d6fc338.setContent(html_0fa4dc8b4a99748e994d9cbd6eddc8ff);
             
         
 
-        marker_4a77c1e9c0dc4a995c6077e4f9863c4f.bindPopup(popup_6451e83a86608f8e0a66502193459990)
+        marker_1fb781ac7a65427441fb2adbe54123f9.bindPopup(popup_74924fe0b0a84350468e43dd4d6fc338)
         ;
 
         
     
     
-            var marker_a85cbaf817551d74a8963e2751b98451 = L.marker(
+            var marker_bb372ad30e04e228274e0d6f94682fba = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_a80f50b91dc4563575e56c7cc20749a8 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_b2359973c565093cf6551383a30ca71d = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_a85cbaf817551d74a8963e2751b98451.setIcon(icon_a80f50b91dc4563575e56c7cc20749a8);
+            marker_bb372ad30e04e228274e0d6f94682fba.setIcon(icon_b2359973c565093cf6551383a30ca71d);
         
     
-        var popup_e92bfac77f4c0b11b1c2d09e82bbce7d = L.popup({"maxWidth": 370});
+        var popup_c541b26c9d86fe8eaf2586ac29932e98 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_d6cd542f1c8452634e09ca2a965f3da2 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDY5Mgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KHQnyDQntCe0J4gIkxhbWEgU3RhbmRhcnQiPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KLQo9Cg0JDQkdCV0JrQntCSINCi0JXQnNCj0KAKIHwgCmNhbm9uIG1mIDQwMTg8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD02OTInLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_e92bfac77f4c0b11b1c2d09e82bbce7d.setContent(i_frame_d6cd542f1c8452634e09ca2a965f3da2);
+                var html_9d579e66512bf6683e5dd441680af48a = $(`&lt;div id=&quot;html_9d579e66512bf6683e5dd441680af48a&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 719 =============================&lt;br&gt; ООО &quot;Technopak Systems&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  заправка 4018 - 2 шт. Карина 935979725&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=719&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_c541b26c9d86fe8eaf2586ac29932e98.setContent(html_9d579e66512bf6683e5dd441680af48a);
             
         
 
-        marker_a85cbaf817551d74a8963e2751b98451.bindPopup(popup_e92bfac77f4c0b11b1c2d09e82bbce7d)
+        marker_bb372ad30e04e228274e0d6f94682fba.bindPopup(popup_c541b26c9d86fe8eaf2586ac29932e98)
         ;
 
         
     
     
-            var marker_a374975f8d55798ca3d5fee86e8929a8 = L.marker(
+            var marker_0cc32ee86fa968f7d2b3524c011036b5 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_02f9a124d26c49deb6af69e5d3e93deb = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_084bc00920c0d2d0461d04f4444dd7f8 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_a374975f8d55798ca3d5fee86e8929a8.setIcon(icon_02f9a124d26c49deb6af69e5d3e93deb);
+            marker_0cc32ee86fa968f7d2b3524c011036b5.setIcon(icon_084bc00920c0d2d0461d04f4444dd7f8);
         
     
-        var popup_f672b8b5d8a5237c6496d883c9a9cdb1 = L.popup({"maxWidth": 370});
+        var popup_6567c03eb7bbb891b347c37bae6810e1 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_4e3e0e18a211a8d74655301fa384ffc7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcwMAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KPQlyDQm9CY0JTQldCfPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KXQvtC70LzRg9GF0LDQvNC10LTQvtCyINCQ0LfQsNC80LDRggogfCAK0JPQvtGA0YHQvtCy0LXRgiAxNTM2LSAxINC30L8sIDIzMSAtIDEg0LfQvywgMjEzNSAtIDEg0LfRgDwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcwMCcsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_f672b8b5d8a5237c6496d883c9a9cdb1.setContent(i_frame_4e3e0e18a211a8d74655301fa384ffc7);
+                var html_5fda48ff8d6c21861b4c82ab3e633386 = $(`&lt;div id=&quot;html_5fda48ff8d6c21861b4c82ab3e633386&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 721 =============================&lt;br&gt; МЧЖ BELLISSIMO PIZZA INTERNATIONAL&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  Офис 1) Canon mf443dw 1 заправка  2) Canon mf236n 2 заправки&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=721&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_6567c03eb7bbb891b347c37bae6810e1.setContent(html_5fda48ff8d6c21861b4c82ab3e633386);
             
         
 
-        marker_a374975f8d55798ca3d5fee86e8929a8.bindPopup(popup_f672b8b5d8a5237c6496d883c9a9cdb1)
+        marker_0cc32ee86fa968f7d2b3524c011036b5.bindPopup(popup_6567c03eb7bbb891b347c37bae6810e1)
         ;
 
         
     
     
-            var marker_5cd97f97e813f98ce86d53929050c275 = L.marker(
+            var marker_8dd7ab9225f17f691ef3b17ce43935c4 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_c6ab18533432f15a91b751d4f3a5b4d1 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_53aafc4a0fe0f90b412204521a272124 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_5cd97f97e813f98ce86d53929050c275.setIcon(icon_c6ab18533432f15a91b751d4f3a5b4d1);
+            marker_8dd7ab9225f17f691ef3b17ce43935c4.setIcon(icon_53aafc4a0fe0f90b412204521a272124);
         
     
-        var popup_b98930ba39df64e5a27d7d24bba38e89 = L.popup({"maxWidth": 370});
+        var popup_933d26f10eaa9a16526251990d148951 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_0796f3927dbf3ec9a688d759d8a57566 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcwNAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J7QntCeIOKAnE5BREVKTklZIEJVWEdBTFRFUuKAnTwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCi0KPQoNCQ0JHQldCa0J7QkiDQotCV0JzQo9CgCiB8IApjYW5vbiAyNjQtMSArIDEg0L3QvtCyINC60LDRgNGC0YDQuNC00LY8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MDQnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_b98930ba39df64e5a27d7d24bba38e89.setContent(i_frame_0796f3927dbf3ec9a688d759d8a57566);
+                var html_f168bf1c51599bda6de5f7caeeacae79 = $(`&lt;div id=&quot;html_f168bf1c51599bda6de5f7caeeacae79&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 722 =============================&lt;br&gt; UZLIDEP&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Холмухамедов Азамат  &lt;br&gt;  405 кабинет 1 заправка 3010. 305 кабинет полный комплект красок для Epson l805&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=722&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_933d26f10eaa9a16526251990d148951.setContent(html_f168bf1c51599bda6de5f7caeeacae79);
             
         
 
-        marker_5cd97f97e813f98ce86d53929050c275.bindPopup(popup_b98930ba39df64e5a27d7d24bba38e89)
+        marker_8dd7ab9225f17f691ef3b17ce43935c4.bindPopup(popup_933d26f10eaa9a16526251990d148951)
         ;
 
         
     
     
-            var marker_8c6e2719870f3cdfc63bb6d840d9dc59 = L.marker(
+            var marker_a2b4ca870d599ee7a23f139f3de5e9be = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_82a86e1d5496af75316920e0ce2305c8 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_a3ef3a77fd46060918ae139fd1a97131 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_8c6e2719870f3cdfc63bb6d840d9dc59.setIcon(icon_82a86e1d5496af75316920e0ce2305c8);
+            marker_a2b4ca870d599ee7a23f139f3de5e9be.setIcon(icon_a3ef3a77fd46060918ae139fd1a97131);
         
     
-        var popup_5d0770250ee1fcd01432a3485e5edff2 = L.popup({"maxWidth": 370});
+        var popup_754934048c40e0daff5891c738a158d1 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_a82e4d451513d4fb72f8708d2166c1c8 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcwNgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J/RgNC10LTRgdGC0LDQstC40YLQtdC70YzRgdGC0LLQviDQotCe0J4gR09PRFJJQ0ggQ0VOVFJBTCBBU0lBPC9iPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0JPQsNC70LjQvNC+0LIg0JTQsNC80LjRgAogfCAK0LTQu9GPIElUINC+0YLQtNC10LvQsCAK0J3QsNGB0YLRgNC+0LnQutCwIFdJRkkK0JHQvtCx0YPRgCA3NywgMzE0LdGF0L7QvdCwCmh0dHBzOi8vbWFwcy5nb29nbGUuY29tL21hcHM/cT00MS4yNzE1ODcsNjkuMjYwNTg1JmxsPTQxLjI3MTU4Nyw2OS4yNjA1ODUmej0xNjwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcwNicsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_5d0770250ee1fcd01432a3485e5edff2.setContent(i_frame_a82e4d451513d4fb72f8708d2166c1c8);
+                var html_0e08fada9935023dc62349a536200732 = $(`&lt;div id=&quot;html_0e08fada9935023dc62349a536200732&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 726 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Хусанходжаев Шухрат  &lt;br&gt;  Заказчик: Korzinka - Ziyolilar Номер заявки: 000000052167 Вид заявки: Заправка принтера* Телефон инициатора: 939674641 Инициатор: Наргиза Тема заявки: Принтер Canon 2206 долго печатает Задача (сокр): Здраствуйте. Принтер Canon 2206 идёт долгая подготовка катреджа перед печатью. Прошу отправить специалистов чтобы устронить проблему. Спасибо&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=726&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_754934048c40e0daff5891c738a158d1.setContent(html_0e08fada9935023dc62349a536200732);
             
         
 
-        marker_8c6e2719870f3cdfc63bb6d840d9dc59.bindPopup(popup_5d0770250ee1fcd01432a3485e5edff2)
+        marker_a2b4ca870d599ee7a23f139f3de5e9be.bindPopup(popup_754934048c40e0daff5891c738a158d1)
         ;
 
         
     
     
-            var marker_7b5d8f2b8640c9a7cb5ae8258c68ebe3 = L.marker(
+            var marker_14bc93b9ba55ae3d0be108316990e059 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_af793e3404e80dba8fee7f31c5d14a24 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_75089a8e62b7ca4939a93240ab0c035a = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_7b5d8f2b8640c9a7cb5ae8258c68ebe3.setIcon(icon_af793e3404e80dba8fee7f31c5d14a24);
+            marker_14bc93b9ba55ae3d0be108316990e059.setIcon(icon_75089a8e62b7ca4939a93240ab0c035a);
         
     
-        var popup_abd8458f9588638e2ca7c3f4999a31c2 = L.popup({"maxWidth": 370});
+        var popup_243d1d141bc6395dc3d993506fed012a = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_cda875f38b57804e6b8ae8e96988feb6 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcyMQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0JzQp9CWIEJFTExJU1NJTU8gUElaWkEgSU5URVJOQVRJT05BTDwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCh0L7QsdC40YLQvtCyINCg0LDRhdC80LDRgtC40LvQu9CwCiB8IArQntGE0LjRgQoxKSBDYW5vbiBtZjQ0M2R3IDEg0LfQsNC/0YDQsNCy0LrQsCAKMikgQ2Fub24gbWYyMzZuIDIg0LfQsNC/0YDQsNCy0LrQuDwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcyMScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_abd8458f9588638e2ca7c3f4999a31c2.setContent(i_frame_cda875f38b57804e6b8ae8e96988feb6);
+                var html_a264290f07c1fc2957db59b7e9b0a2ce = $(`&lt;div id=&quot;html_a264290f07c1fc2957db59b7e9b0a2ce&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 727 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Ким Александр  &lt;br&gt;  Заказчик: Korzinka - Setor Номер заявки: 000000052169 Вид заявки: Заправка принтера* Телефон инициатора: 335279944 Инициатор: Farrux Тема заявки: Заправка принтера* Задача (сокр): Заправка принтера*&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=727&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_243d1d141bc6395dc3d993506fed012a.setContent(html_a264290f07c1fc2957db59b7e9b0a2ce);
             
         
 
-        marker_7b5d8f2b8640c9a7cb5ae8258c68ebe3.bindPopup(popup_abd8458f9588638e2ca7c3f4999a31c2)
+        marker_14bc93b9ba55ae3d0be108316990e059.bindPopup(popup_243d1d141bc6395dc3d993506fed012a)
         ;
 
         
     
     
-            var marker_271838daeb8da20bf42cba3544e6d4f5 = L.marker(
+            var marker_06800663d8776131656d64eafa4e332d = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_b1cb54ced3eab052faf55078b7b00fc6 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_f23de43e746976cca13ebd4224c27903 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_271838daeb8da20bf42cba3544e6d4f5.setIcon(icon_b1cb54ced3eab052faf55078b7b00fc6);
+            marker_06800663d8776131656d64eafa4e332d.setIcon(icon_f23de43e746976cca13ebd4224c27903);
         
     
-        var popup_e5342f68d528387830a374fac34fdfbd = L.popup({"maxWidth": 370});
+        var popup_612db6c410d5e126a881d1b81a92f48e = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_15a8eb9a2d654b6d8ba2412ac536e3f3 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcyMgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KVVpMSURFUDwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCl0L7Qu9C80YPRhdCw0LzQtdC00L7QsiDQkNC30LDQvNCw0YIKIHwgCjQwNSDQutCw0LHQuNC90LXRgiAxINC30LDQv9GA0LDQstC60LAgMzAxMC4gMzA1INC60LDQsdC40L3QtdGCINC/0L7Qu9C90YvQuSDQutC+0LzQv9C70LXQutGCINC60YDQsNGB0L7QuiDQtNC70Y8gRXBzb24gbDgwNTwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcyMicsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_e5342f68d528387830a374fac34fdfbd.setContent(i_frame_15a8eb9a2d654b6d8ba2412ac536e3f3);
+                var html_7462e1b92d7dcb7d395b636c9e4a8785 = $(`&lt;div id=&quot;html_7462e1b92d7dcb7d395b636c9e4a8785&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 728 =============================&lt;br&gt; СП ООО &quot;TECHNOPARK AL-JABR&quot; бывшие   &quot;NAPA TEAM&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Холмухамедов Азамат  &lt;br&gt;  Canon 426- 3 шт&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=728&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_612db6c410d5e126a881d1b81a92f48e.setContent(html_7462e1b92d7dcb7d395b636c9e4a8785);
             
         
 
-        marker_271838daeb8da20bf42cba3544e6d4f5.bindPopup(popup_e5342f68d528387830a374fac34fdfbd)
+        marker_06800663d8776131656d64eafa4e332d.bindPopup(popup_612db6c410d5e126a881d1b81a92f48e)
         ;
 
         
     
     
-            var marker_21a40e4f3d742c4f28caee897800dc51 = L.marker(
+            var marker_dd5a981ee5d1ded4dc9769286e326c0f = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_d5df9fc42be7792543bd6ec47f1ceac4 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_a040e482d0b9ec40b2fe1c506c945ad8 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_21a40e4f3d742c4f28caee897800dc51.setIcon(icon_d5df9fc42be7792543bd6ec47f1ceac4);
+            marker_dd5a981ee5d1ded4dc9769286e326c0f.setIcon(icon_a040e482d0b9ec40b2fe1c506c945ad8);
         
     
-        var popup_dcb7873af0606c981c861f93b5a18f82 = L.popup({"maxWidth": 370});
+        var popup_f995d6a39fc9a73cd61a1023028741ea = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_8e090574543bfbb52de37b7b5b0b197e = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcyNgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0JjQnyDQntCe0J4gQU5HTEVTRVkgRk9PRDwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCl0YPRgdCw0L3RhdC+0LTQttCw0LXQsiDQqNGD0YXRgNCw0YIKIHwgCtCX0LDQutCw0LfRh9C40Lo6IEtvcnppbmthIC0gWml5b2xpbGFyCtCd0L7QvNC10YAg0LfQsNGP0LLQutC4OiAwMDAwMDAwNTIxNjcK0JLQuNC0INC30LDRj9Cy0LrQuDog0JfQsNC/0YDQsNCy0LrQsCDQv9GA0LjQvdGC0LXRgNCwKgrQotC10LvQtdGE0L7QvSDQuNC90LjRhtC40LDRgtC+0YDQsDogOTM5Njc0NjQxCtCY0L3QuNGG0LjQsNGC0L7RgDog0J3QsNGA0LPQuNC30LAK0KLQtdC80LAg0LfQsNGP0LLQutC4OiDQn9GA0LjQvdGC0LXRgCBDYW5vbiAyMjA2INC00L7Qu9Cz0L4g0L/QtdGH0LDRgtCw0LXRggrQl9Cw0LTQsNGH0LAgKNGB0L7QutGAKTog0JfQtNGA0LDRgdGC0LLRg9C50YLQtS4g0J/RgNC40L3RgtC10YAgQ2Fub24gMjIwNiDQuNC00ZHRgiDQtNC+0LvQs9Cw0Y8g0L/QvtC00LPQvtGC0L7QstC60LAg0LrQsNGC0YDQtdC00LbQsCDQv9C10YDQtdC0INC/0LXRh9Cw0YLRjNGOLiDQn9GA0L7RiNGDINC+0YLQv9GA0LDQstC40YLRjCDRgdC/0LXRhtC40LDQu9C40YHRgtC+0LIg0YfRgtC+0LHRiyDRg9GB0YLRgNC+0L3QuNGC0Ywg0L/RgNC+0LHQu9C10LzRgy4g0KHQv9Cw0YHQuNCx0L48L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MjYnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_dcb7873af0606c981c861f93b5a18f82.setContent(i_frame_8e090574543bfbb52de37b7b5b0b197e);
+                var html_4469e0041dc7ef83db5649c5716b91b0 = $(`&lt;div id=&quot;html_4469e0041dc7ef83db5649c5716b91b0&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 729 =============================&lt;br&gt; ООО &quot;Cargo Star&quot; Офис Эльбек 3/1)&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  сanon mf 244-1  canon mf 3010-1 Canon lbp 6030b&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=729&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_f995d6a39fc9a73cd61a1023028741ea.setContent(html_4469e0041dc7ef83db5649c5716b91b0);
             
         
 
-        marker_21a40e4f3d742c4f28caee897800dc51.bindPopup(popup_dcb7873af0606c981c861f93b5a18f82)
+        marker_dd5a981ee5d1ded4dc9769286e326c0f.bindPopup(popup_f995d6a39fc9a73cd61a1023028741ea)
         ;
 
         
     
     
-            var marker_662cff3be67b43178e6cb5097964d621 = L.marker(
+            var marker_fb8514687f5fdddf339863174b724196 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_faf091779f22d47eb312cd23c6b1e0bd = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_218d5d4e22f5426e3ed3755e1ccfe33a = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_662cff3be67b43178e6cb5097964d621.setIcon(icon_faf091779f22d47eb312cd23c6b1e0bd);
+            marker_fb8514687f5fdddf339863174b724196.setIcon(icon_218d5d4e22f5426e3ed3755e1ccfe33a);
         
     
-        var popup_f5f5cd8e77c8595aaa28e80c6b862d99 = L.popup({"maxWidth": 370});
+        var popup_68a4a01712306f369405f9d72fa6191e = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_d4a49d8585ee8e7262e4a82aa499fa26 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcyNwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0JjQnyDQntCe0J4gQU5HTEVTRVkgRk9PRDwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCa0LjQvCDQkNC70LXQutGB0LDQvdC00YAKIHwgCtCX0LDQutCw0LfRh9C40Lo6IEtvcnppbmthIC0gU2V0b3IK0J3QvtC80LXRgCDQt9Cw0Y/QstC60Lg6IDAwMDAwMDA1MjE2OQrQktC40LQg0LfQsNGP0LLQutC4OiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAqCtCi0LXQu9C10YTQvtC9INC40L3QuNGG0LjQsNGC0L7RgNCwOiAzMzUyNzk5NDQK0JjQvdC40YbQuNCw0YLQvtGAOiBGYXJydXgK0KLQtdC80LAg0LfQsNGP0LLQutC4OiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAqCtCX0LDQtNCw0YfQsCAo0YHQvtC60YApOiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAqPC9kaXY+PGRpdj48YnV0dG9uIHN0eWxlPSJtYXJnaW4tdG9wOiAxMHB4OyIgb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzI3JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48L2Rpdj48YnIvPg==" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_f5f5cd8e77c8595aaa28e80c6b862d99.setContent(i_frame_d4a49d8585ee8e7262e4a82aa499fa26);
+                var html_0114cda226e966065015c181efcd091b = $(`&lt;div id=&quot;html_0114cda226e966065015c181efcd091b&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 731 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Хусанходжаев Шухрат  &lt;br&gt;  Заказчик: Korzinka - Qoratosh Номер заявки: 000000052171 Вид заявки: Заправка принтера* Телефон инициатора: 901688929 Инициатор: Файзулла Тема заявки: Заправка принтера Задача (сокр): Заправка  вес принтер маркета&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=731&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_68a4a01712306f369405f9d72fa6191e.setContent(html_0114cda226e966065015c181efcd091b);
             
         
 
-        marker_662cff3be67b43178e6cb5097964d621.bindPopup(popup_f5f5cd8e77c8595aaa28e80c6b862d99)
+        marker_fb8514687f5fdddf339863174b724196.bindPopup(popup_68a4a01712306f369405f9d72fa6191e)
         ;
 
         
     
     
-            var marker_a3e98d3292a8b3ccbe021ff1dfd9e03a = L.marker(
+            var marker_82e7b4fb973f8e6a5ddd8a0611f7dc45 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_cb61bdac88fd165d0f66ad0ee6d386d3 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_b13b6e500d05ac9ab58b821e21aa9f6b = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_a3e98d3292a8b3ccbe021ff1dfd9e03a.setIcon(icon_cb61bdac88fd165d0f66ad0ee6d386d3);
+            marker_82e7b4fb973f8e6a5ddd8a0611f7dc45.setIcon(icon_b13b6e500d05ac9ab58b821e21aa9f6b);
         
     
-        var popup_584867eaafca056ce36e0040d63ea11f = L.popup({"maxWidth": 370});
+        var popup_2ff244472582975fb5dbc22782b8e689 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_4a467ef5ddd8a604ada173cb7ef02da5 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcyOAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KHQnyDQntCe0J4gIlRFQ0hOT1BBUksgQUwtSkFCUiIg0LHRi9Cy0YjQuNC1ICAgIk5BUEEgVEVBTSI8L2I+PC9kaXY+PGRpdiBzdHlsZT0iZm9udC1zaXplOiAxMnB4OyBjb2xvcjogYmxhY2s7Ij7QktGL0L/QvtC70L3QtdC90LAgLSDQpdC+0LvQvNGD0YXQsNC80LXQtNC+0LIg0JDQt9Cw0LzQsNGCCiB8IApDYW5vbiA0MjYtIDMg0YjRgjwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcyOCcsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_584867eaafca056ce36e0040d63ea11f.setContent(i_frame_4a467ef5ddd8a604ada173cb7ef02da5);
+                var html_daf3de35d105a19eea9787652b689035 = $(`&lt;div id=&quot;html_daf3de35d105a19eea9787652b689035&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 733 =============================&lt;br&gt; &quot;EVEREST UNIVERSAL TRADE GROUP&quot; mas\`uliyati cheklangan jamiyati&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  3010 - 2 зправки, 443 - 2 заправки&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=733&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_2ff244472582975fb5dbc22782b8e689.setContent(html_daf3de35d105a19eea9787652b689035);
             
         
 
-        marker_a3e98d3292a8b3ccbe021ff1dfd9e03a.bindPopup(popup_584867eaafca056ce36e0040d63ea11f)
+        marker_82e7b4fb973f8e6a5ddd8a0611f7dc45.bindPopup(popup_2ff244472582975fb5dbc22782b8e689)
         ;
 
         
     
     
-            var marker_eead34056e7e9dc1b361d4fd4a676a3e = L.marker(
+            var marker_1b57aaa8df3628def63343313dec7f2c = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_bef479a62089f85de491050fb9c0a197 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_c5d2ad7d287caa7d7ad523e95c2c92c9 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_eead34056e7e9dc1b361d4fd4a676a3e.setIcon(icon_bef479a62089f85de491050fb9c0a197);
+            marker_1b57aaa8df3628def63343313dec7f2c.setIcon(icon_c5d2ad7d287caa7d7ad523e95c2c92c9);
         
     
-        var popup_2d56c43d1e381f3d85f51e29b893efaa = L.popup({"maxWidth": 370});
+        var popup_4904afe3df4677111c3db1bfb0ff1c89 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_2eec18e9ce1d7096d20f7aec12249194 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcyOQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J7QntCeICJDYXJnbyBTdGFyIiDQntGE0LjRgSDQrdC70YzQsdC10LogMy8xKTwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCi0KPQoNCQ0JHQldCa0J7QkiDQotCV0JzQo9CgCiB8IArRgWFub24gbWYgMjQ0LTEgCmNhbm9uIG1mIDMwMTAtMQpDYW5vbiBsYnAgNjAzMGI8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MjknLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_2d56c43d1e381f3d85f51e29b893efaa.setContent(i_frame_2eec18e9ce1d7096d20f7aec12249194);
+                var html_b8f74ddc64f130404d6400d12e1b8de2 = $(`&lt;div id=&quot;html_b8f74ddc64f130404d6400d12e1b8de2&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 734 =============================&lt;br&gt; &quot;MELON FASHION C A&quot; mas\`uliyati cheklangan jamiyati&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  нужна 1 заправка 269 мф и также 1 новый катридж   Салихов Александр дополнил(а) заявку... Новый клиент до обеда кто может сделать??&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=734&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_4904afe3df4677111c3db1bfb0ff1c89.setContent(html_b8f74ddc64f130404d6400d12e1b8de2);
             
         
 
-        marker_eead34056e7e9dc1b361d4fd4a676a3e.bindPopup(popup_2d56c43d1e381f3d85f51e29b893efaa)
+        marker_1b57aaa8df3628def63343313dec7f2c.bindPopup(popup_4904afe3df4677111c3db1bfb0ff1c89)
         ;
 
         
     
     
-            var marker_7c41d6308720ea3061e917a1e27f05fc = L.marker(
+            var marker_166b9f36917eb4737c9119bea65fcaed = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_6d84555fd75b4382bc694bf29e04e18d = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_559416efcb04fa252f49edd0d6ff4607 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_7c41d6308720ea3061e917a1e27f05fc.setIcon(icon_6d84555fd75b4382bc694bf29e04e18d);
+            marker_166b9f36917eb4737c9119bea65fcaed.setIcon(icon_559416efcb04fa252f49edd0d6ff4607);
         
     
-        var popup_0aeabea28ccef36626452cd89558d352 = L.popup({"maxWidth": 370});
+        var popup_9f11c89e283994890d08894505594827 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_75f35d266880cc435e1ee61614ad8525 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczMQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0JjQnyDQntCe0J4gQU5HTEVTRVkgRk9PRDwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCl0YPRgdCw0L3RhdC+0LTQttCw0LXQsiDQqNGD0YXRgNCw0YIKIHwgCtCX0LDQutCw0LfRh9C40Lo6IEtvcnppbmthIC0gUW9yYXRvc2gK0J3QvtC80LXRgCDQt9Cw0Y/QstC60Lg6IDAwMDAwMDA1MjE3MQrQktC40LQg0LfQsNGP0LLQutC4OiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAqCtCi0LXQu9C10YTQvtC9INC40L3QuNGG0LjQsNGC0L7RgNCwOiA5MDE2ODg5MjkK0JjQvdC40YbQuNCw0YLQvtGAOiDQpNCw0LnQt9GD0LvQu9CwCtCi0LXQvNCwINC30LDRj9Cy0LrQuDog0JfQsNC/0YDQsNCy0LrQsCDQv9GA0LjQvdGC0LXRgNCwCtCX0LDQtNCw0YfQsCAo0YHQvtC60YApOiDQl9Cw0L/RgNCw0LLQutCwwqAg0LLQtdGBINC/0YDQuNC90YLQtdGAINC80LDRgNC60LXRgtCwPC9kaXY+PGRpdj48YnV0dG9uIHN0eWxlPSJtYXJnaW4tdG9wOiAxMHB4OyIgb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzMxJywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48L2Rpdj48YnIvPg==" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_0aeabea28ccef36626452cd89558d352.setContent(i_frame_75f35d266880cc435e1ee61614ad8525);
+                var html_7b1404f652d5b844b7d54077318bdd70 = $(`&lt;div id=&quot;html_7b1404f652d5b844b7d54077318bdd70&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 735 =============================&lt;br&gt; OOO &quot;Kanstik&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  Канстик Мирабад. 4730-1 заправка. Тел 933901314&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=735&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_9f11c89e283994890d08894505594827.setContent(html_7b1404f652d5b844b7d54077318bdd70);
             
         
 
-        marker_7c41d6308720ea3061e917a1e27f05fc.bindPopup(popup_0aeabea28ccef36626452cd89558d352)
+        marker_166b9f36917eb4737c9119bea65fcaed.bindPopup(popup_9f11c89e283994890d08894505594827)
         ;
 
         
     
     
-            var marker_a1afe9072298742329682309cdb4f1b5 = L.marker(
+            var marker_f7f41348204288fb83ff38317ebdf829 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_bab8051b4575d64d1ccd4e9593e1d378 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_f803d61ed177c9b513bd7fa8d428fc99 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_a1afe9072298742329682309cdb4f1b5.setIcon(icon_bab8051b4575d64d1ccd4e9593e1d378);
+            marker_f7f41348204288fb83ff38317ebdf829.setIcon(icon_f803d61ed177c9b513bd7fa8d428fc99);
         
     
-        var popup_f1f9a4c9d699b294775c280838399017 = L.popup({"maxWidth": 370});
+        var popup_41b2000a337e56531640fc28b596e353 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_83a1d6b0d621087a0ac9b5fbcdea2834 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczNQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KT09PICJLYW5zdGlrIjwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCh0L7QsdC40YLQvtCyINCg0LDRhdC80LDRgtC40LvQu9CwCiB8IArQmtCw0L3RgdGC0LjQuiDQnNC40YDQsNCx0LDQtC4gNDczMC0xINC30LDQv9GA0LDQstC60LAuINCi0LXQuyA5MzM5MDEzMTQ8L2Rpdj48ZGl2PjxidXR0b24gc3R5bGU9Im1hcmdpbi10b3A6IDEwcHg7IiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MzUnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjwvZGl2Pjxici8+" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_f1f9a4c9d699b294775c280838399017.setContent(i_frame_83a1d6b0d621087a0ac9b5fbcdea2834);
+                var html_900cf7ea14ec803bae7cb2992e446e94 = $(`&lt;div id=&quot;html_900cf7ea14ec803bae7cb2992e446e94&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 736 =============================&lt;br&gt; OOO &quot;Ixlos Invest&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  canon 232-7шт&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=736&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_41b2000a337e56531640fc28b596e353.setContent(html_900cf7ea14ec803bae7cb2992e446e94);
             
         
 
-        marker_a1afe9072298742329682309cdb4f1b5.bindPopup(popup_f1f9a4c9d699b294775c280838399017)
+        marker_f7f41348204288fb83ff38317ebdf829.bindPopup(popup_41b2000a337e56531640fc28b596e353)
         ;
 
         
     
     
-            var marker_d1d230fe20b66a56e99139159a3f1e7c = L.marker(
+            var marker_53cf2407764966413449698f7fbd4bd5 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_3cc8f804c6e313aedbd7e55baf43bdf2 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_1da9637e2eacd4195594bf1281b5b2af = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_d1d230fe20b66a56e99139159a3f1e7c.setIcon(icon_3cc8f804c6e313aedbd7e55baf43bdf2);
+            marker_53cf2407764966413449698f7fbd4bd5.setIcon(icon_1da9637e2eacd4195594bf1281b5b2af);
         
     
-        var popup_6bd687f51c1445591d186b139d6e6448 = L.popup({"maxWidth": 370});
+        var popup_8709ccbe4a8fdcf4ce2db5902a07b7ec = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_94a991bd22a1c8c073fee14915e6ec22 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDczOQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0JjQnyDQntCe0J4gQU5HTEVTRVkgRk9PRDwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCa0LjQvCDQkNC70LXQutGB0LDQvdC00YAKIHwgCtCX0LDQutCw0LfRh9C40Lo6INCmMQrQndC+0LzQtdGAINC30LDRj9Cy0LrQuDogMDAwMDAwMDUyMTgzCtCS0LjQtCDQt9Cw0Y/QstC60Lg6INCX0LDQv9GA0LDQstC60LAg0L/RgNC40L3RgtC10YDQsCoK0KLQtdC70LXRhNC+0L0g0LjQvdC40YbQuNCw0YLQvtGA0LA6IDkzNTAxMDQ2MQrQmNC90LjRhtC40LDRgtC+0YA6INCQ0LrQvNCw0Lsg0K/QtNCz0L7RgNC+0LIK0KLQtdC80LAg0LfQsNGP0LLQutC4OiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAK0JfQsNC00LDRh9CwICjRgdC+0LrRgCk6INCf0YDQvtGI0YMg0LfQsNC/0YDQsNCy0LjRgtGMINC60LDRgtGA0LjQtNC2INC/0YDQuNC90YLQtdGA0LAgQ2Fub24gTUYzMDEwINC4INChYW5vbiBNRjIyMDwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTczOScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_6bd687f51c1445591d186b139d6e6448.setContent(i_frame_94a991bd22a1c8c073fee14915e6ec22);
+                var html_9829b9f0b675f1c2d9a0d956874ae747 = $(`&lt;div id=&quot;html_9829b9f0b675f1c2d9a0d956874ae747&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 737 =============================&lt;br&gt; ООО «ANOR AGRO GLOBAL GROUP»&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  canon 643-не печатает черный цвет&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=737&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_8709ccbe4a8fdcf4ce2db5902a07b7ec.setContent(html_9829b9f0b675f1c2d9a0d956874ae747);
             
         
 
-        marker_d1d230fe20b66a56e99139159a3f1e7c.bindPopup(popup_6bd687f51c1445591d186b139d6e6448)
+        marker_53cf2407764966413449698f7fbd4bd5.bindPopup(popup_8709ccbe4a8fdcf4ce2db5902a07b7ec)
         ;
 
         
     
     
-            var marker_ac4a1354d52c6086154985c55906f867 = L.marker(
+            var marker_bd7c0f940b83fe06d7a6b9dd1183dc67 = L.marker(
+                [41.28921489333344, 69.31288111459628],
+                {}
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+        
+    
+            var icon_cbf1fa71babca6e2ea4567579f101e77 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
+            );
+            marker_bd7c0f940b83fe06d7a6b9dd1183dc67.setIcon(icon_cbf1fa71babca6e2ea4567579f101e77);
+        
+    
+        var popup_121e510d71fdedf8a1c82215efcb75a2 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+
+        
+            
+                var html_09a81aa3ed47f3ba72db8f1d664f69bd = $(`&lt;div id=&quot;html_09a81aa3ed47f3ba72db8f1d664f69bd&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 739 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Ким Александр  &lt;br&gt;  Заказчик: Ц1 Номер заявки: 000000052183 Вид заявки: Заправка принтера* Телефон инициатора: 935010461 Инициатор: Акмал Ядгоров Тема заявки: Заправка принтера Задача (сокр): Прошу заправить катридж принтера Canon MF3010 и Сanon MF220&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=739&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_121e510d71fdedf8a1c82215efcb75a2.setContent(html_09a81aa3ed47f3ba72db8f1d664f69bd);
+            
+        
+
+        marker_bd7c0f940b83fe06d7a6b9dd1183dc67.bindPopup(popup_121e510d71fdedf8a1c82215efcb75a2)
+        ;
+
+        
+    
+    
+            var marker_b4a4ac55a6f53803e52820f31d5a7f02 = L.marker(
                 [41.300857, 69.263421],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_bfac188648025147752da38f429afd26 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            var icon_707a5261d7f8e8d861a29353a496e9fa = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_ac4a1354d52c6086154985c55906f867.setIcon(icon_bfac188648025147752da38f429afd26);
+            marker_b4a4ac55a6f53803e52820f31d5a7f02.setIcon(icon_707a5261d7f8e8d861a29353a496e9fa);
         
     
-        var popup_d4d969361b831937c0a20d404824f2d8 = L.popup({"maxWidth": 370});
+        var popup_5e64123d55c9f639282714a943e247fb = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_d2da06265ea232781b9b6530af2cce04 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDc0Mwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0JjQnyDQntCe0J4gQU5HTEVTRVkgRk9PRDwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCa0LjQvCDQkNC70LXQutGB0LDQvdC00YAKIHwgCtCX0LDQutCw0LfRh9C40Lo6IEtvcnppbmthIC0gVHVya21lbnNraXkK0J3QvtC80LXRgCDQt9Cw0Y/QstC60Lg6IDAwMDAwMDA1MjE5MQrQktC40LQg0LfQsNGP0LLQutC4OiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAqCtCi0LXQu9C10YTQvtC9INC40L3QuNGG0LjQsNGC0L7RgNCwOiA5OTUxNTUyMjYK0JjQvdC40YbQuNCw0YLQvtGAOiDQrdC00LXQvArQotC10LzQsCDQt9Cw0Y/QstC60Lg6INCX0LDQv9GA0LDQstC60LAg0L/RgNC40L3RgtC10YDQsArQl9Cw0LTQsNGH0LAgKNGB0L7QutGAKTog0JfQsNC/0YDQsNCy0LrQsCDQv9GA0LjQvdGC0LXRgNCwKjwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTc0MycsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_d4d969361b831937c0a20d404824f2d8.setContent(i_frame_d2da06265ea232781b9b6530af2cce04);
+                var html_7f97a714ee02e3e2f55309484c7e7c19 = $(`&lt;div id=&quot;html_7f97a714ee02e3e2f55309484c7e7c19&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 743 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Ким Александр  &lt;br&gt;  Заказчик: Korzinka - Turkmenskiy Номер заявки: 000000052191 Вид заявки: Заправка принтера* Телефон инициатора: 995155226 Инициатор: Эдем Тема заявки: Заправка принтера Задача (сокр): Заправка принтера*&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=743&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_5e64123d55c9f639282714a943e247fb.setContent(html_7f97a714ee02e3e2f55309484c7e7c19);
             
         
 
-        marker_ac4a1354d52c6086154985c55906f867.bindPopup(popup_d4d969361b831937c0a20d404824f2d8)
+        marker_b4a4ac55a6f53803e52820f31d5a7f02.bindPopup(popup_5e64123d55c9f639282714a943e247fb)
         ;
 
         
     
     
-            var marker_d1b58eb5a538884b17830f5041f315b7 = L.marker(
+            var marker_e5327ad1fbdbc97a64a7957c968819ce = L.marker(
                 [41.219524, 69.223094],
                 {}
-            ).addTo(marker_cluster_efb2a8b8dbc34597fa4b7d0ac7d85030);
+            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
         
     
-            var icon_4d1696e993d7cb684b840e657f7f54fa = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            var icon_e957c12d1078ef881033d63e29bd0aa9 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;red&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_d1b58eb5a538884b17830f5041f315b7.setIcon(icon_4d1696e993d7cb684b840e657f7f54fa);
+            marker_e5327ad1fbdbc97a64a7957c968819ce.setIcon(icon_e957c12d1078ef881033d63e29bd0aa9);
         
     
-        var popup_fd309c6213e4055f9f5f410add4aace5 = L.popup({"maxWidth": 370});
+        var popup_c208ab59f9c87e3b7fd657d8625108d8 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
 
         
             
-                var i_frame_c5faba095f869ee82ec1cc8b5c0e10d7 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjMDA1N0I1OyI+PGI+4oSWIDcyNQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KLQtdGB0YIgMjwvYj48L2Rpdj48ZGl2IHN0eWxlPSJmb250LXNpemU6IDEycHg7IGNvbG9yOiBibGFjazsiPtCe0YLQvNC10L3QtdC90LAKIHwgCtCf0YDQvtCy0LXRgNC60LAg0L/QvtC00LDRh9C4INC30LDRj9Cy0LrQuCDQvtGCINGE0LjQtyDQu9C40YbQsDwvZGl2PjxkaXY+PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDogMTBweDsiIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcyNScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PC9kaXY+PGJyLz4=" width="370" style="border:none !important;" height="200"></iframe>`)[0];
-                popup_fd309c6213e4055f9f5f410add4aace5.setContent(i_frame_c5faba095f869ee82ec1cc8b5c0e10d7);
+                var html_8f0d56b5bb7c9ac730811aacf6b9671d = $(`&lt;div id=&quot;html_8f0d56b5bb7c9ac730811aacf6b9671d&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:red; font-size:16px; font-weight:bold;&quot;&gt;№ 725 =============================&lt;br&gt; Тест 2&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Отменена  &lt;br&gt;  Проверка подачи заявки от физ лица&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=725&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:red; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_c208ab59f9c87e3b7fd657d8625108d8.setContent(html_8f0d56b5bb7c9ac730811aacf6b9671d);
             
         
 
-        marker_d1b58eb5a538884b17830f5041f315b7.bindPopup(popup_fd309c6213e4055f9f5f410add4aace5)
+        marker_e5327ad1fbdbc97a64a7957c968819ce.bindPopup(popup_c208ab59f9c87e3b7fd657d8625108d8)
         ;
 
         
     
-    
-            var marker_c88de470cde9f5758bfd4ff28fdecfa0 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(map_2437020f0b059ec4e9610faf58c8ed68);
-        
-    
-            var icon_ddcf85dc0c996187da7303340ed365da = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "gray", "prefix": "glyphicon"}
-            );
-            marker_c88de470cde9f5758bfd4ff28fdecfa0.setIcon(icon_ddcf85dc0c996187da7303340ed365da);
-        
-    
-        var popup_03ff24ae5c46901449449b3367b0ba7c = L.popup({"maxWidth": 200});
+&lt;/script&gt;
+&lt;/html&gt;" style="position:absolute;width:100%;height:100%;left:0;top:0;border:none !important;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe></div></div>
+            </div>
+            <div class="scrollable-list" style="width: 30%; float: left; height: calc(100% - 130px); overflow: auto;">
+                <div style="margin-bottom: 20px;">
+                    <h2 style="color: black; font-size: 18px; font-weight: bold;">Условные обозначения</h2>
+                    <p style="color: blue; font-size: 14px;">████ - Заявки не принятые мастерами</p>
+                    <p style="color: orange; font-size: 14px;">████ - Заявки у мастеров</p>
+                    <p style="color: green; font-size: 14px;">████ - Выполненные заявки</p>
+                    <p style="color: red; font-size: 14px;">████ - Отмененные заявки</p>
+                    <br>
+                </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:blue; font-size:16px; font-weight:bold;">№ 714
+=============================<br>
+OOO "FILUET SILK WAY LOGISTICS"</p>
+            <p style="color:black; font-size:12px;">Зарегистрирована
+ <br> 
+hp m 608-5
 
-        
-            
-                var i_frame_b203f812f513f6a501da7dc8dc27d6ee = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICAKICAgICAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDIwcHg7IGNvbG9yOiBibGFjazsiPjxiPtCj0YHQu9C+0LLQvdGL0LUg0L7QsdC+0LfQvdCw0YfQtdC90LjRjzo8L2Rpdj48YnIvPgogICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBibHVlOyI+PGIgc3R5bGU9ImNvbG9yOiBibHVlOyI+4paI4paI4paI4paIPC9iPiAtINCX0LDRj9Cy0LrQuCDQvdC1INC/0YDQuNC90Y/RgtGL0LUg0LzQsNGB0YLQtdGA0LDQvNC4PC9iPjwvZGl2PgogICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBvcmFuZ2U7Ij48YiBzdHlsZT0iY29sb3I6IG9yYW5nZTsiPuKWiOKWiOKWiOKWiDwvYj4gLSDQl9Cw0Y/QstC60Lgg0YMg0LzQsNGB0YLQtdGA0L7QsjwvYj48L2Rpdj4KICAgICAgICA8ZGl2IHN0eWxlPSJtYXJnaW4tYm90dG9tOiAxMHB4OyBjb2xvcjogZ3JlZW47Ij48YiBzdHlsZT0iY29sb3I6IGdyZWVuOyI+4paI4paI4paI4paIPC9iPiAtINCS0YvQv9C+0LvQvdC10L3QvdGL0LUg0LfQsNGP0LLQutC4PC9iPjwvZGl2PgogICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiByZWQ7Ij48YiBzdHlsZT0iY29sb3I6IHJlZDsiPuKWiOKWiOKWiOKWiDwvYj4gLSDQntGC0LzQtdC90LXQvdC90YvQtSDQt9Cw0Y/QstC60Lg8L2Rpdj48YnIvPgogICAg" width="200" style="border:none !important;" height="150"></iframe>`)[0];
-                popup_03ff24ae5c46901449449b3367b0ba7c.setContent(i_frame_b203f812f513f6a501da7dc8dc27d6ee);
-            
-        
-
-        marker_c88de470cde9f5758bfd4ff28fdecfa0.bindPopup(popup_03ff24ae5c46901449449b3367b0ba7c)
-        ;
-
-        
+ Ахмедова Шаира дополнил(а) заявку...
+локацию</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=714', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
     
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:blue; font-size:16px; font-weight:bold;">№ 724
+=============================<br>
+СП ООО «ADM-ASTER»</p>
+            <p style="color:black; font-size:12px;">Зарегистрирована
+ <br> 
+057 - 2 заправки . 051 самсунг - 3 заправки</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=724', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
     
-            var marker_3b0e15a322b329eea28786122b1933a5 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(map_2437020f0b059ec4e9610faf58c8ed68);
-        
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:blue; font-size:16px; font-weight:bold;">№ 730
+=============================<br>
+ООО "AVA-TEN"</p>
+            <p style="color:black; font-size:12px;">Зарегистрирована
+ <br> 
+Заправка картриджей
+на 19,05,2023 с утра
+909088333 Карина</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=730', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
     
-            var icon_773704e0e2fc4b2b41eb0ee79d20bad2 = L.AwesomeMarkers.icon(
-                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "gray", "prefix": "glyphicon"}
-            );
-            marker_3b0e15a322b329eea28786122b1933a5.setIcon(icon_773704e0e2fc4b2b41eb0ee79d20bad2);
-        
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:blue; font-size:16px; font-weight:bold;">№ 732
+=============================<br>
+"NUR-EL BIZNES"</p>
+            <p style="color:black; font-size:12px;">Зарегистрирована
+ <br> 
+Проблемы с компьютером</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=732', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
     
-        var popup_541267a7e632fcaf4694182aa64e4ee5 = L.popup({"maxWidth": 400});
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:blue; font-size:16px; font-weight:bold;">№ 740
+=============================<br>
+ЧП "LUX OPTIX"</p>
+            <p style="color:black; font-size:12px;">Зарегистрирована
+ <br> 
+для IT отдела надо проверить офисные программы
+филиал на М. Горьком
+974600338 Екатерина</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=740', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:blue; font-size:16px; font-weight:bold;">№ 741
+=============================<br>
+"DAVLAT EKOLOGIK EKSPERTIZASI MARKAZI" DUK</p>
+            <p style="color:black; font-size:12px;">Зарегистрирована
+ <br> 
+Заправка картриджей</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=741', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:blue; font-size:16px; font-weight:bold;">№ 742
+=============================<br>
+OOO "QUALITY PHARM"</p>
+            <p style="color:black; font-size:12px;">Зарегистрирована
+ <br> 
+Заправка  Canon i-SENSYS MF643Cdw цветное/лазерное - 1 заправка. и пару чёрно белых модель не знают</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=742', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:blue; font-size:16px; font-weight:bold;">№ 744
+=============================<br>
+ИП ООО ANGLESEY FOOD</p>
+            <p style="color:black; font-size:12px;">Зарегистрирована
+ <br> 
+Заказчик: Ц1
+Номер заявки: 000000052198
+Вид заявки: Заправка принтера*
+Телефон инициатора: 974907726
+Инициатор: Эргашев Шахбос
+Тема заявки: Заправка принтера
+Задача (сокр): Необходимо заправить принтеры юридического отдела Canon MF 3010 и Canon MF 443dw.</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=744', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:orange; font-size:16px; font-weight:bold;">№ 710
+=============================<br>
+ИП ООО Fashion Star</p>
+            <p style="color:black; font-size:12px;">Принята мастером - Холмухамедов Азамат
+ <br> 
+заправка L3100 - 1 шт. Наргиза 935056067</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=710', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:orange; font-size:16px; font-weight:bold;">№ 738
+=============================<br>
+СП ООО " CENTRAL ASIA FERTILIZERS "</p>
+            <p style="color:black; font-size:12px;">Принята мастером - Холмухамедов Азамат
+ <br> 
+canon 453</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=738', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 683
+=============================<br>
+ООО "DELI TORG"</p>
+            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
+ <br> 
+canon 6030-1
+933818284 Камола
 
-        
-            
-                var i_frame_f5634e5b88ab993cb70021085bffb812 = $(`<iframe src="data:text/html;charset=utf-8;base64,CiAgICAKICAgICAgICA8ZGl2IHN0eWxlPSJmb250LXNpemU6IDIwcHg7IGNvbG9yOiBibGFjazsiPjxiPtCj0YHQu9C+0LLQvdGL0LUg0L7QsdC+0LfQvdCw0YfQtdC90LjRjzo8L2Rpdj48YnIvPgogICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBibHVlOyI+PGIgc3R5bGU9ImNvbG9yOiBibHVlOyI+4paI4paI4paI4paIPC9iPiAtINCX0LDRj9Cy0LrQuCDQvdC1INC/0YDQuNC90Y/RgtGL0LUg0LzQsNGB0YLQtdGA0LDQvNC4PC9iPjwvZGl2PgogICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBvcmFuZ2U7Ij48YiBzdHlsZT0iY29sb3I6IG9yYW5nZTsiPuKWiOKWiOKWiOKWiDwvYj4gLSDQl9Cw0Y/QstC60Lgg0YMg0LzQsNGB0YLQtdGA0L7QsjwvYj48L2Rpdj4KICAgICAgICA8ZGl2IHN0eWxlPSJtYXJnaW4tYm90dG9tOiAxMHB4OyBjb2xvcjogZ3JlZW47Ij48YiBzdHlsZT0iY29sb3I6IGdyZWVuOyI+4paI4paI4paI4paIPC9iPiAtINCS0YvQv9C+0LvQvdC10L3QvdGL0LUg0LfQsNGP0LLQutC4PC9iPjwvZGl2PgogICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiByZWQ7Ij48YiBzdHlsZT0iY29sb3I6IHJlZDsiPuKWiOKWiOKWiOKWiDwvYj4gLSDQntGC0LzQtdC90LXQvdC90YvQtSDQt9Cw0Y/QstC60Lg8L2Rpdj48YnIvPgogICAgPGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGJsdWU7Ij48YiBzdHlsZT0iY29sb3I6IGJsdWU7Ij7ihJYgNzE0Cj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpPT08gIkZJTFVFVCBTSUxLIFdBWSBMT0dJU1RJQ1MiPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IApocCBtIDYwOC01Cgog0JDRhdC80LXQtNC+0LLQsCDQqNCw0LjRgNCwINC00L7Qv9C+0LvQvdC40Lso0LApINC30LDRj9Cy0LrRgy4uLgrQu9C+0LrQsNGG0LjRjjwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzE0JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGJsdWU7Ij48YiBzdHlsZT0iY29sb3I6IGJsdWU7Ij7ihJYgNzI0Cj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrQodCfINCe0J7QniDCq0FETS1BU1RFUsK7PC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IAowNTcgLSAyINC30LDQv9GA0LDQstC60LggLiAwNTEg0YHQsNC80YHRg9C90LMgLSAzINC30LDQv9GA0LDQstC60Lg8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcyNCcsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBibHVlOyI+PGIgc3R5bGU9ImNvbG9yOiBibHVlOyI+4oSWIDczMAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J7QntCeICJBVkEtVEVOIjwvYj48YnIvPjxzcGFuIHN0eWxlPSJjb2xvcjogYmxhY2s7Ij7Ql9Cw0YDQtdCz0LjRgdGC0YDQuNGA0L7QstCw0L3QsAogfCAK0JfQsNC/0YDQsNCy0LrQsCDQutCw0YDRgtGA0LjQtNC20LXQuQrQvdCwIDE5LDA1LDIwMjMg0YEg0YPRgtGA0LAKOTA5MDg4MzMzINCa0LDRgNC40L3QsDwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzMwJywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGJsdWU7Ij48YiBzdHlsZT0iY29sb3I6IGJsdWU7Ij7ihJYgNzMyCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoiTlVSLUVMIEJJWk5FUyI8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JfQsNGA0LXQs9C40YHRgtGA0LjRgNC+0LLQsNC90LAKIHwgCtCf0YDQvtCx0LvQtdC80Ysg0YEg0LrQvtC80L/RjNGO0YLQtdGA0L7QvDwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzMyJywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGJsdWU7Ij48YiBzdHlsZT0iY29sb3I6IGJsdWU7Ij7ihJYgNzMzCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoiRVZFUkVTVCBVTklWRVJTQUwgVFJBREUgR1JPVVAiIG1hc2B1bGl5YXRpIGNoZWtsYW5nYW4gamFtaXlhdGk8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JfQsNGA0LXQs9C40YHRgtGA0LjRgNC+0LLQsNC90LAKIHwgCjMwMTAgLSAyINC30L/RgNCw0LLQutC4LCA0NDMgLSAyINC30LDQv9GA0LDQstC60Lg8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTczMycsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBibHVlOyI+PGIgc3R5bGU9ImNvbG9yOiBibHVlOyI+4oSWIDczNAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIk1FTE9OIEZBU0hJT04gQyBBIiBtYXNgdWxpeWF0aSBjaGVrbGFuZ2FuIGphbWl5YXRpPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IArQvdGD0LbQvdCwIDEg0LfQsNC/0YDQsNCy0LrQsCAyNjkg0LzRhCDQuCDRgtCw0LrQttC1IDEg0L3QvtCy0YvQuSDQutCw0YLRgNC40LTQtgoKINCh0LDQu9C40YXQvtCyINCQ0LvQtdC60YHQsNC90LTRgCDQtNC+0L/QvtC70L3QuNC7KNCwKSDQt9Cw0Y/QstC60YMuLi4K0J3QvtCy0YvQuSDQutC70LjQtdC90YIg0LTQviDQvtCx0LXQtNCwINC60YLQviDQvNC+0LbQtdGCINGB0LTQtdC70LDRgtGMPz88L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTczNCcsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBibHVlOyI+PGIgc3R5bGU9ImNvbG9yOiBibHVlOyI+4oSWIDczNwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0J7QntCeIMKrQU5PUiBBR1JPIEdMT0JBTCBHUk9VUMK7PC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IApjYW5vbiA2NDMt0L3QtSDQv9C10YfQsNGC0LDQtdGCINGH0LXRgNC90YvQuSDRhtCy0LXRgjwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzM3JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGJsdWU7Ij48YiBzdHlsZT0iY29sb3I6IGJsdWU7Ij7ihJYgNzQwCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrQp9CfICJMVVggT1BUSVgiPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IArQtNC70Y8gSVQg0L7RgtC00LXQu9CwINC90LDQtNC+INC/0YDQvtCy0LXRgNC40YLRjCDQvtGE0LjRgdC90YvQtSDQv9GA0L7Qs9GA0LDQvNC80YsK0YTQuNC70LjQsNC7INC90LAg0JwuINCT0L7RgNGM0LrQvtC8Cjk3NDYwMDMzOCDQldC60LDRgtC10YDQuNC90LA8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTc0MCcsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBibHVlOyI+PGIgc3R5bGU9ImNvbG9yOiBibHVlOyI+4oSWIDc0MQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIkRBVkxBVCBFS09MT0dJSyBFS1NQRVJUSVpBU0kgTUFSS0FaSSIgRFVLPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCX0LDRgNC10LPQuNGB0YLRgNC40YDQvtCy0LDQvdCwCiB8IArQl9Cw0L/RgNCw0LLQutCwINC60LDRgNGC0YDQuNC00LbQtdC5PC9zcGFuPjxici8+PGJ1dHRvbiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03NDEnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjxici8+PGJyLz48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW4tYm90dG9tOiAxMHB4OyBjb2xvcjogYmx1ZTsiPjxiIHN0eWxlPSJjb2xvcjogYmx1ZTsiPuKEliA3NDIKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ck9PTyAiUVVBTElUWSBQSEFSTSI8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JfQsNGA0LXQs9C40YHRgtGA0LjRgNC+0LLQsNC90LAKIHwgCtCX0LDQv9GA0LDQstC60LAgIENhbm9uIGktU0VOU1lTIE1GNjQzQ2R3INGG0LLQtdGC0L3QvtC1L9C70LDQt9C10YDQvdC+0LUgLSAxINC30LDQv9GA0LDQstC60LAuINC4INC/0LDRgNGDINGH0ZHRgNC90L4g0LHQtdC70YvRhSDQvNC+0LTQtdC70Ywg0L3QtSDQt9C90LDRjtGCPC9zcGFuPjxici8+PGJ1dHRvbiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03NDInLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjxici8+PGJyLz48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW4tYm90dG9tOiAxMHB4OyBjb2xvcjogb3JhbmdlOyI+PGIgc3R5bGU9ImNvbG9yOiBvcmFuZ2U7Ij7ihJYgNzEwCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrQmNCfINCe0J7QniBGYXNoaW9uIFN0YXI8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0J/RgNC40L3Rj9GC0LAg0LzQsNGB0YLQtdGA0L7QvCAtINCl0L7Qu9C80YPRhdCw0LzQtdC00L7QsiDQkNC30LDQvNCw0YIKIHwgCtC30LDQv9GA0LDQstC60LAgTDMxMDAgLSAxINGI0YIuINCd0LDRgNCz0LjQt9CwIDkzNTA1NjA2Nzwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzEwJywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IG9yYW5nZTsiPjxiIHN0eWxlPSJjb2xvcjogb3JhbmdlOyI+4oSWIDcxMQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0KfQnyAiSVYgU1RBTCBJTlZFU1QiPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCf0YDQuNC90Y/RgtCwINC80LDRgdGC0LXRgNC+0LwgLSDQodC+0LHQuNGC0L7QsiDQoNCw0YXQvNCw0YLQuNC70LvQsAogfCAKY2Fub24gMjMyCmNhbm9uIGxicDMwMTA8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcxMScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBvcmFuZ2U7Ij48YiBzdHlsZT0iY29sb3I6IG9yYW5nZTsiPuKEliA3MTkKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCe0J7QniAiVGVjaG5vcGFrIFN5c3RlbXMiPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCf0YDQuNC90Y/RgtCwINC80LDRgdGC0LXRgNC+0LwgLSDQodC+0LHQuNGC0L7QsiDQoNCw0YXQvNCw0YLQuNC70LvQsAogfCAK0LfQsNC/0YDQsNCy0LrQsCA0MDE4IC0gMiDRiNGCLiDQmtCw0YDQuNC90LAgOTM1OTc5NzI1PC9zcGFuPjxici8+PGJ1dHRvbiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MTknLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjxici8+PGJyLz48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW4tYm90dG9tOiAxMHB4OyBjb2xvcjogb3JhbmdlOyI+PGIgc3R5bGU9ImNvbG9yOiBvcmFuZ2U7Ij7ihJYgNzM2Cj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpPT08gIkl4bG9zIEludmVzdCI8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0J/RgNC40L3Rj9GC0LAg0LzQsNGB0YLQtdGA0L7QvCAtINCh0L7QsdC40YLQvtCyINCg0LDRhdC80LDRgtC40LvQu9CwCiB8IApjYW5vbiAyMzItN9GI0YI8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTczNicsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBvcmFuZ2U7Ij48YiBzdHlsZT0iY29sb3I6IG9yYW5nZTsiPuKEliA3MzgKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCh0J8g0J7QntCeICIgQ0VOVFJBTCBBU0lBIEZFUlRJTElaRVJTICI8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0J/RgNC40L3Rj9GC0LAg0LzQsNGB0YLQtdGA0L7QvCAtINCl0L7Qu9C80YPRhdCw0LzQtdC00L7QsiDQkNC30LDQvNCw0YIKIHwgCmNhbm9uIDQ1Mzwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzM4JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGdyZWVuOyI+PGIgc3R5bGU9ImNvbG9yOiBncmVlbjsiPuKEliA2ODMKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCe0J7QniAiREVMSSBUT1JHIjwvYj48YnIvPjxzcGFuIHN0eWxlPSJjb2xvcjogYmxhY2s7Ij7QktGL0L/QvtC70L3QtdC90LAgLSDQotCj0KDQkNCR0JXQmtCe0JIg0KLQldCc0KPQoAogfCAKY2Fub24gNjAzMC0xCjkzMzgxODI4NCDQmtCw0LzQvtC70LAKCiDQodC+0LHQuNGC0L7QsiDQoNCw0YXQvNCw0YLQuNC70LvQsCDQtNC+0L/QvtC70L3QuNC7KNCwKSDQt9Cw0Y/QstC60YMuLi4K0JLRi9C/0L7Qu9C90LXQvdC+INCy0YfQtdGA0LA8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTY4MycsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBncmVlbjsiPjxiIHN0eWxlPSJjb2xvcjogZ3JlZW47Ij7ihJYgNjkyCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrQodCfINCe0J7QniAiTGFtYSBTdGFuZGFydCI8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KLQo9Cg0JDQkdCV0JrQntCSINCi0JXQnNCj0KAKIHwgCmNhbm9uIG1mIDQwMTg8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTY5MicsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBncmVlbjsiPjxiIHN0eWxlPSJjb2xvcjogZ3JlZW47Ij7ihJYgNzAwCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrQo9CXINCb0JjQlNCV0J88L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KXQvtC70LzRg9GF0LDQvNC10LTQvtCyINCQ0LfQsNC80LDRggogfCAK0JPQvtGA0YHQvtCy0LXRgiAxNTM2LSAxINC30L8sIDIzMSAtIDEg0LfQvywgMjEzNSAtIDEg0LfRgDwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzAwJywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGdyZWVuOyI+PGIgc3R5bGU9ImNvbG9yOiBncmVlbjsiPuKEliA3MDQKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCe0J7QniDigJxOQURFSk5JWSBCVVhHQUxURVLigJ08L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KLQo9Cg0JDQkdCV0JrQntCSINCi0JXQnNCj0KAKIHwgCmNhbm9uIDI2NC0xICsgMSDQvdC+0LIg0LrQsNGA0YLRgNC40LTQtjwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzA0JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGdyZWVuOyI+PGIgc3R5bGU9ImNvbG9yOiBncmVlbjsiPuKEliA3MDYKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCf0YDQtdC00YHRgtCw0LLQuNGC0LXQu9GM0YHRgtCy0L4g0KLQntCeIEdPT0RSSUNIIENFTlRSQUwgQVNJQTwvYj48YnIvPjxzcGFuIHN0eWxlPSJjb2xvcjogYmxhY2s7Ij7QktGL0L/QvtC70L3QtdC90LAgLSDQk9Cw0LvQuNC80L7QsiDQlNCw0LzQuNGACiB8IArQtNC70Y8gSVQg0L7RgtC00LXQu9CwIArQndCw0YHRgtGA0L7QudC60LAgV0lGSQrQkdC+0LHRg9GAIDc3LCAzMTQt0YXQvtC90LAKaHR0cHM6Ly9tYXBzLmdvb2dsZS5jb20vbWFwcz9xPTQxLjI3MTU4Nyw2OS4yNjA1ODUmbGw9NDEuMjcxNTg3LDY5LjI2MDU4NSZ6PTE2PC9zcGFuPjxici8+PGJ1dHRvbiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03MDYnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjxici8+PGJyLz48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW4tYm90dG9tOiAxMHB4OyBjb2xvcjogZ3JlZW47Ij48YiBzdHlsZT0iY29sb3I6IGdyZWVuOyI+4oSWIDcyMQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K0JzQp9CWIEJFTExJU1NJTU8gUElaWkEgSU5URVJOQVRJT05BTDwvYj48YnIvPjxzcGFuIHN0eWxlPSJjb2xvcjogYmxhY2s7Ij7QktGL0L/QvtC70L3QtdC90LAgLSDQodC+0LHQuNGC0L7QsiDQoNCw0YXQvNCw0YLQuNC70LvQsAogfCAK0J7RhNC40YEKMSkgQ2Fub24gbWY0NDNkdyAxINC30LDQv9GA0LDQstC60LAgCjIpIENhbm9uIG1mMjM2biAyINC30LDQv9GA0LDQstC60Lg8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcyMScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBncmVlbjsiPjxiIHN0eWxlPSJjb2xvcjogZ3JlZW47Ij7ihJYgNzIyCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpVWkxJREVQPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCl0L7Qu9C80YPRhdCw0LzQtdC00L7QsiDQkNC30LDQvNCw0YIKIHwgCjQwNSDQutCw0LHQuNC90LXRgiAxINC30LDQv9GA0LDQstC60LAgMzAxMC4gMzA1INC60LDQsdC40L3QtdGCINC/0L7Qu9C90YvQuSDQutC+0LzQv9C70LXQutGCINC60YDQsNGB0L7QuiDQtNC70Y8gRXBzb24gbDgwNTwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzIyJywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGdyZWVuOyI+PGIgc3R5bGU9ImNvbG9yOiBncmVlbjsiPuKEliA3MjYKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCY0J8g0J7QntCeIEFOR0xFU0VZIEZPT0Q8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KXRg9GB0LDQvdGF0L7QtNC20LDQtdCyINCo0YPRhdGA0LDRggogfCAK0JfQsNC60LDQt9GH0LjQujogS29yemlua2EgLSBaaXlvbGlsYXIK0J3QvtC80LXRgCDQt9Cw0Y/QstC60Lg6IDAwMDAwMDA1MjE2NwrQktC40LQg0LfQsNGP0LLQutC4OiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAqCtCi0LXQu9C10YTQvtC9INC40L3QuNGG0LjQsNGC0L7RgNCwOiA5Mzk2NzQ2NDEK0JjQvdC40YbQuNCw0YLQvtGAOiDQndCw0YDQs9C40LfQsArQotC10LzQsCDQt9Cw0Y/QstC60Lg6INCf0YDQuNC90YLQtdGAIENhbm9uIDIyMDYg0LTQvtC70LPQviDQv9C10YfQsNGC0LDQtdGCCtCX0LDQtNCw0YfQsCAo0YHQvtC60YApOiDQl9C00YDQsNGB0YLQstGD0LnRgtC1LiDQn9GA0LjQvdGC0LXRgCBDYW5vbiAyMjA2INC40LTRkdGCINC00L7Qu9Cz0LDRjyDQv9C+0LTQs9C+0YLQvtCy0LrQsCDQutCw0YLRgNC10LTQttCwINC/0LXRgNC10LQg0L/QtdGH0LDRgtGM0Y4uINCf0YDQvtGI0YMg0L7RgtC/0YDQsNCy0LjRgtGMINGB0L/QtdGG0LjQsNC70LjRgdGC0L7QsiDRh9GC0L7QsdGLINGD0YHRgtGA0L7QvdC40YLRjCDQv9GA0L7QsdC70LXQvNGDLiDQodC/0LDRgdC40LHQvjwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzI2JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGdyZWVuOyI+PGIgc3R5bGU9ImNvbG9yOiBncmVlbjsiPuKEliA3MjcKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCY0J8g0J7QntCeIEFOR0xFU0VZIEZPT0Q8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0JrQuNC8INCQ0LvQtdC60YHQsNC90LTRgAogfCAK0JfQsNC60LDQt9GH0LjQujogS29yemlua2EgLSBTZXRvcgrQndC+0LzQtdGAINC30LDRj9Cy0LrQuDogMDAwMDAwMDUyMTY5CtCS0LjQtCDQt9Cw0Y/QstC60Lg6INCX0LDQv9GA0LDQstC60LAg0L/RgNC40L3RgtC10YDQsCoK0KLQtdC70LXRhNC+0L0g0LjQvdC40YbQuNCw0YLQvtGA0LA6IDMzNTI3OTk0NArQmNC90LjRhtC40LDRgtC+0YA6IEZhcnJ1eArQotC10LzQsCDQt9Cw0Y/QstC60Lg6INCX0LDQv9GA0LDQstC60LAg0L/RgNC40L3RgtC10YDQsCoK0JfQsNC00LDRh9CwICjRgdC+0LrRgCk6INCX0LDQv9GA0LDQstC60LAg0L/RgNC40L3RgtC10YDQsCo8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTcyNycsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBncmVlbjsiPjxiIHN0eWxlPSJjb2xvcjogZ3JlZW47Ij7ihJYgNzI4Cj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrQodCfINCe0J7QniAiVEVDSE5PUEFSSyBBTC1KQUJSIiDQsdGL0LLRiNC40LUgICAiTkFQQSBURUFNIjwvYj48YnIvPjxzcGFuIHN0eWxlPSJjb2xvcjogYmxhY2s7Ij7QktGL0L/QvtC70L3QtdC90LAgLSDQpdC+0LvQvNGD0YXQsNC80LXQtNC+0LIg0JDQt9Cw0LzQsNGCCiB8IApDYW5vbiA0MjYtIDMg0YjRgjwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzI4JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGdyZWVuOyI+PGIgc3R5bGU9ImNvbG9yOiBncmVlbjsiPuKEliA3MjkKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCe0J7QniAiQ2FyZ28gU3RhciIg0J7RhNC40YEg0K3Qu9GM0LHQtdC6IDMvMSk8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KLQo9Cg0JDQkdCV0JrQntCSINCi0JXQnNCj0KAKIHwgCtGBYW5vbiBtZiAyNDQtMSAKY2Fub24gbWYgMzAxMC0xCkNhbm9uIGxicCA2MDMwYjwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzI5JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGdyZWVuOyI+PGIgc3R5bGU9ImNvbG9yOiBncmVlbjsiPuKEliA3MzEKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCY0J8g0J7QntCeIEFOR0xFU0VZIEZPT0Q8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0KXRg9GB0LDQvdGF0L7QtNC20LDQtdCyINCo0YPRhdGA0LDRggogfCAK0JfQsNC60LDQt9GH0LjQujogS29yemlua2EgLSBRb3JhdG9zaArQndC+0LzQtdGAINC30LDRj9Cy0LrQuDogMDAwMDAwMDUyMTcxCtCS0LjQtCDQt9Cw0Y/QstC60Lg6INCX0LDQv9GA0LDQstC60LAg0L/RgNC40L3RgtC10YDQsCoK0KLQtdC70LXRhNC+0L0g0LjQvdC40YbQuNCw0YLQvtGA0LA6IDkwMTY4ODkyOQrQmNC90LjRhtC40LDRgtC+0YA6INCk0LDQudC30YPQu9C70LAK0KLQtdC80LAg0LfQsNGP0LLQutC4OiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAK0JfQsNC00LDRh9CwICjRgdC+0LrRgCk6INCX0LDQv9GA0LDQstC60LDCoCDQstC10YEg0L/RgNC40L3RgtC10YAg0LzQsNGA0LrQtdGC0LA8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTczMScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBncmVlbjsiPjxiIHN0eWxlPSJjb2xvcjogZ3JlZW47Ij7ihJYgNzM1Cj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpPT08gIkthbnN0aWsiPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCh0L7QsdC40YLQvtCyINCg0LDRhdC80LDRgtC40LvQu9CwCiB8IArQmtCw0L3RgdGC0LjQuiDQnNC40YDQsNCx0LDQtC4gNDczMC0xINC30LDQv9GA0LDQstC60LAuINCi0LXQuyA5MzM5MDEzMTQ8L3NwYW4+PGJyLz48YnV0dG9uIG9uY2xpY2s9IndpbmRvdy5vcGVuKCdodHRwczovL3QubWUvbGFibW9ub3Rhc2t0ZWxlYm90P3N0YXJ0PTczNScsICdfYmxhbmsnKSI+0J/QtdGA0LXQudGC0Lgg0Log0LfQsNGP0LLQutC1PC9idXR0b24+PGJyLz48YnIvPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEwcHg7IGNvbG9yOiBncmVlbjsiPjxiIHN0eWxlPSJjb2xvcjogZ3JlZW47Ij7ihJYgNzM5Cj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrQmNCfINCe0J7QniBBTkdMRVNFWSBGT09EPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCS0YvQv9C+0LvQvdC10L3QsCAtINCa0LjQvCDQkNC70LXQutGB0LDQvdC00YAKIHwgCtCX0LDQutCw0LfRh9C40Lo6INCmMQrQndC+0LzQtdGAINC30LDRj9Cy0LrQuDogMDAwMDAwMDUyMTgzCtCS0LjQtCDQt9Cw0Y/QstC60Lg6INCX0LDQv9GA0LDQstC60LAg0L/RgNC40L3RgtC10YDQsCoK0KLQtdC70LXRhNC+0L0g0LjQvdC40YbQuNCw0YLQvtGA0LA6IDkzNTAxMDQ2MQrQmNC90LjRhtC40LDRgtC+0YA6INCQ0LrQvNCw0Lsg0K/QtNCz0L7RgNC+0LIK0KLQtdC80LAg0LfQsNGP0LLQutC4OiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAK0JfQsNC00LDRh9CwICjRgdC+0LrRgCk6INCf0YDQvtGI0YMg0LfQsNC/0YDQsNCy0LjRgtGMINC60LDRgtGA0LjQtNC2INC/0YDQuNC90YLQtdGA0LAgQ2Fub24gTUYzMDEwINC4INChYW5vbiBNRjIyMDwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzM5JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsgY29sb3I6IGdyZWVuOyI+PGIgc3R5bGU9ImNvbG9yOiBncmVlbjsiPuKEliA3NDMKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CtCY0J8g0J7QntCeIEFOR0xFU0VZIEZPT0Q8L2I+PGJyLz48c3BhbiBzdHlsZT0iY29sb3I6IGJsYWNrOyI+0JLRi9C/0L7Qu9C90LXQvdCwIC0g0JrQuNC8INCQ0LvQtdC60YHQsNC90LTRgAogfCAK0JfQsNC60LDQt9GH0LjQujogS29yemlua2EgLSBUdXJrbWVuc2tpeQrQndC+0LzQtdGAINC30LDRj9Cy0LrQuDogMDAwMDAwMDUyMTkxCtCS0LjQtCDQt9Cw0Y/QstC60Lg6INCX0LDQv9GA0LDQstC60LAg0L/RgNC40L3RgtC10YDQsCoK0KLQtdC70LXRhNC+0L0g0LjQvdC40YbQuNCw0YLQvtGA0LA6IDk5NTE1NTIyNgrQmNC90LjRhtC40LDRgtC+0YA6INCt0LTQtdC8CtCi0LXQvNCwINC30LDRj9Cy0LrQuDog0JfQsNC/0YDQsNCy0LrQsCDQv9GA0LjQvdGC0LXRgNCwCtCX0LDQtNCw0YfQsCAo0YHQvtC60YApOiDQl9Cw0L/RgNCw0LLQutCwINC/0YDQuNC90YLQtdGA0LAqPC9zcGFuPjxici8+PGJ1dHRvbiBvbmNsaWNrPSJ3aW5kb3cub3BlbignaHR0cHM6Ly90Lm1lL2xhYm1vbm90YXNrdGVsZWJvdD9zdGFydD03NDMnLCAnX2JsYW5rJykiPtCf0LXRgNC10LnRgtC4INC6INC30LDRj9Cy0LrQtTwvYnV0dG9uPjxici8+PGJyLz48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW4tYm90dG9tOiAxMHB4OyBjb2xvcjogcmVkOyI+PGIgc3R5bGU9ImNvbG9yOiByZWQ7Ij7ihJYgNzI1Cj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrQotC10YHRgiAyPC9iPjxici8+PHNwYW4gc3R5bGU9ImNvbG9yOiBibGFjazsiPtCe0YLQvNC10L3QtdC90LAKIHwgCtCf0YDQvtCy0LXRgNC60LAg0L/QvtC00LDRh9C4INC30LDRj9Cy0LrQuCDQvtGCINGE0LjQtyDQu9C40YbQsDwvc3Bhbj48YnIvPjxidXR0b24gb25jbGljaz0id2luZG93Lm9wZW4oJ2h0dHBzOi8vdC5tZS9sYWJtb25vdGFza3RlbGVib3Q/c3RhcnQ9NzI1JywgJ19ibGFuaycpIj7Qn9C10YDQtdC50YLQuCDQuiDQt9Cw0Y/QstC60LU8L2J1dHRvbj48YnIvPjxici8+PC9kaXY+" width="400" style="border:none !important;" height="600"></iframe>`)[0];
-                popup_541267a7e632fcaf4694182aa64e4ee5.setContent(i_frame_f5634e5b88ab993cb70021085bffb812);
-            
-        
-
-        marker_3b0e15a322b329eea28786122b1933a5.bindPopup(popup_541267a7e632fcaf4694182aa64e4ee5)
-        ;
-
-        
+ Собитов Рахматилла дополнил(а) заявку...
+Выполнено вчера</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=683', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
     
-</script>
-</html>
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 692
+=============================<br>
+СП ООО "Lama Standart"</p>
+            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
+ <br> 
+canon mf 4018</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=692', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 700
+=============================<br>
+УЗ ЛИДЕП</p>
+            <p style="color:black; font-size:12px;">Выполнена - Холмухамедов Азамат
+ <br> 
+Горсовет 1536- 1 зп, 231 - 1 зп, 2135 - 1 зр</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=700', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 704
+=============================<br>
+ООО “NADEJNIY BUXGALTER”</p>
+            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
+ <br> 
+canon 264-1 + 1 нов картридж</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=704', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 706
+=============================<br>
+Представительство ТОО GOODRICH CENTRAL ASIA</p>
+            <p style="color:black; font-size:12px;">Выполнена - Галимов Дамир
+ <br> 
+для IT отдела 
+Настройка WIFI
+Бобур 77, 314-хона
+https://maps.google.com/maps?q=41.271587,69.260585&ll=41.271587,69.260585&z=16</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=706', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 711
+=============================<br>
+ЧП "IV STAL INVEST"</p>
+            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
+ <br> 
+canon 232
+canon lbp3010</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=711', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 719
+=============================<br>
+ООО "Technopak Systems"</p>
+            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
+ <br> 
+заправка 4018 - 2 шт. Карина 935979725</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=719', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 721
+=============================<br>
+МЧЖ BELLISSIMO PIZZA INTERNATIONAL</p>
+            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
+ <br> 
+Офис
+1) Canon mf443dw 1 заправка 
+2) Canon mf236n 2 заправки</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=721', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 722
+=============================<br>
+UZLIDEP</p>
+            <p style="color:black; font-size:12px;">Выполнена - Холмухамедов Азамат
+ <br> 
+405 кабинет 1 заправка 3010. 305 кабинет полный комплект красок для Epson l805</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=722', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 726
+=============================<br>
+ИП ООО ANGLESEY FOOD</p>
+            <p style="color:black; font-size:12px;">Выполнена - Хусанходжаев Шухрат
+ <br> 
+Заказчик: Korzinka - Ziyolilar
+Номер заявки: 000000052167
+Вид заявки: Заправка принтера*
+Телефон инициатора: 939674641
+Инициатор: Наргиза
+Тема заявки: Принтер Canon 2206 долго печатает
+Задача (сокр): Здраствуйте. Принтер Canon 2206 идёт долгая подготовка катреджа перед печатью. Прошу отправить специалистов чтобы устронить проблему. Спасибо</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=726', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 727
+=============================<br>
+ИП ООО ANGLESEY FOOD</p>
+            <p style="color:black; font-size:12px;">Выполнена - Ким Александр
+ <br> 
+Заказчик: Korzinka - Setor
+Номер заявки: 000000052169
+Вид заявки: Заправка принтера*
+Телефон инициатора: 335279944
+Инициатор: Farrux
+Тема заявки: Заправка принтера*
+Задача (сокр): Заправка принтера*</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=727', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 728
+=============================<br>
+СП ООО "TECHNOPARK AL-JABR" бывшие   "NAPA TEAM"</p>
+            <p style="color:black; font-size:12px;">Выполнена - Холмухамедов Азамат
+ <br> 
+Canon 426- 3 шт</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=728', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 729
+=============================<br>
+ООО "Cargo Star" Офис Эльбек 3/1)</p>
+            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
+ <br> 
+сanon mf 244-1 
+canon mf 3010-1
+Canon lbp 6030b</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=729', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 731
+=============================<br>
+ИП ООО ANGLESEY FOOD</p>
+            <p style="color:black; font-size:12px;">Выполнена - Хусанходжаев Шухрат
+ <br> 
+Заказчик: Korzinka - Qoratosh
+Номер заявки: 000000052171
+Вид заявки: Заправка принтера*
+Телефон инициатора: 901688929
+Инициатор: Файзулла
+Тема заявки: Заправка принтера
+Задача (сокр): Заправка  вес принтер маркета</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=731', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 733
+=============================<br>
+"EVEREST UNIVERSAL TRADE GROUP" mas`uliyati cheklangan jamiyati</p>
+            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
+ <br> 
+3010 - 2 зправки, 443 - 2 заправки</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=733', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 734
+=============================<br>
+"MELON FASHION C A" mas`uliyati cheklangan jamiyati</p>
+            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
+ <br> 
+нужна 1 заправка 269 мф и также 1 новый катридж
+
+ Салихов Александр дополнил(а) заявку...
+Новый клиент до обеда кто может сделать??</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=734', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 735
+=============================<br>
+OOO "Kanstik"</p>
+            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
+ <br> 
+Канстик Мирабад. 4730-1 заправка. Тел 933901314</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=735', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 736
+=============================<br>
+OOO "Ixlos Invest"</p>
+            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
+ <br> 
+canon 232-7шт</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=736', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 737
+=============================<br>
+ООО «ANOR AGRO GLOBAL GROUP»</p>
+            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
+ <br> 
+canon 643-не печатает черный цвет</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=737', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 739
+=============================<br>
+ИП ООО ANGLESEY FOOD</p>
+            <p style="color:black; font-size:12px;">Выполнена - Ким Александр
+ <br> 
+Заказчик: Ц1
+Номер заявки: 000000052183
+Вид заявки: Заправка принтера*
+Телефон инициатора: 935010461
+Инициатор: Акмал Ядгоров
+Тема заявки: Заправка принтера
+Задача (сокр): Прошу заправить катридж принтера Canon MF3010 и Сanon MF220</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=739', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:green; font-size:16px; font-weight:bold;">№ 743
+=============================<br>
+ИП ООО ANGLESEY FOOD</p>
+            <p style="color:black; font-size:12px;">Выполнена - Ким Александр
+ <br> 
+Заказчик: Korzinka - Turkmenskiy
+Номер заявки: 000000052191
+Вид заявки: Заправка принтера*
+Телефон инициатора: 995155226
+Инициатор: Эдем
+Тема заявки: Заправка принтера
+Задача (сокр): Заправка принтера*</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=743', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+                    <div style="margin-bottom: 20px;">
+                        
+        <div>
+            <p style="color:red; font-size:16px; font-weight:bold;">№ 725
+=============================<br>
+Тест 2</p>
+            <p style="color:black; font-size:12px;">Отменена
+ <br> 
+Проверка подачи заявки от физ лица</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=725', '_blank')" style="background-color:red; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                    </div>
+                
+            </div>
+        </body>
+        </html>
+    
