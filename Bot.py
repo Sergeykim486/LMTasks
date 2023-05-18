@@ -81,7 +81,7 @@ async def schedule_message():
             for task in addedlocs:
                 company = db.get_record_by_id('Contragents', task[3])[1]
                 status = db.get_record_by_id('Statuses', task[11])[1]
-                name = '№ ' + str(task[0]) + '\n=======================================\n' + str(company)
+                name = '№ ' + str(task[0]) + '\n=============================|\n' + str(company)
                 description = status + '\n | \n' + task[4]
                 location = db.get_record_by_id('Locations', task[12])
                 if task[12] is not None and location is not None:
@@ -101,7 +101,7 @@ async def schedule_message():
                 status = db.get_record_by_id('Statuses', task[11])[1]
                 user = db.get_record_by_id('Users', task[6])
                 master = str(user[2]) + ' ' + str(user[1])
-                name = '№ ' + str(task[0]) + '\n=======================================\n' + str(company)
+                name = '№ ' + str(task[0]) + '\n=============================|\n' + str(company)
                 description = status + ' - ' + master + '\n | \n' + task[4]
                 if task[12] is None:
                     lat = 41.28921489333344
@@ -120,7 +120,7 @@ async def schedule_message():
                 status = db.get_record_by_id('Statuses', task[11])[1]
                 user = db.get_record_by_id('Users', task[6])
                 master = str(user[2]) + ' ' + str(user[1])
-                name = '№ ' + str(task[0]) + '\n=======================================\n' + str(company)
+                name = '№ ' + str(task[0]) + '\n=============================|\n' + str(company)
                 description = status + ' - ' + master + '\n | \n' + task[4]
                 if task[12] is None:
                     lat = 41.28921489333344
@@ -137,7 +137,7 @@ async def schedule_message():
             for task in canceled:
                 company = db.get_record_by_id('Contragents', task[3])[1]
                 status = db.get_record_by_id('Statuses', task[11])[1]
-                name = '№ ' + str(task[0]) + '\n=======================================\n' + str(company)
+                name = '№ ' + str(task[0]) + '\n=============================|\n' + str(company)
                 description = status + '\n | \n' + task[4]
                 if task[12] is None:
                     lat = 41.28921489333344
