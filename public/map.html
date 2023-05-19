@@ -24,10 +24,26 @@
                     color: red;
                 }
                 .map-container {
+                    position: absolute;
+                    top: 100px;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    overflow: hidden;
+                }
+                .popup-list {
+                    position: absolute;
+                    top: 110px;
+                    left: 10px;
+                    width: 30%;
                     height: calc(100% - 130px);
+                    background-color: rgba(255, 255, 255, 0.9);
+                    border: 1px solid black;
+                    padding: 10px;
                     overflow: auto;
                 }
                 header {
+                    background-color: lightgray;
                     height: 100px;
                     display: flex;
                     align-items: flex-start;
@@ -46,12 +62,13 @@
                 <div style="align-self: flex-start;">
                     <h1 style="margin-top: 0; margin-left: 20px;">Активные заявки</h1>
                     <button onclick="location.reload();" style="background-color: green; color: white; font-weight: bold; font-size: 18px; margin-top: -10px; margin-left: 20px;">Обновить страницу</button>
+                    <button onclick="toggleList();" style="background-color: orange; color: white; font-weight: bold; font-size: 18px; margin-top: -10px; margin-left: 20px;">Показать список</button>
                 </div>
                 <div class="logo">
                     <img src="Logo.png" alt="Logo" style="height: 56px;">
                 </div>
             </header>
-            <div class="map-container" style="width: 70%; float: right;">
+            <div class="map-container">
                 <div style="width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:60%;"><span style="color:#565656">Make this Notebook Trusted to load map: File -> Trust Notebook</span><iframe srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -79,7 +96,7 @@
             &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;
             &lt;style&gt;
-                #map_5bba855860fe00b55cb20b5f0b9f0d96 {
+                #map_7bba83fec7573dea946f2be17f21affa {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -96,14 +113,14 @@
 &lt;body&gt;
     
     
-            &lt;div class=&quot;folium-map&quot; id=&quot;map_5bba855860fe00b55cb20b5f0b9f0d96&quot; &gt;&lt;/div&gt;
+            &lt;div class=&quot;folium-map&quot; id=&quot;map_7bba83fec7573dea946f2be17f21affa&quot; &gt;&lt;/div&gt;
         
 &lt;/body&gt;
 &lt;script&gt;
     
     
-            var map_5bba855860fe00b55cb20b5f0b9f0d96 = L.map(
-                &quot;map_5bba855860fe00b55cb20b5f0b9f0d96&quot;,
+            var map_7bba83fec7573dea946f2be17f21affa = L.map(
+                &quot;map_7bba83fec7573dea946f2be17f21affa&quot;,
                 {
                     center: [41.28927613679946, 69.31295641163192],
                     crs: L.CRS.EPSG3857,
@@ -117,877 +134,283 @@
 
         
     
-            var tile_layer_79c013285c46260289dc2a3a8b4fcecd = L.tileLayer(
+            var tile_layer_bdbdad6ddc37a3ceae68103d891624d1 = L.tileLayer(
                 &quot;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&quot;,
                 {&quot;attribution&quot;: &quot;Data by \u0026copy; \u003ca target=\&quot;_blank\&quot; href=\&quot;http://openstreetmap.org\&quot;\u003eOpenStreetMap\u003c/a\u003e, under \u003ca target=\&quot;_blank\&quot; href=\&quot;http://www.openstreetmap.org/copyright\&quot;\u003eODbL\u003c/a\u003e.&quot;, &quot;detectRetina&quot;: false, &quot;maxNativeZoom&quot;: 18, &quot;maxZoom&quot;: 18, &quot;minZoom&quot;: 0, &quot;noWrap&quot;: false, &quot;opacity&quot;: 1, &quot;subdomains&quot;: &quot;abc&quot;, &quot;tms&quot;: false}
-            ).addTo(map_5bba855860fe00b55cb20b5f0b9f0d96);
+            ).addTo(map_7bba83fec7573dea946f2be17f21affa);
         
     
-            var marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c = L.markerClusterGroup(
+            var marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306 = L.markerClusterGroup(
                 {}
             );
-            map_5bba855860fe00b55cb20b5f0b9f0d96.addLayer(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            map_7bba83fec7573dea946f2be17f21affa.addLayer(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var marker_b263f023412e2745f3d0a5726a56470b = L.marker(
+            var marker_73697bc1558f07ec27899b041857ffcc = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_a655abd8542907de77be67ff6527d375 = L.AwesomeMarkers.icon(
+            var icon_b542b465f7fc3c823e6a911021bca639 = L.AwesomeMarkers.icon(
                 {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_b263f023412e2745f3d0a5726a56470b.setIcon(icon_a655abd8542907de77be67ff6527d375);
+            marker_73697bc1558f07ec27899b041857ffcc.setIcon(icon_b542b465f7fc3c823e6a911021bca639);
         
     
-        var popup_357de227b60dd8f43060208e58509b1a = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_8a564d849ef323aa6a11ce2afa8d4582 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_bb8d5118f502fc74c8c2ed3aad311321 = $(`&lt;div id=&quot;html_bb8d5118f502fc74c8c2ed3aad311321&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 714 =============================&lt;br&gt; OOO &quot;FILUET SILK WAY LOGISTICS&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  hp m 608-5   Ахмедова Шаира дополнил(а) заявку... локацию&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=714&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_357de227b60dd8f43060208e58509b1a.setContent(html_bb8d5118f502fc74c8c2ed3aad311321);
+                var html_12f6933cb5eca96576646856d2da38f2 = $(`&lt;div id=&quot;html_12f6933cb5eca96576646856d2da38f2&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 714 &lt;br&gt;=============================&lt;br&gt; OOO &quot;FILUET SILK WAY LOGISTICS&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  hp m 608-5   Ахмедова Шаира дополнил(а) заявку... локацию&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=714&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_8a564d849ef323aa6a11ce2afa8d4582.setContent(html_12f6933cb5eca96576646856d2da38f2);
             
         
 
-        marker_b263f023412e2745f3d0a5726a56470b.bindPopup(popup_357de227b60dd8f43060208e58509b1a)
+        marker_73697bc1558f07ec27899b041857ffcc.bindPopup(popup_8a564d849ef323aa6a11ce2afa8d4582)
         ;
 
         
     
     
-            var marker_87636c43b0e6d68a444b450d48e2498c = L.marker(
+            var marker_cadf6d9be6fb526adc982f3c58b25177 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_fe57a24cec2eb903e8577be10c3ea3cc = L.AwesomeMarkers.icon(
+            var icon_c752b86e0ddcfc6c42a8a2bffdc3ac44 = L.AwesomeMarkers.icon(
                 {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_87636c43b0e6d68a444b450d48e2498c.setIcon(icon_fe57a24cec2eb903e8577be10c3ea3cc);
+            marker_cadf6d9be6fb526adc982f3c58b25177.setIcon(icon_c752b86e0ddcfc6c42a8a2bffdc3ac44);
         
     
-        var popup_dfa045f15c6907961ed05f86d9d24661 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_0114b60e460c13056a2af2b74dbec391 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_3b5d3a0dfef594854577292558043d60 = $(`&lt;div id=&quot;html_3b5d3a0dfef594854577292558043d60&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 724 =============================&lt;br&gt; СП ООО «ADM-ASTER»&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  057 - 2 заправки . 051 самсунг - 3 заправки&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=724&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_dfa045f15c6907961ed05f86d9d24661.setContent(html_3b5d3a0dfef594854577292558043d60);
+                var html_5f3e61f97deed7a1c85c954e8f97464f = $(`&lt;div id=&quot;html_5f3e61f97deed7a1c85c954e8f97464f&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 724 &lt;br&gt;=============================&lt;br&gt; СП ООО «ADM-ASTER»&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  057 - 2 заправки . 051 самсунг - 3 заправки&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=724&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_0114b60e460c13056a2af2b74dbec391.setContent(html_5f3e61f97deed7a1c85c954e8f97464f);
             
         
 
-        marker_87636c43b0e6d68a444b450d48e2498c.bindPopup(popup_dfa045f15c6907961ed05f86d9d24661)
+        marker_cadf6d9be6fb526adc982f3c58b25177.bindPopup(popup_0114b60e460c13056a2af2b74dbec391)
         ;
 
         
     
     
-            var marker_5f76e44725582cb9d4c6549301522532 = L.marker(
+            var marker_082a8fae78343d406c44a03d28a42be3 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_94c6e0797bd812c3f4b7ab96be53925c = L.AwesomeMarkers.icon(
+            var icon_7d7d5a1cd8d8b3c5c09752150dc6d117 = L.AwesomeMarkers.icon(
                 {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_5f76e44725582cb9d4c6549301522532.setIcon(icon_94c6e0797bd812c3f4b7ab96be53925c);
+            marker_082a8fae78343d406c44a03d28a42be3.setIcon(icon_7d7d5a1cd8d8b3c5c09752150dc6d117);
         
     
-        var popup_8df5831d0336f42fa63926a8e348f8f1 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_2eb3b104d83ef6c0a159c26da11fc6cc = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_a0fac0b769fbced87335206fdbfa99fa = $(`&lt;div id=&quot;html_a0fac0b769fbced87335206fdbfa99fa&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 730 =============================&lt;br&gt; ООО &quot;AVA-TEN&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заправка картриджей на 19,05,2023 с утра 909088333 Карина&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=730&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_8df5831d0336f42fa63926a8e348f8f1.setContent(html_a0fac0b769fbced87335206fdbfa99fa);
+                var html_0b7207ccf640e9fbfc68607f19decbd6 = $(`&lt;div id=&quot;html_0b7207ccf640e9fbfc68607f19decbd6&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 732 &lt;br&gt;=============================&lt;br&gt; &quot;NUR-EL BIZNES&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Проблемы с компьютером&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=732&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_2eb3b104d83ef6c0a159c26da11fc6cc.setContent(html_0b7207ccf640e9fbfc68607f19decbd6);
             
         
 
-        marker_5f76e44725582cb9d4c6549301522532.bindPopup(popup_8df5831d0336f42fa63926a8e348f8f1)
+        marker_082a8fae78343d406c44a03d28a42be3.bindPopup(popup_2eb3b104d83ef6c0a159c26da11fc6cc)
         ;
 
         
     
     
-            var marker_3429ee3d4e141330a6315633c6067b2b = L.marker(
+            var marker_d55ab5de80865c0e67fbabc7e2a06971 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_0618c98d26bd473ae544241391e02f68 = L.AwesomeMarkers.icon(
+            var icon_2b4d2d71ee32c466eed101abe0daae60 = L.AwesomeMarkers.icon(
                 {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_3429ee3d4e141330a6315633c6067b2b.setIcon(icon_0618c98d26bd473ae544241391e02f68);
+            marker_d55ab5de80865c0e67fbabc7e2a06971.setIcon(icon_2b4d2d71ee32c466eed101abe0daae60);
         
     
-        var popup_0509b319302ef9d2db740150ece13543 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_f5b335ed6a78de8a95b1eeb9c7d6f821 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_722aeb612434f01167179c188e4f9838 = $(`&lt;div id=&quot;html_722aeb612434f01167179c188e4f9838&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 732 =============================&lt;br&gt; &quot;NUR-EL BIZNES&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Проблемы с компьютером&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=732&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_0509b319302ef9d2db740150ece13543.setContent(html_722aeb612434f01167179c188e4f9838);
+                var html_ad57b3dc68e43e50785ca6790e39374b = $(`&lt;div id=&quot;html_ad57b3dc68e43e50785ca6790e39374b&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 740 &lt;br&gt;=============================&lt;br&gt; ЧП &quot;LUX OPTIX&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  для IT отдела надо проверить офисные программы филиал на М. Горьком 974600338 Екатерина&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=740&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_f5b335ed6a78de8a95b1eeb9c7d6f821.setContent(html_ad57b3dc68e43e50785ca6790e39374b);
             
         
 
-        marker_3429ee3d4e141330a6315633c6067b2b.bindPopup(popup_0509b319302ef9d2db740150ece13543)
+        marker_d55ab5de80865c0e67fbabc7e2a06971.bindPopup(popup_f5b335ed6a78de8a95b1eeb9c7d6f821)
         ;
 
         
     
     
-            var marker_065a7cc842d41a0cfef7728c2f1cd44c = L.marker(
+            var marker_b7931a55c9cb232126fdfac3a3fbd35c = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_056747dc198a8ff68db6bfc1e455b2d1 = L.AwesomeMarkers.icon(
+            var icon_d4078788b72a2f21b44cceea10bfaa1e = L.AwesomeMarkers.icon(
                 {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_065a7cc842d41a0cfef7728c2f1cd44c.setIcon(icon_056747dc198a8ff68db6bfc1e455b2d1);
+            marker_b7931a55c9cb232126fdfac3a3fbd35c.setIcon(icon_d4078788b72a2f21b44cceea10bfaa1e);
         
     
-        var popup_e756ceea979ed7df88f327ac11954865 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_25eeb692e6d2ea1c0fd6bff5279fb1b6 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_ca4ef01c4e75b9ff116dda4e30a12e98 = $(`&lt;div id=&quot;html_ca4ef01c4e75b9ff116dda4e30a12e98&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 740 =============================&lt;br&gt; ЧП &quot;LUX OPTIX&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  для IT отдела надо проверить офисные программы филиал на М. Горьком 974600338 Екатерина&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=740&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_e756ceea979ed7df88f327ac11954865.setContent(html_ca4ef01c4e75b9ff116dda4e30a12e98);
+                var html_2585cd09260d99c3fd634c9a1591616c = $(`&lt;div id=&quot;html_2585cd09260d99c3fd634c9a1591616c&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 742 &lt;br&gt;=============================&lt;br&gt; OOO &quot;QUALITY PHARM&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заправка  Canon i-SENSYS MF643Cdw цветное/лазерное - 1 заправка. и пару чёрно белых модель не знают&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=742&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_25eeb692e6d2ea1c0fd6bff5279fb1b6.setContent(html_2585cd09260d99c3fd634c9a1591616c);
             
         
 
-        marker_065a7cc842d41a0cfef7728c2f1cd44c.bindPopup(popup_e756ceea979ed7df88f327ac11954865)
+        marker_b7931a55c9cb232126fdfac3a3fbd35c.bindPopup(popup_25eeb692e6d2ea1c0fd6bff5279fb1b6)
         ;
 
         
     
     
-            var marker_987e4266a32f08ae7ce7519e14b14d59 = L.marker(
+            var marker_91d1885e6ae686ce394a89f0f4e5ad19 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_8752613989346ae6e6fa1dd6591a2678 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_987e4266a32f08ae7ce7519e14b14d59.setIcon(icon_8752613989346ae6e6fa1dd6591a2678);
-        
-    
-        var popup_80a9639f70836b0df2b7a4e520fe9727 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_2152ad4eb9351a3759fa3d88044f7cf1 = $(`&lt;div id=&quot;html_2152ad4eb9351a3759fa3d88044f7cf1&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 741 =============================&lt;br&gt; &quot;DAVLAT EKOLOGIK EKSPERTIZASI MARKAZI&quot; DUK&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заправка картриджей&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=741&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_80a9639f70836b0df2b7a4e520fe9727.setContent(html_2152ad4eb9351a3759fa3d88044f7cf1);
-            
-        
-
-        marker_987e4266a32f08ae7ce7519e14b14d59.bindPopup(popup_80a9639f70836b0df2b7a4e520fe9727)
-        ;
-
-        
-    
-    
-            var marker_15d0ab97850db422cc9109485df5dfd5 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_e496d30c97a3d0a629eda50ce29d5f47 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_15d0ab97850db422cc9109485df5dfd5.setIcon(icon_e496d30c97a3d0a629eda50ce29d5f47);
-        
-    
-        var popup_9b64c387fc3e9aa37ebfcce61c862b5c = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_de59d6b22d4ae08f574e3d766897ecce = $(`&lt;div id=&quot;html_de59d6b22d4ae08f574e3d766897ecce&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 742 =============================&lt;br&gt; OOO &quot;QUALITY PHARM&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заправка  Canon i-SENSYS MF643Cdw цветное/лазерное - 1 заправка. и пару чёрно белых модель не знают&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=742&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_9b64c387fc3e9aa37ebfcce61c862b5c.setContent(html_de59d6b22d4ae08f574e3d766897ecce);
-            
-        
-
-        marker_15d0ab97850db422cc9109485df5dfd5.bindPopup(popup_9b64c387fc3e9aa37ebfcce61c862b5c)
-        ;
-
-        
-    
-    
-            var marker_311f894b15fa2488cb80a61f5a2a46dc = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_9dca1bf397a554920b224d27ab2f706d = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;blue&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_311f894b15fa2488cb80a61f5a2a46dc.setIcon(icon_9dca1bf397a554920b224d27ab2f706d);
-        
-    
-        var popup_beab9ff00ab91b6ba40ab5041b29e8b6 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_a71f179de7ade633af4c6a6c227309c8 = $(`&lt;div id=&quot;html_a71f179de7ade633af4c6a6c227309c8&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:blue; font-size:16px; font-weight:bold;&quot;&gt;№ 744 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Зарегистрирована  &lt;br&gt;  Заказчик: Ц1 Номер заявки: 000000052198 Вид заявки: Заправка принтера* Телефон инициатора: 974907726 Инициатор: Эргашев Шахбос Тема заявки: Заправка принтера Задача (сокр): Необходимо заправить принтеры юридического отдела Canon MF 3010 и Canon MF 443dw.&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=744&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:blue; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_beab9ff00ab91b6ba40ab5041b29e8b6.setContent(html_a71f179de7ade633af4c6a6c227309c8);
-            
-        
-
-        marker_311f894b15fa2488cb80a61f5a2a46dc.bindPopup(popup_beab9ff00ab91b6ba40ab5041b29e8b6)
-        ;
-
-        
-    
-    
-            var marker_a5f67b8b76dafc13f9e504cfc08ccae8 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_e6f649bed848669c5e6c2e8b6bad5b80 = L.AwesomeMarkers.icon(
+            var icon_f0325c5e3c35a8162e9591c31e4a622e = L.AwesomeMarkers.icon(
                 {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;orange&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_a5f67b8b76dafc13f9e504cfc08ccae8.setIcon(icon_e6f649bed848669c5e6c2e8b6bad5b80);
+            marker_91d1885e6ae686ce394a89f0f4e5ad19.setIcon(icon_f0325c5e3c35a8162e9591c31e4a622e);
         
     
-        var popup_50c60e6a8555bd42b22b47891313fe6c = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_aceea7918815e9dea8380557f662f21e = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_976ed35f2c91580e91f3a8a9cb9eb811 = $(`&lt;div id=&quot;html_976ed35f2c91580e91f3a8a9cb9eb811&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 710 =============================&lt;br&gt; ИП ООО Fashion Star&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - Холмухамедов Азамат  &lt;br&gt;  заправка L3100 - 1 шт. Наргиза 935056067&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=710&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_50c60e6a8555bd42b22b47891313fe6c.setContent(html_976ed35f2c91580e91f3a8a9cb9eb811);
+                var html_d8b181415f625f9dd92b6ebdffc1f7ac = $(`&lt;div id=&quot;html_d8b181415f625f9dd92b6ebdffc1f7ac&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 710 &lt;br&gt;=============================&lt;br&gt; ИП ООО Fashion Star&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - Холмухамедов Азамат  &lt;br&gt;  заправка L3100 - 1 шт. Наргиза 935056067&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=710&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_aceea7918815e9dea8380557f662f21e.setContent(html_d8b181415f625f9dd92b6ebdffc1f7ac);
             
         
 
-        marker_a5f67b8b76dafc13f9e504cfc08ccae8.bindPopup(popup_50c60e6a8555bd42b22b47891313fe6c)
+        marker_91d1885e6ae686ce394a89f0f4e5ad19.bindPopup(popup_aceea7918815e9dea8380557f662f21e)
         ;
 
         
     
     
-            var marker_6fcf88a7e3542ce9c1b49cb7cbfae079 = L.marker(
+            var marker_2b55133673727a2ff8ba865ac190c753 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_4a111cc12844e2de4bdc01f273216935 = L.AwesomeMarkers.icon(
+            var icon_48a953d91f054055b7d4279168fb1cd8 = L.AwesomeMarkers.icon(
                 {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;orange&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_6fcf88a7e3542ce9c1b49cb7cbfae079.setIcon(icon_4a111cc12844e2de4bdc01f273216935);
+            marker_2b55133673727a2ff8ba865ac190c753.setIcon(icon_48a953d91f054055b7d4279168fb1cd8);
         
     
-        var popup_1fb82685b4fe38b4535d033b836e2fb0 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_9a8afada465c5b16640529deac92697e = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_4b1095b57a2b1e5313007488aea31865 = $(`&lt;div id=&quot;html_4b1095b57a2b1e5313007488aea31865&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 738 =============================&lt;br&gt; СП ООО &quot; CENTRAL ASIA FERTILIZERS &quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - Холмухамедов Азамат  &lt;br&gt;  canon 453&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=738&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_1fb82685b4fe38b4535d033b836e2fb0.setContent(html_4b1095b57a2b1e5313007488aea31865);
+                var html_1a98a3fbaa4c6cb5ee72d708adce7ed0 = $(`&lt;div id=&quot;html_1a98a3fbaa4c6cb5ee72d708adce7ed0&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 730 &lt;br&gt;=============================&lt;br&gt; ООО &quot;AVA-TEN&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - Собитов Рахматилла  &lt;br&gt;  Заправка картриджей на 19,05,2023 с утра 909088333 Карина&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=730&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_9a8afada465c5b16640529deac92697e.setContent(html_1a98a3fbaa4c6cb5ee72d708adce7ed0);
             
         
 
-        marker_6fcf88a7e3542ce9c1b49cb7cbfae079.bindPopup(popup_1fb82685b4fe38b4535d033b836e2fb0)
+        marker_2b55133673727a2ff8ba865ac190c753.bindPopup(popup_9a8afada465c5b16640529deac92697e)
         ;
 
         
     
     
-            var marker_56b227cec9a01764f9f5f8d983013317 = L.marker(
+            var marker_b8ae090f7ebbe0c2093b43424486cb0a = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_57f6978e3c052ed621e8fd9025562415 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
+            var icon_c5e4861a57505288f6447b0a4a94f830 = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;orange&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_56b227cec9a01764f9f5f8d983013317.setIcon(icon_57f6978e3c052ed621e8fd9025562415);
+            marker_b8ae090f7ebbe0c2093b43424486cb0a.setIcon(icon_c5e4861a57505288f6447b0a4a94f830);
         
     
-        var popup_f8ec1070f1bfb8c08a5142662115821b = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_20c3d3a654b48d1dbbddf6d272fd7e57 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_3169093deb60c2a0726072f8730a1e13 = $(`&lt;div id=&quot;html_3169093deb60c2a0726072f8730a1e13&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 683 =============================&lt;br&gt; ООО &quot;DELI TORG&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  canon 6030-1 933818284 Камола   Собитов Рахматилла дополнил(а) заявку... Выполнено вчера&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=683&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_f8ec1070f1bfb8c08a5142662115821b.setContent(html_3169093deb60c2a0726072f8730a1e13);
+                var html_2058c14d2e1bd772aaf8384d08980d83 = $(`&lt;div id=&quot;html_2058c14d2e1bd772aaf8384d08980d83&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 738 &lt;br&gt;=============================&lt;br&gt; СП ООО &quot; CENTRAL ASIA FERTILIZERS &quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - Холмухамедов Азамат  &lt;br&gt;  canon 453&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=738&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_20c3d3a654b48d1dbbddf6d272fd7e57.setContent(html_2058c14d2e1bd772aaf8384d08980d83);
             
         
 
-        marker_56b227cec9a01764f9f5f8d983013317.bindPopup(popup_f8ec1070f1bfb8c08a5142662115821b)
+        marker_b8ae090f7ebbe0c2093b43424486cb0a.bindPopup(popup_20c3d3a654b48d1dbbddf6d272fd7e57)
         ;
 
         
     
     
-            var marker_1e024307cf3359e7d9bc2150640d34e9 = L.marker(
+            var marker_7aab79ef8bbef620ef4392acf27bdb66 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_5a9b182b6c83c0da778e94783bf25995 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
+            var icon_9304a6a42726f6aa3ccee28d02bd09be = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;orange&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_1e024307cf3359e7d9bc2150640d34e9.setIcon(icon_5a9b182b6c83c0da778e94783bf25995);
+            marker_7aab79ef8bbef620ef4392acf27bdb66.setIcon(icon_9304a6a42726f6aa3ccee28d02bd09be);
         
     
-        var popup_97d4a632eea3d0cad1f78b7e76f9796d = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_deb879dfa414fdfc6a4454d0ccdd6b85 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_5eaecffa8025ec9e60667f05472f76ff = $(`&lt;div id=&quot;html_5eaecffa8025ec9e60667f05472f76ff&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 692 =============================&lt;br&gt; СП ООО &quot;Lama Standart&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  canon mf 4018&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=692&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_97d4a632eea3d0cad1f78b7e76f9796d.setContent(html_5eaecffa8025ec9e60667f05472f76ff);
+                var html_f3d95cab389bec2ab6fce755ab16e099 = $(`&lt;div id=&quot;html_f3d95cab389bec2ab6fce755ab16e099&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 741 &lt;br&gt;=============================&lt;br&gt; &quot;DAVLAT EKOLOGIK EKSPERTIZASI MARKAZI&quot; DUK&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  Заправка картриджей&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=741&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_deb879dfa414fdfc6a4454d0ccdd6b85.setContent(html_f3d95cab389bec2ab6fce755ab16e099);
             
         
 
-        marker_1e024307cf3359e7d9bc2150640d34e9.bindPopup(popup_97d4a632eea3d0cad1f78b7e76f9796d)
+        marker_7aab79ef8bbef620ef4392acf27bdb66.bindPopup(popup_deb879dfa414fdfc6a4454d0ccdd6b85)
         ;
 
         
     
     
-            var marker_f74ec3f2fbdd1985659d6f78ca475d6e = L.marker(
+            var marker_4c64348dd90f61dc4c4c8e0106254d13 = L.marker(
                 [41.28921489333344, 69.31288111459628],
                 {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
+            ).addTo(marker_cluster_f433dbd5baa318ed95e7c17bd4eeb306);
         
     
-            var icon_c8721c9d3811dc3b92590b47557ab31d = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
+            var icon_8993f2e717e38504ad1169f5c5089a1e = L.AwesomeMarkers.icon(
+                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;orange&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
             );
-            marker_f74ec3f2fbdd1985659d6f78ca475d6e.setIcon(icon_c8721c9d3811dc3b92590b47557ab31d);
+            marker_4c64348dd90f61dc4c4c8e0106254d13.setIcon(icon_8993f2e717e38504ad1169f5c5089a1e);
         
     
-        var popup_3efd33c3358bfa1ab1c08d5edf0b7de4 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
+        var popup_26c1cc12f8d1b25cfaf631a1faae47fa = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;, &quot;style&quot;: &quot;background-color: rgba(255, 255, 200, 0.9);&quot;});
 
         
             
-                var html_28dd542879fa065aef3a179200377ce7 = $(`&lt;div id=&quot;html_28dd542879fa065aef3a179200377ce7&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 700 =============================&lt;br&gt; УЗ ЛИДЕП&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Холмухамедов Азамат  &lt;br&gt;  Горсовет 1536- 1 зп, 231 - 1 зп, 2135 - 1 зр&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=700&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_3efd33c3358bfa1ab1c08d5edf0b7de4.setContent(html_28dd542879fa065aef3a179200377ce7);
+                var html_95a72b062315e6308011de723ecff00b = $(`&lt;div id=&quot;html_95a72b062315e6308011de723ecff00b&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:orange; font-size:16px; font-weight:bold;&quot;&gt;№ 744 &lt;br&gt;=============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Принята мастером - Хусанходжаев Шухрат  &lt;br&gt;  Заказчик: Ц1 Номер заявки: 000000052198 Вид заявки: Заправка принтера* Телефон инициатора: 974907726 Инициатор: Эргашев Шахбос Тема заявки: Заправка принтера Задача (сокр): Необходимо заправить принтеры юридического отдела Canon MF 3010 и Canon MF 443dw.&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=744&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:orange; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
+                popup_26c1cc12f8d1b25cfaf631a1faae47fa.setContent(html_95a72b062315e6308011de723ecff00b);
             
         
 
-        marker_f74ec3f2fbdd1985659d6f78ca475d6e.bindPopup(popup_3efd33c3358bfa1ab1c08d5edf0b7de4)
-        ;
-
-        
-    
-    
-            var marker_b2b4c5e019bc3712f710a13a0decf5ef = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_49d2b066d0913116188bb5ae0beba6d7 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_b2b4c5e019bc3712f710a13a0decf5ef.setIcon(icon_49d2b066d0913116188bb5ae0beba6d7);
-        
-    
-        var popup_6d4ad48ac06953d89c3dac1507c6445f = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_5040619b0d7e9d8011f2ceaf08e6a92f = $(`&lt;div id=&quot;html_5040619b0d7e9d8011f2ceaf08e6a92f&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 704 =============================&lt;br&gt; ООО “NADEJNIY BUXGALTER”&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  canon 264-1 + 1 нов картридж&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=704&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_6d4ad48ac06953d89c3dac1507c6445f.setContent(html_5040619b0d7e9d8011f2ceaf08e6a92f);
-            
-        
-
-        marker_b2b4c5e019bc3712f710a13a0decf5ef.bindPopup(popup_6d4ad48ac06953d89c3dac1507c6445f)
-        ;
-
-        
-    
-    
-            var marker_9d35d6ba84b140c731cdb7642b0e9b01 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_2398534b8c72bdafe23c7b0d1daa36cc = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_9d35d6ba84b140c731cdb7642b0e9b01.setIcon(icon_2398534b8c72bdafe23c7b0d1daa36cc);
-        
-    
-        var popup_f9ef891381cce6ab502fdd9b39faec36 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_18cf559c86995e2d9de54c236e687e3f = $(`&lt;div id=&quot;html_18cf559c86995e2d9de54c236e687e3f&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 706 =============================&lt;br&gt; Представительство ТОО GOODRICH CENTRAL ASIA&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Галимов Дамир  &lt;br&gt;  для IT отдела  Настройка WIFI Бобур 77, 314-хона https://maps.google.com/maps?q=41.271587,69.260585&amp;ll=41.271587,69.260585&amp;z=16&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=706&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_f9ef891381cce6ab502fdd9b39faec36.setContent(html_18cf559c86995e2d9de54c236e687e3f);
-            
-        
-
-        marker_9d35d6ba84b140c731cdb7642b0e9b01.bindPopup(popup_f9ef891381cce6ab502fdd9b39faec36)
-        ;
-
-        
-    
-    
-            var marker_1fb781ac7a65427441fb2adbe54123f9 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_2f524afbc8d2d7c4cd58d87e35897184 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_1fb781ac7a65427441fb2adbe54123f9.setIcon(icon_2f524afbc8d2d7c4cd58d87e35897184);
-        
-    
-        var popup_74924fe0b0a84350468e43dd4d6fc338 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_0fa4dc8b4a99748e994d9cbd6eddc8ff = $(`&lt;div id=&quot;html_0fa4dc8b4a99748e994d9cbd6eddc8ff&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 711 =============================&lt;br&gt; ЧП &quot;IV STAL INVEST&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  canon 232 canon lbp3010&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=711&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_74924fe0b0a84350468e43dd4d6fc338.setContent(html_0fa4dc8b4a99748e994d9cbd6eddc8ff);
-            
-        
-
-        marker_1fb781ac7a65427441fb2adbe54123f9.bindPopup(popup_74924fe0b0a84350468e43dd4d6fc338)
-        ;
-
-        
-    
-    
-            var marker_bb372ad30e04e228274e0d6f94682fba = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_b2359973c565093cf6551383a30ca71d = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_bb372ad30e04e228274e0d6f94682fba.setIcon(icon_b2359973c565093cf6551383a30ca71d);
-        
-    
-        var popup_c541b26c9d86fe8eaf2586ac29932e98 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_9d579e66512bf6683e5dd441680af48a = $(`&lt;div id=&quot;html_9d579e66512bf6683e5dd441680af48a&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 719 =============================&lt;br&gt; ООО &quot;Technopak Systems&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  заправка 4018 - 2 шт. Карина 935979725&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=719&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_c541b26c9d86fe8eaf2586ac29932e98.setContent(html_9d579e66512bf6683e5dd441680af48a);
-            
-        
-
-        marker_bb372ad30e04e228274e0d6f94682fba.bindPopup(popup_c541b26c9d86fe8eaf2586ac29932e98)
-        ;
-
-        
-    
-    
-            var marker_0cc32ee86fa968f7d2b3524c011036b5 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_084bc00920c0d2d0461d04f4444dd7f8 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_0cc32ee86fa968f7d2b3524c011036b5.setIcon(icon_084bc00920c0d2d0461d04f4444dd7f8);
-        
-    
-        var popup_6567c03eb7bbb891b347c37bae6810e1 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_5fda48ff8d6c21861b4c82ab3e633386 = $(`&lt;div id=&quot;html_5fda48ff8d6c21861b4c82ab3e633386&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 721 =============================&lt;br&gt; МЧЖ BELLISSIMO PIZZA INTERNATIONAL&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  Офис 1) Canon mf443dw 1 заправка  2) Canon mf236n 2 заправки&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=721&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_6567c03eb7bbb891b347c37bae6810e1.setContent(html_5fda48ff8d6c21861b4c82ab3e633386);
-            
-        
-
-        marker_0cc32ee86fa968f7d2b3524c011036b5.bindPopup(popup_6567c03eb7bbb891b347c37bae6810e1)
-        ;
-
-        
-    
-    
-            var marker_8dd7ab9225f17f691ef3b17ce43935c4 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_53aafc4a0fe0f90b412204521a272124 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_8dd7ab9225f17f691ef3b17ce43935c4.setIcon(icon_53aafc4a0fe0f90b412204521a272124);
-        
-    
-        var popup_933d26f10eaa9a16526251990d148951 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_f168bf1c51599bda6de5f7caeeacae79 = $(`&lt;div id=&quot;html_f168bf1c51599bda6de5f7caeeacae79&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 722 =============================&lt;br&gt; UZLIDEP&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Холмухамедов Азамат  &lt;br&gt;  405 кабинет 1 заправка 3010. 305 кабинет полный комплект красок для Epson l805&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=722&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_933d26f10eaa9a16526251990d148951.setContent(html_f168bf1c51599bda6de5f7caeeacae79);
-            
-        
-
-        marker_8dd7ab9225f17f691ef3b17ce43935c4.bindPopup(popup_933d26f10eaa9a16526251990d148951)
-        ;
-
-        
-    
-    
-            var marker_a2b4ca870d599ee7a23f139f3de5e9be = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_a3ef3a77fd46060918ae139fd1a97131 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_a2b4ca870d599ee7a23f139f3de5e9be.setIcon(icon_a3ef3a77fd46060918ae139fd1a97131);
-        
-    
-        var popup_754934048c40e0daff5891c738a158d1 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_0e08fada9935023dc62349a536200732 = $(`&lt;div id=&quot;html_0e08fada9935023dc62349a536200732&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 726 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Хусанходжаев Шухрат  &lt;br&gt;  Заказчик: Korzinka - Ziyolilar Номер заявки: 000000052167 Вид заявки: Заправка принтера* Телефон инициатора: 939674641 Инициатор: Наргиза Тема заявки: Принтер Canon 2206 долго печатает Задача (сокр): Здраствуйте. Принтер Canon 2206 идёт долгая подготовка катреджа перед печатью. Прошу отправить специалистов чтобы устронить проблему. Спасибо&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=726&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_754934048c40e0daff5891c738a158d1.setContent(html_0e08fada9935023dc62349a536200732);
-            
-        
-
-        marker_a2b4ca870d599ee7a23f139f3de5e9be.bindPopup(popup_754934048c40e0daff5891c738a158d1)
-        ;
-
-        
-    
-    
-            var marker_14bc93b9ba55ae3d0be108316990e059 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_75089a8e62b7ca4939a93240ab0c035a = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_14bc93b9ba55ae3d0be108316990e059.setIcon(icon_75089a8e62b7ca4939a93240ab0c035a);
-        
-    
-        var popup_243d1d141bc6395dc3d993506fed012a = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_a264290f07c1fc2957db59b7e9b0a2ce = $(`&lt;div id=&quot;html_a264290f07c1fc2957db59b7e9b0a2ce&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 727 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Ким Александр  &lt;br&gt;  Заказчик: Korzinka - Setor Номер заявки: 000000052169 Вид заявки: Заправка принтера* Телефон инициатора: 335279944 Инициатор: Farrux Тема заявки: Заправка принтера* Задача (сокр): Заправка принтера*&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=727&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_243d1d141bc6395dc3d993506fed012a.setContent(html_a264290f07c1fc2957db59b7e9b0a2ce);
-            
-        
-
-        marker_14bc93b9ba55ae3d0be108316990e059.bindPopup(popup_243d1d141bc6395dc3d993506fed012a)
-        ;
-
-        
-    
-    
-            var marker_06800663d8776131656d64eafa4e332d = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_f23de43e746976cca13ebd4224c27903 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_06800663d8776131656d64eafa4e332d.setIcon(icon_f23de43e746976cca13ebd4224c27903);
-        
-    
-        var popup_612db6c410d5e126a881d1b81a92f48e = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_7462e1b92d7dcb7d395b636c9e4a8785 = $(`&lt;div id=&quot;html_7462e1b92d7dcb7d395b636c9e4a8785&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 728 =============================&lt;br&gt; СП ООО &quot;TECHNOPARK AL-JABR&quot; бывшие   &quot;NAPA TEAM&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Холмухамедов Азамат  &lt;br&gt;  Canon 426- 3 шт&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=728&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_612db6c410d5e126a881d1b81a92f48e.setContent(html_7462e1b92d7dcb7d395b636c9e4a8785);
-            
-        
-
-        marker_06800663d8776131656d64eafa4e332d.bindPopup(popup_612db6c410d5e126a881d1b81a92f48e)
-        ;
-
-        
-    
-    
-            var marker_dd5a981ee5d1ded4dc9769286e326c0f = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_a040e482d0b9ec40b2fe1c506c945ad8 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_dd5a981ee5d1ded4dc9769286e326c0f.setIcon(icon_a040e482d0b9ec40b2fe1c506c945ad8);
-        
-    
-        var popup_f995d6a39fc9a73cd61a1023028741ea = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_4469e0041dc7ef83db5649c5716b91b0 = $(`&lt;div id=&quot;html_4469e0041dc7ef83db5649c5716b91b0&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 729 =============================&lt;br&gt; ООО &quot;Cargo Star&quot; Офис Эльбек 3/1)&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  сanon mf 244-1  canon mf 3010-1 Canon lbp 6030b&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=729&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_f995d6a39fc9a73cd61a1023028741ea.setContent(html_4469e0041dc7ef83db5649c5716b91b0);
-            
-        
-
-        marker_dd5a981ee5d1ded4dc9769286e326c0f.bindPopup(popup_f995d6a39fc9a73cd61a1023028741ea)
-        ;
-
-        
-    
-    
-            var marker_fb8514687f5fdddf339863174b724196 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_218d5d4e22f5426e3ed3755e1ccfe33a = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_fb8514687f5fdddf339863174b724196.setIcon(icon_218d5d4e22f5426e3ed3755e1ccfe33a);
-        
-    
-        var popup_68a4a01712306f369405f9d72fa6191e = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_0114cda226e966065015c181efcd091b = $(`&lt;div id=&quot;html_0114cda226e966065015c181efcd091b&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 731 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Хусанходжаев Шухрат  &lt;br&gt;  Заказчик: Korzinka - Qoratosh Номер заявки: 000000052171 Вид заявки: Заправка принтера* Телефон инициатора: 901688929 Инициатор: Файзулла Тема заявки: Заправка принтера Задача (сокр): Заправка  вес принтер маркета&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=731&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_68a4a01712306f369405f9d72fa6191e.setContent(html_0114cda226e966065015c181efcd091b);
-            
-        
-
-        marker_fb8514687f5fdddf339863174b724196.bindPopup(popup_68a4a01712306f369405f9d72fa6191e)
-        ;
-
-        
-    
-    
-            var marker_82e7b4fb973f8e6a5ddd8a0611f7dc45 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_b13b6e500d05ac9ab58b821e21aa9f6b = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_82e7b4fb973f8e6a5ddd8a0611f7dc45.setIcon(icon_b13b6e500d05ac9ab58b821e21aa9f6b);
-        
-    
-        var popup_2ff244472582975fb5dbc22782b8e689 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_daf3de35d105a19eea9787652b689035 = $(`&lt;div id=&quot;html_daf3de35d105a19eea9787652b689035&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 733 =============================&lt;br&gt; &quot;EVEREST UNIVERSAL TRADE GROUP&quot; mas\`uliyati cheklangan jamiyati&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  3010 - 2 зправки, 443 - 2 заправки&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=733&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_2ff244472582975fb5dbc22782b8e689.setContent(html_daf3de35d105a19eea9787652b689035);
-            
-        
-
-        marker_82e7b4fb973f8e6a5ddd8a0611f7dc45.bindPopup(popup_2ff244472582975fb5dbc22782b8e689)
-        ;
-
-        
-    
-    
-            var marker_1b57aaa8df3628def63343313dec7f2c = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_c5d2ad7d287caa7d7ad523e95c2c92c9 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_1b57aaa8df3628def63343313dec7f2c.setIcon(icon_c5d2ad7d287caa7d7ad523e95c2c92c9);
-        
-    
-        var popup_4904afe3df4677111c3db1bfb0ff1c89 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_b8f74ddc64f130404d6400d12e1b8de2 = $(`&lt;div id=&quot;html_b8f74ddc64f130404d6400d12e1b8de2&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 734 =============================&lt;br&gt; &quot;MELON FASHION C A&quot; mas\`uliyati cheklangan jamiyati&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - ТУРАБЕКОВ ТЕМУР  &lt;br&gt;  нужна 1 заправка 269 мф и также 1 новый катридж   Салихов Александр дополнил(а) заявку... Новый клиент до обеда кто может сделать??&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=734&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_4904afe3df4677111c3db1bfb0ff1c89.setContent(html_b8f74ddc64f130404d6400d12e1b8de2);
-            
-        
-
-        marker_1b57aaa8df3628def63343313dec7f2c.bindPopup(popup_4904afe3df4677111c3db1bfb0ff1c89)
-        ;
-
-        
-    
-    
-            var marker_166b9f36917eb4737c9119bea65fcaed = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_559416efcb04fa252f49edd0d6ff4607 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_166b9f36917eb4737c9119bea65fcaed.setIcon(icon_559416efcb04fa252f49edd0d6ff4607);
-        
-    
-        var popup_9f11c89e283994890d08894505594827 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_7b1404f652d5b844b7d54077318bdd70 = $(`&lt;div id=&quot;html_7b1404f652d5b844b7d54077318bdd70&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 735 =============================&lt;br&gt; OOO &quot;Kanstik&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  Канстик Мирабад. 4730-1 заправка. Тел 933901314&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=735&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_9f11c89e283994890d08894505594827.setContent(html_7b1404f652d5b844b7d54077318bdd70);
-            
-        
-
-        marker_166b9f36917eb4737c9119bea65fcaed.bindPopup(popup_9f11c89e283994890d08894505594827)
-        ;
-
-        
-    
-    
-            var marker_f7f41348204288fb83ff38317ebdf829 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_f803d61ed177c9b513bd7fa8d428fc99 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_f7f41348204288fb83ff38317ebdf829.setIcon(icon_f803d61ed177c9b513bd7fa8d428fc99);
-        
-    
-        var popup_41b2000a337e56531640fc28b596e353 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_900cf7ea14ec803bae7cb2992e446e94 = $(`&lt;div id=&quot;html_900cf7ea14ec803bae7cb2992e446e94&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 736 =============================&lt;br&gt; OOO &quot;Ixlos Invest&quot;&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  canon 232-7шт&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=736&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_41b2000a337e56531640fc28b596e353.setContent(html_900cf7ea14ec803bae7cb2992e446e94);
-            
-        
-
-        marker_f7f41348204288fb83ff38317ebdf829.bindPopup(popup_41b2000a337e56531640fc28b596e353)
-        ;
-
-        
-    
-    
-            var marker_53cf2407764966413449698f7fbd4bd5 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_1da9637e2eacd4195594bf1281b5b2af = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_53cf2407764966413449698f7fbd4bd5.setIcon(icon_1da9637e2eacd4195594bf1281b5b2af);
-        
-    
-        var popup_8709ccbe4a8fdcf4ce2db5902a07b7ec = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_9829b9f0b675f1c2d9a0d956874ae747 = $(`&lt;div id=&quot;html_9829b9f0b675f1c2d9a0d956874ae747&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 737 =============================&lt;br&gt; ООО «ANOR AGRO GLOBAL GROUP»&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Собитов Рахматилла  &lt;br&gt;  canon 643-не печатает черный цвет&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=737&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_8709ccbe4a8fdcf4ce2db5902a07b7ec.setContent(html_9829b9f0b675f1c2d9a0d956874ae747);
-            
-        
-
-        marker_53cf2407764966413449698f7fbd4bd5.bindPopup(popup_8709ccbe4a8fdcf4ce2db5902a07b7ec)
-        ;
-
-        
-    
-    
-            var marker_bd7c0f940b83fe06d7a6b9dd1183dc67 = L.marker(
-                [41.28921489333344, 69.31288111459628],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_cbf1fa71babca6e2ea4567579f101e77 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_bd7c0f940b83fe06d7a6b9dd1183dc67.setIcon(icon_cbf1fa71babca6e2ea4567579f101e77);
-        
-    
-        var popup_121e510d71fdedf8a1c82215efcb75a2 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_09a81aa3ed47f3ba72db8f1d664f69bd = $(`&lt;div id=&quot;html_09a81aa3ed47f3ba72db8f1d664f69bd&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 739 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Ким Александр  &lt;br&gt;  Заказчик: Ц1 Номер заявки: 000000052183 Вид заявки: Заправка принтера* Телефон инициатора: 935010461 Инициатор: Акмал Ядгоров Тема заявки: Заправка принтера Задача (сокр): Прошу заправить катридж принтера Canon MF3010 и Сanon MF220&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=739&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_121e510d71fdedf8a1c82215efcb75a2.setContent(html_09a81aa3ed47f3ba72db8f1d664f69bd);
-            
-        
-
-        marker_bd7c0f940b83fe06d7a6b9dd1183dc67.bindPopup(popup_121e510d71fdedf8a1c82215efcb75a2)
-        ;
-
-        
-    
-    
-            var marker_b4a4ac55a6f53803e52820f31d5a7f02 = L.marker(
-                [41.300857, 69.263421],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_707a5261d7f8e8d861a29353a496e9fa = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;green&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_b4a4ac55a6f53803e52820f31d5a7f02.setIcon(icon_707a5261d7f8e8d861a29353a496e9fa);
-        
-    
-        var popup_5e64123d55c9f639282714a943e247fb = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_7f97a714ee02e3e2f55309484c7e7c19 = $(`&lt;div id=&quot;html_7f97a714ee02e3e2f55309484c7e7c19&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:green; font-size:16px; font-weight:bold;&quot;&gt;№ 743 =============================&lt;br&gt; ИП ООО ANGLESEY FOOD&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Выполнена - Ким Александр  &lt;br&gt;  Заказчик: Korzinka - Turkmenskiy Номер заявки: 000000052191 Вид заявки: Заправка принтера* Телефон инициатора: 995155226 Инициатор: Эдем Тема заявки: Заправка принтера Задача (сокр): Заправка принтера*&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=743&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:green; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_5e64123d55c9f639282714a943e247fb.setContent(html_7f97a714ee02e3e2f55309484c7e7c19);
-            
-        
-
-        marker_b4a4ac55a6f53803e52820f31d5a7f02.bindPopup(popup_5e64123d55c9f639282714a943e247fb)
-        ;
-
-        
-    
-    
-            var marker_e5327ad1fbdbc97a64a7957c968819ce = L.marker(
-                [41.219524, 69.223094],
-                {}
-            ).addTo(marker_cluster_a6408a4b40d0b73f6a10d0389c112f8c);
-        
-    
-            var icon_e957c12d1078ef881033d63e29bd0aa9 = L.AwesomeMarkers.icon(
-                {&quot;extraClasses&quot;: &quot;fa-rotate-0&quot;, &quot;icon&quot;: &quot;info-sign&quot;, &quot;iconColor&quot;: &quot;white&quot;, &quot;markerColor&quot;: &quot;red&quot;, &quot;prefix&quot;: &quot;glyphicon&quot;}
-            );
-            marker_e5327ad1fbdbc97a64a7957c968819ce.setIcon(icon_e957c12d1078ef881033d63e29bd0aa9);
-        
-    
-        var popup_c208ab59f9c87e3b7fd657d8625108d8 = L.popup({&quot;maxWidth&quot;: &quot;auto&quot;});
-
-        
-            
-                var html_8f0d56b5bb7c9ac730811aacf6b9671d = $(`&lt;div id=&quot;html_8f0d56b5bb7c9ac730811aacf6b9671d&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;&gt;         &lt;div style=&quot;width: auto;&quot;&gt;             &lt;p style=&quot;color:red; font-size:16px; font-weight:bold;&quot;&gt;№ 725 =============================&lt;br&gt; Тест 2&lt;/p&gt;             &lt;p style=&quot;color:black; font-size:12px;&quot;&gt;Отменена  &lt;br&gt;  Проверка подачи заявки от физ лица&lt;/p&gt;             &lt;button onclick=&quot;window.open(&#x27;https://t.me/labmonotasktelebot?start=725&#x27;, &#x27;_blank&#x27;)&quot; style=&quot;background-color:red; color:white; font-size:16px;&quot;&gt;Перейти к заявке&lt;/button&gt;         &lt;/div&gt;     &lt;/div&gt;`)[0];
-                popup_c208ab59f9c87e3b7fd657d8625108d8.setContent(html_8f0d56b5bb7c9ac730811aacf6b9671d);
-            
-        
-
-        marker_e5327ad1fbdbc97a64a7957c968819ce.bindPopup(popup_c208ab59f9c87e3b7fd657d8625108d8)
+        marker_4c64348dd90f61dc4c4c8e0106254d13.bindPopup(popup_26c1cc12f8d1b25cfaf631a1faae47fa)
         ;
 
         
@@ -995,21 +418,20 @@
 &lt;/script&gt;
 &lt;/html&gt;" style="position:absolute;width:100%;height:100%;left:0;top:0;border:none !important;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe></div></div>
             </div>
-            <div class="scrollable-list" style="width: 30%; float: left; height: calc(100% - 130px); overflow: auto;">
-                <div style="margin-bottom: 20px;">
-                    <h2 style="color: black; font-size: 18px; font-weight: bold;">Условные обозначения</h2>
-                    <p style="color: blue; font-size: 14px;">████ - Заявки не принятые мастерами</p>
-                    <p style="color: orange; font-size: 14px;">████ - Заявки у мастеров</p>
-                    <p style="color: green; font-size: 14px;">████ - Выполненные заявки</p>
-                    <p style="color: red; font-size: 14px;">████ - Отмененные заявки</p>
-                    <br>
-                </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
+            <div id="popup-list" class="popup-list" style="display: none;">
+                <h2 style="color: black; font-size: 18px; font-weight: bold;">Условные обозначения</h2>
+                <p style="color: blue; font-size: 14px;">████ - Заявки не принятые мастерами</p>
+                <p style="color: orange; font-size: 14px;">████ - Заявки у мастеров</p>
+                <p style="color: green; font-size: 14px;">████ - Выполненные заявки</p>
+                <p style="color: red; font-size: 14px;">████ - Отмененные заявки</p>
+                <br>
+                <div class="scrollable-list">
+                    
+                        <div style="margin-bottom: 20px;">
+                            
         <div>
             <p style="color:blue; font-size:16px; font-weight:bold;">№ 714
-=============================<br>
+<br>=============================<br>
 OOO "FILUET SILK WAY LOGISTICS"</p>
             <p style="color:black; font-size:12px;">Зарегистрирована
  <br> 
@@ -1020,13 +442,13 @@ hp m 608-5
             <button onclick="window.open('https://t.me/labmonotasktelebot?start=714', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
         </div>
     
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
         <div>
             <p style="color:blue; font-size:16px; font-weight:bold;">№ 724
-=============================<br>
+<br>=============================<br>
 СП ООО «ADM-ASTER»</p>
             <p style="color:black; font-size:12px;">Зарегистрирована
  <br> 
@@ -1034,29 +456,13 @@ hp m 608-5
             <button onclick="window.open('https://t.me/labmonotasktelebot?start=724', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
         </div>
     
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:blue; font-size:16px; font-weight:bold;">№ 730
-=============================<br>
-ООО "AVA-TEN"</p>
-            <p style="color:black; font-size:12px;">Зарегистрирована
- <br> 
-Заправка картриджей
-на 19,05,2023 с утра
-909088333 Карина</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=730', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
         <div>
             <p style="color:blue; font-size:16px; font-weight:bold;">№ 732
-=============================<br>
+<br>=============================<br>
 "NUR-EL BIZNES"</p>
             <p style="color:black; font-size:12px;">Зарегистрирована
  <br> 
@@ -1064,13 +470,13 @@ hp m 608-5
             <button onclick="window.open('https://t.me/labmonotasktelebot?start=732', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
         </div>
     
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
         <div>
             <p style="color:blue; font-size:16px; font-weight:bold;">№ 740
-=============================<br>
+<br>=============================<br>
 ЧП "LUX OPTIX"</p>
             <p style="color:black; font-size:12px;">Зарегистрирована
  <br> 
@@ -1080,27 +486,13 @@ hp m 608-5
             <button onclick="window.open('https://t.me/labmonotasktelebot?start=740', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
         </div>
     
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:blue; font-size:16px; font-weight:bold;">№ 741
-=============================<br>
-"DAVLAT EKOLOGIK EKSPERTIZASI MARKAZI" DUK</p>
-            <p style="color:black; font-size:12px;">Зарегистрирована
- <br> 
-Заправка картриджей</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=741', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
         <div>
             <p style="color:blue; font-size:16px; font-weight:bold;">№ 742
-=============================<br>
+<br>=============================<br>
 OOO "QUALITY PHARM"</p>
             <p style="color:black; font-size:12px;">Зарегистрирована
  <br> 
@@ -1108,15 +500,73 @@ OOO "QUALITY PHARM"</p>
             <button onclick="window.open('https://t.me/labmonotasktelebot?start=742', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
         </div>
     
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
         <div>
-            <p style="color:blue; font-size:16px; font-weight:bold;">№ 744
-=============================<br>
+            <p style="color:orange; font-size:16px; font-weight:bold;">№ 710
+<br>=============================<br>
+ИП ООО Fashion Star</p>
+            <p style="color:black; font-size:12px;">Принята мастером - Холмухамедов Азамат
+ <br> 
+заправка L3100 - 1 шт. Наргиза 935056067</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=710', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
+        <div>
+            <p style="color:orange; font-size:16px; font-weight:bold;">№ 730
+<br>=============================<br>
+ООО "AVA-TEN"</p>
+            <p style="color:black; font-size:12px;">Принята мастером - Собитов Рахматилла
+ <br> 
+Заправка картриджей
+на 19,05,2023 с утра
+909088333 Карина</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=730', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
+        <div>
+            <p style="color:orange; font-size:16px; font-weight:bold;">№ 738
+<br>=============================<br>
+СП ООО " CENTRAL ASIA FERTILIZERS "</p>
+            <p style="color:black; font-size:12px;">Принята мастером - Холмухамедов Азамат
+ <br> 
+canon 453</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=738', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
+        <div>
+            <p style="color:orange; font-size:16px; font-weight:bold;">№ 741
+<br>=============================<br>
+"DAVLAT EKOLOGIK EKSPERTIZASI MARKAZI" DUK</p>
+            <p style="color:black; font-size:12px;">Принята мастером - ТУРАБЕКОВ ТЕМУР
+ <br> 
+Заправка картриджей</p>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=741', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+        </div>
+    
+                        </div>
+                    
+                        <div style="margin-bottom: 20px;">
+                            
+        <div>
+            <p style="color:orange; font-size:16px; font-weight:bold;">№ 744
+<br>=============================<br>
 ИП ООО ANGLESEY FOOD</p>
-            <p style="color:black; font-size:12px;">Зарегистрирована
+            <p style="color:black; font-size:12px;">Принята мастером - Хусанходжаев Шухрат
  <br> 
 Заказчик: Ц1
 Номер заявки: 000000052198
@@ -1125,393 +575,30 @@ OOO "QUALITY PHARM"</p>
 Инициатор: Эргашев Шахбос
 Тема заявки: Заправка принтера
 Задача (сокр): Необходимо заправить принтеры юридического отдела Canon MF 3010 и Canon MF 443dw.</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=744', '_blank')" style="background-color:blue; color:white; font-size:16px;">Перейти к заявке</button><br><br>
+            <button onclick="window.open('https://t.me/labmonotasktelebot?start=744', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
         </div>
     
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:orange; font-size:16px; font-weight:bold;">№ 710
-=============================<br>
-ИП ООО Fashion Star</p>
-            <p style="color:black; font-size:12px;">Принята мастером - Холмухамедов Азамат
- <br> 
-заправка L3100 - 1 шт. Наргиза 935056067</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=710', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:orange; font-size:16px; font-weight:bold;">№ 738
-=============================<br>
-СП ООО " CENTRAL ASIA FERTILIZERS "</p>
-            <p style="color:black; font-size:12px;">Принята мастером - Холмухамедов Азамат
- <br> 
-canon 453</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=738', '_blank')" style="background-color:orange; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 683
-=============================<br>
-ООО "DELI TORG"</p>
-            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
- <br> 
-canon 6030-1
-933818284 Камола
-
- Собитов Рахматилла дополнил(а) заявку...
-Выполнено вчера</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=683', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 692
-=============================<br>
-СП ООО "Lama Standart"</p>
-            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
- <br> 
-canon mf 4018</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=692', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 700
-=============================<br>
-УЗ ЛИДЕП</p>
-            <p style="color:black; font-size:12px;">Выполнена - Холмухамедов Азамат
- <br> 
-Горсовет 1536- 1 зп, 231 - 1 зп, 2135 - 1 зр</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=700', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 704
-=============================<br>
-ООО “NADEJNIY BUXGALTER”</p>
-            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
- <br> 
-canon 264-1 + 1 нов картридж</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=704', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 706
-=============================<br>
-Представительство ТОО GOODRICH CENTRAL ASIA</p>
-            <p style="color:black; font-size:12px;">Выполнена - Галимов Дамир
- <br> 
-для IT отдела 
-Настройка WIFI
-Бобур 77, 314-хона
-https://maps.google.com/maps?q=41.271587,69.260585&ll=41.271587,69.260585&z=16</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=706', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 711
-=============================<br>
-ЧП "IV STAL INVEST"</p>
-            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
- <br> 
-canon 232
-canon lbp3010</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=711', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 719
-=============================<br>
-ООО "Technopak Systems"</p>
-            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
- <br> 
-заправка 4018 - 2 шт. Карина 935979725</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=719', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 721
-=============================<br>
-МЧЖ BELLISSIMO PIZZA INTERNATIONAL</p>
-            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
- <br> 
-Офис
-1) Canon mf443dw 1 заправка 
-2) Canon mf236n 2 заправки</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=721', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 722
-=============================<br>
-UZLIDEP</p>
-            <p style="color:black; font-size:12px;">Выполнена - Холмухамедов Азамат
- <br> 
-405 кабинет 1 заправка 3010. 305 кабинет полный комплект красок для Epson l805</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=722', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 726
-=============================<br>
-ИП ООО ANGLESEY FOOD</p>
-            <p style="color:black; font-size:12px;">Выполнена - Хусанходжаев Шухрат
- <br> 
-Заказчик: Korzinka - Ziyolilar
-Номер заявки: 000000052167
-Вид заявки: Заправка принтера*
-Телефон инициатора: 939674641
-Инициатор: Наргиза
-Тема заявки: Принтер Canon 2206 долго печатает
-Задача (сокр): Здраствуйте. Принтер Canon 2206 идёт долгая подготовка катреджа перед печатью. Прошу отправить специалистов чтобы устронить проблему. Спасибо</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=726', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 727
-=============================<br>
-ИП ООО ANGLESEY FOOD</p>
-            <p style="color:black; font-size:12px;">Выполнена - Ким Александр
- <br> 
-Заказчик: Korzinka - Setor
-Номер заявки: 000000052169
-Вид заявки: Заправка принтера*
-Телефон инициатора: 335279944
-Инициатор: Farrux
-Тема заявки: Заправка принтера*
-Задача (сокр): Заправка принтера*</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=727', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 728
-=============================<br>
-СП ООО "TECHNOPARK AL-JABR" бывшие   "NAPA TEAM"</p>
-            <p style="color:black; font-size:12px;">Выполнена - Холмухамедов Азамат
- <br> 
-Canon 426- 3 шт</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=728', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 729
-=============================<br>
-ООО "Cargo Star" Офис Эльбек 3/1)</p>
-            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
- <br> 
-сanon mf 244-1 
-canon mf 3010-1
-Canon lbp 6030b</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=729', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 731
-=============================<br>
-ИП ООО ANGLESEY FOOD</p>
-            <p style="color:black; font-size:12px;">Выполнена - Хусанходжаев Шухрат
- <br> 
-Заказчик: Korzinka - Qoratosh
-Номер заявки: 000000052171
-Вид заявки: Заправка принтера*
-Телефон инициатора: 901688929
-Инициатор: Файзулла
-Тема заявки: Заправка принтера
-Задача (сокр): Заправка  вес принтер маркета</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=731', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 733
-=============================<br>
-"EVEREST UNIVERSAL TRADE GROUP" mas`uliyati cheklangan jamiyati</p>
-            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
- <br> 
-3010 - 2 зправки, 443 - 2 заправки</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=733', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 734
-=============================<br>
-"MELON FASHION C A" mas`uliyati cheklangan jamiyati</p>
-            <p style="color:black; font-size:12px;">Выполнена - ТУРАБЕКОВ ТЕМУР
- <br> 
-нужна 1 заправка 269 мф и также 1 новый катридж
-
- Салихов Александр дополнил(а) заявку...
-Новый клиент до обеда кто может сделать??</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=734', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 735
-=============================<br>
-OOO "Kanstik"</p>
-            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
- <br> 
-Канстик Мирабад. 4730-1 заправка. Тел 933901314</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=735', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 736
-=============================<br>
-OOO "Ixlos Invest"</p>
-            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
- <br> 
-canon 232-7шт</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=736', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 737
-=============================<br>
-ООО «ANOR AGRO GLOBAL GROUP»</p>
-            <p style="color:black; font-size:12px;">Выполнена - Собитов Рахматилла
- <br> 
-canon 643-не печатает черный цвет</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=737', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 739
-=============================<br>
-ИП ООО ANGLESEY FOOD</p>
-            <p style="color:black; font-size:12px;">Выполнена - Ким Александр
- <br> 
-Заказчик: Ц1
-Номер заявки: 000000052183
-Вид заявки: Заправка принтера*
-Телефон инициатора: 935010461
-Инициатор: Акмал Ядгоров
-Тема заявки: Заправка принтера
-Задача (сокр): Прошу заправить катридж принтера Canon MF3010 и Сanon MF220</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=739', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:green; font-size:16px; font-weight:bold;">№ 743
-=============================<br>
-ИП ООО ANGLESEY FOOD</p>
-            <p style="color:black; font-size:12px;">Выполнена - Ким Александр
- <br> 
-Заказчик: Korzinka - Turkmenskiy
-Номер заявки: 000000052191
-Вид заявки: Заправка принтера*
-Телефон инициатора: 995155226
-Инициатор: Эдем
-Тема заявки: Заправка принтера
-Задача (сокр): Заправка принтера*</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=743', '_blank')" style="background-color:green; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
-                    <div style="margin-bottom: 20px;">
-                        
-        <div>
-            <p style="color:red; font-size:16px; font-weight:bold;">№ 725
-=============================<br>
-Тест 2</p>
-            <p style="color:black; font-size:12px;">Отменена
- <br> 
-Проверка подачи заявки от физ лица</p>
-            <button onclick="window.open('https://t.me/labmonotasktelebot?start=725', '_blank')" style="background-color:red; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-        </div>
-    
-                    </div>
-                
+                        </div>
+                    
+                </div>
             </div>
+
+            <script type="text/javascript">
+                function toggleList() {
+                    var list = document.getElementById("popup-list");
+                    if (list.style.display === "none") {
+                        list.style.display = "block";
+                    } else {
+                        list.style.display = "none";
+                    }
+                }
+            </script>
+            <script type="text/javascript">
+                var isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile) {
+                    window.location.href = 'm.map.html';
+                }
+            </script>
         </body>
         </html>
     
