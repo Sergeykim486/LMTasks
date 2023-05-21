@@ -1177,7 +1177,7 @@ class NewTask:
             bot.send_message(
                 message.chat.id,
                 'Выберите филиал',
-                reply_markup=buttons.Buttons(clocations)
+                reply_markup=buttons.Buttons(clocations,3)
             )
         else:
             clocations.append('Добавить филиал')
