@@ -38,7 +38,6 @@ async def job():
     await schedule_message()
 async def schedule_message():
     while True:
-        logging.info('Проверка расписания')
         try:
             Tasks = db.select_table_with_filters('Tasks', {'status': 0})
             if len(Tasks) > 0:
@@ -67,16 +66,12 @@ async def schedule_message():
             await daylyreport.morning()
         elif now.hour == 20 and now.minute == 0:
             await daylyreport.evening()
-        # Формирование карты заявок
-        logging.info('формирование карты заявок')
         daterep = str(datetime.now().strftime("%d.%m.%Y"))
         locations = []
         addedlocs = db.select_table_with_filters('Tasks', {'status': 1})
         conflocs = db.select_table_with_filters('Tasks', {'status': 2})
         donet = db.select_table_with_filters('Tasks', {'status': 3}, ['done'], [daterep+' 00:00'], [daterep+' 23:59'])
         canceled = db.select_table_with_filters('Tasks', {'status': 4}, ['canceled'], [daterep+' 00:00'], [daterep+' 23:59'])
-        print(f'Добавленные - {len(addedlocs)}\nПринятые - {len(conflocs)}\nЗавершенные - {len(donet)}\nОтмененные - {len(canceled)}\n')
-        print('Не принятые')
         try:
             for task in addedlocs:
                 company = db.get_record_by_id('Contragents', task[3])[1]
@@ -94,7 +89,6 @@ async def schedule_message():
         except Exception as e:
             logging.info(e)
             pass
-        print('Принятые')
         try:
             for task in conflocs:
                 company = db.get_record_by_id('Contragents', task[3])[1]
@@ -113,7 +107,6 @@ async def schedule_message():
         except Exception as e:
             logging.info(e)
             pass
-        print('Выполненные')
         try:
             for task in donet:
                 company = db.get_record_by_id('Contragents', task[3])[1]
@@ -132,7 +125,6 @@ async def schedule_message():
         except Exception as e:
             logging.info(e)
             pass
-        print('Отмененные')
         try:
             for task in canceled:
                 company = db.get_record_by_id('Contragents', task[3])[1]
@@ -152,18 +144,6 @@ async def schedule_message():
         if len(locations) > 0:
             functions.mmapgen(locations)
             functions.mapgen(locations)
-        # global sch, continue_polling
-        
-        # if continue_polling == False:
-        #     if sch < 4:
-        #         sch = sch + 1
-        #     elif sch == 4:
-        #         continue_polling = True
-        #         bot.polling()
-        #         sch = 0
-        # else:
-        #     sch = 0
-
         await asyncio.sleep(15)
 async def main():
     await job()
@@ -456,9 +436,6 @@ class MainMenu:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser, continue_polling
-        # if continue_polling == False:
-        #     bot.polling()
-        #     continue_polling == True
         if message.text == 'Новая заявка':
             ActiveUser[message.chat.id]['nt'] = 1
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -661,20 +638,27 @@ class editcont():
             bot.register_next_step_handler(message, CADR1)
         elif message.text == 'ЛОКАЦИИ':
             # ИЗМЕНЕНИЕ ЛОКАЦИЙ КОНТРАГЕНТА
-            sendlocations(ActiveUser[message.chat.id]['inn'], message)
-            locs = db.select_table_with_filters('Locations', {'inn': ActiveUser[message.chat.id]['inn']})
-            if len(locs) == 0:
+            locations = db.select_table_with_filters('Locations', {'inn': ActiveUser[message.chat.id]['inn']})
+            buttonsloc = []
+            buttonsloc.append('Добавить')
+            try:
+                for location in locations:
+                    buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
+            except Exception as e:
+                logging.error(e)
+                time.sleep(5)
+            buttonsloc.append('Назад')
+            if len(locations) > 2:
                 bot.send_message(
                     message.chat.id,
-                    'Для выбранного контрагента не указаны локации. Добавьте новые\nОтправьте локацию',
-                    reply_markup=buttons.clearbuttons()
+                    'Это все локации выберите ту которую хотите изменить.',
+                    reply_markup=buttons.Buttons(buttonsloc, 2)
                 )
-                bot.register_next_step_handler(message, newlocation)
             else:
                 bot.send_message(
                     message.chat.id,
-                    'Вы можете добавить локацию',
-                    reply_markup=buttons.Buttons(['Добавить', 'Назад'])
+                    'Для выбранного контрагента не указаны локации.',
+                    reply_markup=buttons.Buttons(buttonsloc, 2)
                 )
             bot.register_next_step_handler(message, editcont.locations1)
         else:
@@ -774,21 +758,30 @@ class editcont():
         elif message.text == 'Назад':
             editcontragent(message)
             bot.register_next_step_handler(message, editcont.ec2)
-        else:
-            print('пропуск')
+        elif message.text.split()[0].isdigit() and db.get_record_by_id('Locations', message.text.split()[0]) is not None:
+            location = db.get_record_by_id('Locations', message.text.split()[0])
+            loc = types.Location(location[4], location[3])
+            bot.send_location(message.chat.id, loc.latitude, loc.longitude)
+            ActiveUser[message.chat.id]['curlocation'] = location[0]
+            bot.send_message(
+                message.chat.id,
+                f'Выбрана локация: {location[2]}',
+                reply_markup=buttons.Buttons(['Изменить локацию', 'Изменить азвание', 'Удалить', 'Отмена'], 3)
+            )
+            bot.register_next_step_handler(message, editcont.locations2)
     # Редактирование выбранной локации
     def locations2(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-        if message.text == 'Локацию':
+        if message.text == 'Изменить локацию':
             bot.send_message(
                 message.chat.id,
                 'Отправьте новую локацию.',
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, editcontlocation1)
-        elif message.text == 'Название':
+        elif message.text == 'Изменить азвание':
             bot.send_message(
                 message.chat.id,
                 'Укажите новое название локации.',
@@ -805,8 +798,29 @@ class editcont():
             )
             bot.register_next_step_handler(message, editcont.locations4)
         elif message.text == 'Отмена':
-            editcontragent(message)
-            bot.register_next_step_handler(message, editcont.ec2)
+            locations = db.select_table_with_filters('Locations', {'inn': ActiveUser[message.chat.id]['inn']})
+            buttonsloc = []
+            buttonsloc.append('Добавить')
+            try:
+                for location in locations:
+                    buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
+            except Exception as e:
+                logging.error(e)
+                time.sleep(5)
+            buttonsloc.append('Назад')
+            if len(locations) > 2:
+                bot.send_message(
+                    message.chat.id,
+                    'Это все локации выберите ту которую хотите изменить.',
+                    reply_markup=buttons.Buttons(buttonsloc, 2)
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'Для выбранного контрагента не указаны локации.',
+                    reply_markup=buttons.Buttons(buttonsloc, 2)
+                )
+            bot.register_next_step_handler(message, editcont.locations1)
     # Сохранение имени новой локации
     def locations3(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -822,7 +836,7 @@ class editcont():
         bot.send_message(
             message.chat.id,
             'Название изменено.\nЧто вы хотите изменить?',
-            reply_markup=buttons.Buttons(['Локацию','Название','Удалить', 'Отмена'])
+            reply_markup=buttons.Buttons(['Изменить локацию', 'Изменить азвание', 'Удалить', 'Отмена'], 3)
         )
         bot.register_next_step_handler(message, editcont.locations2)
     # Удаление локации
@@ -843,7 +857,7 @@ class editcont():
             bot.send_message(
                 message.chat.id,
                 'Удаление отменено.\nЧто вы хотите изменить?',
-                reply_markup=buttons.Buttons(['Локацию','Название','Удалить', 'Отмена'])
+                reply_markup=buttons.Buttons(['Изменить локацию', 'Изменить азвание', 'Удалить', 'Отмена'], 3)
             )
             bot.register_next_step_handler(message, editcont.locations2)
         else:
@@ -1177,7 +1191,7 @@ class NewTask:
             bot.send_message(
                 message.chat.id,
                 'Выберите филиал',
-                reply_markup=buttons.Buttons(clocations,3)
+                reply_markup=buttons.Buttons(clocations,2)
             )
         else:
             clocations.append('Добавить филиал')
@@ -1302,8 +1316,6 @@ class Task:
                     "Вы не можете принять эту заявку!",
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
                 )
-                # continue_polling = True
-                bot.register_next_step_handler(message, MainMenu.Main2)
             db.update_records(
                 'Tasks',
                 [
@@ -1334,8 +1346,6 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            # continue_polling = True
-            # bot.register_next_step_handler(message, MainMenu.Main2) 
         elif message.text == 'Дополнить':
             bot.send_message(
                 message.chat.id,
@@ -1377,8 +1387,6 @@ class Task:
                     'Вы завершили заявку.',
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
                 )
-                # continue_polling = True
-                # bot.register_next_step_handler(message, MainMenu.Main2) 
         elif message.text == 'Отказаться от заявки':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
             if manager == str(message.chat.id):
@@ -1407,8 +1415,6 @@ class Task:
                     'Вы отказались от заявки.',
                     reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
                 )
-                # continue_polling = True
-                # bot.register_next_step_handler(message, MainMenu.Main2) 
             else:
                 master = db.get_record_by_id('Users', manager)[1]
                 bot.send_message(
@@ -1434,8 +1440,6 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            # continue_polling = True
-            # bot.register_next_step_handler(message, MainMenu.Main2) 
         elif message.text == 'Изменить контрагента':
             bot.send_message(
                 message.chat.id,
@@ -1462,20 +1466,94 @@ class Task:
                 bot.send_message(
                     message.chat.id,
                     'Выберите операцию',
-                    reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+                    reply_markup=buttons.Buttons(['Указать локацию', 'Отмена'])
                 )
-                # continue_polling = True
-                # bot.register_next_step_handler(message, MainMenu.Main2) 
             else:
                 bot.send_message(
                     message.chat.id,
                     'Прошу прощения но указанная локаия либо не была добавлена, или была удалена.\nВыберите операцию',
-                    reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+                    reply_markup=buttons.Buttons(['Указать локацию', 'Отмена'])
                 )
-                # continue_polling = True
-                # bot.register_next_step_handler(message, MainMenu.Main2) 
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        # continue_polling = True
+            bot.register_next_step_handler(message, Task.locations1)
+
+    def locations1(message):
+        if message.text == 'Отмена':
+            print('Нажата отмена')
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+            )
+        elif message.text == 'Указать локацию':
+            inn = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
+            locations = db.select_table_with_filters('Locations', {'inn': inn})
+            buttonsloc = []
+            buttonsloc.append('Добавить филиал')
+            try:
+                for location in locations:
+                    buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
+            except Exception as e:
+                logging.error(e)
+                time.sleep(5)
+            buttonsloc.append('Отмена')
+            if len(locations) > 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите филиал',
+                    reply_markup=buttons.Buttons(buttonsloc, 2)
+                )
+            bot.register_next_step_handler(message, Task.locations2)
+
+    def locations2(message):
+        if message.text == 'Добавить филиал':
+            ActiveUser[message.chat.id]['inn'] = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
+            bot.send_message(
+                message.chat.id,
+                'Отправьте локацию.',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, tnl1)
+        elif message.text == 'Отмена':
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+            )
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        elif message.text.split()[0].isdigit():
+            selected = db.get_record_by_id('Locations', message.text.split()[0])
+            db.update_records(
+                'Tasks',
+                ['location'],
+                [selected[0]],
+                'id',
+                ActiveUser[message.chat.id]['task']
+            )
+            bot.send_message(
+                message.chat.id,
+                f'Выбрана локация {selected[2]}',
+                reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
+            )
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        else:
+            inn = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
+            locations = db.select_table_with_filters('Locations', {'inn': inn})
+            buttonsloc = []
+            buttonsloc.append('Добавить филиал')
+            try:
+                for location in locations:
+                    buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
+            except Exception as e:
+                logging.error(e)
+                time.sleep(5)
+            buttonsloc.append('Отмена')
+            if len(locations) > 0:
+                bot.send_message(
+                    message.chat.id,
+                    'Ошибка ввода!\nВыберите филиал',
+                    reply_markup=buttons.Buttons(buttonsloc, 2)
+                )
+            bot.register_next_step_handler(message, Task.locations2)
 
     def task2(message):
         global ActiveUser, continue_polling
@@ -1496,8 +1574,6 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            # continue_polling = True
-            # bot.register_next_step_handler(message, MainMenu.Main2) 
 
     def task3(message):
         global ActiveUser, continue_polling
@@ -1528,8 +1604,6 @@ class Task:
             'Заявка отменена\n\nВыберите операцию.',
             reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
         )
-        # continue_polling = True
-        # bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task4(message):
         global ActiveUser, continue_polling
@@ -1575,8 +1649,6 @@ class Task:
                 reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            # continue_polling = True
-            # bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task5(message):
         global ActiveUser, continue_polling
@@ -1607,8 +1679,6 @@ class Task:
             reply_markup=buttons.Buttons(['Новая заявка', 'Обновить список заявок', 'Мои заявки', 'Редактировать контрагента', 'Дневной отчет', 'Карта', 'Написать всем'],3)
         )
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        # continue_polling = True
-        # bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task6(message):
         global ActiveUser, continue_polling
@@ -2286,8 +2356,29 @@ def newlocation1(message):
         'Локация сохранена.',
         reply_markup=buttons.clearbuttons()
     )
-    editcontragent(message)
-    bot.register_next_step_handler(message, editcont.ec2)
+    locations = db.select_table_with_filters('Locations', {'inn': ActiveUser[message.chat.id]['inn']})
+    buttonsloc = []
+    buttonsloc.append('Добавить')
+    try:
+        for location in locations:
+            buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
+    except Exception as e:
+        logging.error(e)
+        time.sleep(5)
+    buttonsloc.append('Назад')
+    if len(locations) > 2:
+        bot.send_message(
+            message.chat.id,
+            'Это все локации выберите ту которую хотите изменить.',
+            reply_markup=buttons.Buttons(buttonsloc, 2)
+        )
+    else:
+        bot.send_message(
+            message.chat.id,
+            'Для выбранного контрагента не указаны локации.',
+            reply_markup=buttons.Buttons(buttonsloc, 2)
+        )
+    bot.register_next_step_handler(message, editcont.locations1)
 # Изменение локаии контрагента
 def editcontlocation1(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -2311,7 +2402,7 @@ def editcontlocation1(message):
         bot.send_message(
             message.chat.id,
             'Локация изменена.\nЧто вы хотите изменить?',
-            reply_markup=buttons.Buttons(['Локацию','Название','Удалить', 'Отмена'])
+            reply_markup=buttons.Buttons(['Изменить локацию', 'Изменить азвание', 'Удалить', 'Отмена'], 3)
         )
         bot.register_next_step_handler(message, editcont.locations2)
     else:
@@ -2370,11 +2461,63 @@ def newlocationintask2(message):
         )
     bot.register_next_step_handler(message, NewTask.ntlocation2)
 
+def tnl1(message):
+    username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+    logging.info(f'{username} Отправил запрос - {message.text}')
+    global ActiveUser
+    if message.content_type == 'location':
+        ActiveUser[message.chat.id]['lon'], ActiveUser[message.chat.id]['lat'] = message.location.longitude, message.location.latitude
+        bot.send_message(
+            message.chat.id,
+            'Укажите название локации\nНАПРИМЕР:\nФилиал чиланзар или головной офис',
+            reply_markup=buttons.clearbuttons()
+        )
+        bot.register_next_step_handler(message, tnl2)
+    else:
+        bot.send_message(
+            message.chat.id,
+            'Вы должны были отправить локацию.\nОтправьте локацию.',
+            reply_markup=buttons.clearbuttons
+        )
+        bot.register_next_step_handler(message, tnl1)
+def tnl2(message):
+    username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+    logging.info(f'{username} Отправил запрос - {message.text}')
+    global ActiveUser
+    ActiveUser[message.chat.id]['locationname'] = message.text
+    db.insert_record(
+        'Locations',
+        [
+            None,
+            ActiveUser[message.chat.id]['inn'],
+            ActiveUser[message.chat.id]['locationname'],
+            ActiveUser[message.chat.id]['lat'],
+            ActiveUser[message.chat.id]['lon']
+        ]
+    )
+    inn = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
+    locations = db.select_table_with_filters('Locations', {'inn': inn})
+    buttonsloc = []
+    buttonsloc.append('Добавить филиал')
+    try:
+        for location in locations:
+            buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
+    except Exception as e:
+        logging.error(e)
+        time.sleep(5)
+    buttonsloc.append('Отмена')
+    if len(locations) > 0:
+        bot.send_message(
+            message.chat.id,
+            'Выберите филиал...',
+            reply_markup=buttons.Buttons(buttonsloc, 2)
+        )
+    bot.register_next_step_handler(message, Task.locations2)
+
 @bot.callback_query_handler(func=lambda call: True)
 # реакция на инлайновые кнопки
 def callback_handler(call):
     global ActiveUser, sendedmessages, continue_polling
-    # bot.stop_polling()
     if call.data.split()[0] == 'tasklist':# Подробности заявки
         status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
         if status[11] == 1:
@@ -2431,16 +2574,6 @@ def callback_handler(call):
         bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
         ActiveUser[call.from_user.id]['task'] = call.data.split()[1]
         bot.register_next_step_handler(call.message, Task.task4)
-    elif call.data.split()[0] == 'location':# Редактирование локации
-        ActiveUser[call.from_user.id]['curlocation'] = call.data.split()[1]
-        bot.send_message(
-            call.from_user.id,
-            'Что вы хотите изменить?',
-            reply_markup=buttons.Buttons(['Локацию','Название','Удалить', 'Отмена'])
-        )
-        bot.register_next_step_handler(call.message, editcont.locations2)
-    # else:
-    #     bot.polling()
         
 # Запуск бота
 if __name__ == '__main__':
@@ -2450,8 +2583,6 @@ if __name__ == '__main__':
     # bot.polling()
     while True:
         try:
-            bot.stop_polling()
-            logging.info('остановка пула')
             bot.polling(none_stop=True, interval=0)
             logging.info('запуск пула')
             logging.info()
