@@ -67,6 +67,12 @@ def listgen(table, cols, tasks = 0):
 
             elif str(line[11]) == '4': marker = '🔴 '
 
+            elif str(line[11]) == '5': marker = '🟦 '
+            
+            elif str(line[11]) == '6': marker = '🟨 '
+            
+            elif str(line[11]) == '7': marker = '🟩 '
+            
             else: marker = '⚪️ '
 
             res.append(marker + curline)
@@ -182,173 +188,6 @@ def mmapgen(locations):
 
 # =======================================================================================================
 
-# def generate_popup(location):
-#     name = location[0].replace('|', '<br>')
-#     description = location[1].replace('|', '<br>')
-#     status = location[4]
-#     task_id = name.split()[1]
-#     link = f"https://t.me/labmonotasktelebot?start={task_id}"
-
-#     # Set color based on status
-#     color = 'black'
-#     if status == 1:
-#         color = 'blue'
-#     elif status == 2:
-#         color = 'orange'
-#     elif status == 3:
-#         color = 'green'
-#     elif status == 4:
-#         color = 'red'
-
-#     popup_html = f"""
-#         <div style="width: auto;">
-#             <p style="color:{color}; font-size:16px; font-weight:bold;">{name}</p>
-#             <p style="color:black; font-size:12px;">{description}</p>
-#             <button onclick="window.open('{link}', '_blank')" style="background-color:{color}; color:white; font-size:16px;">Перейти к заявке</button>
-#         </div>
-#     """
-#     return popup_html
-
-# def generate_marker_html(location):
-#     name = location[0].replace('|', '<br>')
-#     description = location[1].replace('|', '<br>')
-#     status = location[4]
-
-#     # Set color based on status
-#     color = 'black'
-#     if status == 1:
-#         color = 'blue'
-#     elif status == 2:
-#         color = 'orange'
-#     elif status == 3:
-#         color = 'green'
-#     elif status == 4:
-#         color = 'red'
-
-#     marker_html = f"""
-#         <div>
-#             <p style="color:{color}; font-size:16px; font-weight:bold;">{name}</p>
-#             <p style="color:black; font-size:12px;">{description}</p>
-#             <button onclick="window.open('https://t.me/labmonotasktelebot?start={name.split()[1]}', '_blank')" style="background-color:{color}; color:white; font-size:16px;">Перейти к заявке</button><br><br>
-#         </div>
-#     """
-#     return marker_html
-
-# def mapgen(locations):
-#     # Create map
-#     map_object = folium.Map(location=[41.28927613679946, 69.31295641163192], zoom_start=12)
-
-#     # Create marker cluster
-#     marker_cluster = MarkerCluster().add_to(map_object)
-
-#     # Add markers to the cluster
-#     for location in locations:
-#         name = location[0]
-#         lat = location[2]
-#         lon = location[3]
-#         status = location[4]
-
-#         # Create popup for the marker
-#         popup_html = generate_popup(location)
-#         popup = folium.Popup(popup_html, max_width='auto')
-
-#         # Set marker color based on status
-#         marker_color = 'black'
-#         if status == 1:
-#             marker_color = 'blue'
-#         elif status == 2:
-#             marker_color = 'orange'
-#         elif status == 3:
-#             marker_color = 'green'
-#         elif status == 4:
-#             marker_color = 'red'
-
-#         # Create marker with popup
-#         marker = folium.Marker(location=[lat, lon], popup=popup, icon=folium.Icon(color=marker_color))
-#         marker.add_to(marker_cluster)
-
-#     # Generate HTML and save to file
-#     template = Template('''
-#         <html>
-#         <head>
-#             <meta charset="UTF-8">
-#             <title>Активные заявки</title>
-#             <style>
-#                 .button {
-#                     padding: 10px 20px;
-#                     display: inline-block;
-#                     border-radius: 4px;
-#                     font-size: 12px;
-#                     justify-self: flex-start;
-#                 }
-#                 .blue {
-#                     color: blue;
-#                 }
-#                 .orange {
-#                     color: orange;
-#                 }
-#                 .green {
-#                     color: green;
-#                 }
-#                 .red {
-#                     color: red;
-#                 }
-#                 .map-container {
-#                     height: calc(100% - 130px);
-#                     overflow: auto;
-#                 }
-#                 header {
-#                     height: 100px;
-#                     display: flex;
-#                     align-items: flex-start;
-#                     justify-content: space-between;
-#                 }
-#                 .logo {
-#                     margin-top: 20px;
-#                     margin-right: 20px;
-#                     align-self: flex-start;
-#                     justify-self: flex-end;
-#                 }
-#             </style>
-#         </head>
-#         <body>
-#             <header>
-#                 <div style="align-self: flex-start;">
-#                     <h1 style="margin-top: 0; margin-left: 20px;">Активные заявки</h1>
-#                     <button onclick="location.reload();" style="background-color: green; color: white; font-weight: bold; font-size: 18px; margin-top: -10px; margin-left: 20px;">Обновить страницу</button>
-#                 </div>
-#                 <div class="logo">
-#                     <img src="Logo.png" alt="Logo" style="height: 56px;">
-#                 </div>
-#             </header>
-#             <div class="map-container" style="width: 70%; float: right;">
-#                 {{ folium_map|safe }}
-#             </div>
-#             <div class="scrollable-list" style="width: 30%; float: left; height: calc(100% - 130px); overflow: auto;">
-#                 <div style="margin-bottom: 20px;">
-#                     <h2 style="color: black; font-size: 18px; font-weight: bold;">Условные обозначения</h2>
-#                     <p style="color: blue; font-size: 14px;">████ - Заявки не принятые мастерами</p>
-#                     <p style="color: orange; font-size: 14px;">████ - Заявки у мастеров</p>
-#                     <p style="color: green; font-size: 14px;">████ - Выполненные заявки</p>
-#                     <p style="color: red; font-size: 14px;">████ - Отмененные заявки</p>
-#                     <br>
-#                 </div>
-#                 {% for location in locations %}
-#                     <div style="margin-bottom: 20px;">
-#                         {{ generate_marker_html(location) }}
-#                     </div>
-#                 {% endfor %}
-#             </div>
-#         </body>
-#         </html>
-#     ''')
-#     folium_map = map_object._repr_html_()
-#     html = template.render(folium_map=folium_map, locations=locations, generate_marker_html=generate_marker_html)
-
-#     with io.open('public/map.html', 'w', encoding='utf-8') as file:
-#         file.write(html)
-
-
 def generate_popup(location):
     name = location[0].replace('|', '<br>')
     description = location[1].replace('|', '<br>')
@@ -381,7 +220,6 @@ def generate_marker_html(location):
     description = location[1].replace('|', '<br>')
     status = location[4]
 
-    # Set color based on status
     color = 'black'
     if status == 1:
         color = 'blue'
@@ -400,8 +238,6 @@ def generate_marker_html(location):
         </div>
     """
     return marker_html
-
-
 
 def mapgen(locations):
     # Create map
@@ -551,125 +387,80 @@ def mapgen(locations):
     with io.open('public/map.html', 'w', encoding='utf-8') as file:
         file.write(html)
 
+# ======================================================================================================
+# ПОИСК ЭЛЕМЕНТА ПО КЛЮЧЕВОМУ СЛОВУ
+# ======================================================================================================
 
+def transliterate_cyrillic_to_latin(word):
+    conversion = {
+        'а': ['a'], 'б': ['b'], 'в': ['v'], 'г': ['g'], 'д': ['d'], 'е': ['e'], 'ё': ['e'], 'ж': ['zh', 'j', 'dj'],
+        'з': ['z'], 'и': ['i'], 'й': ['y', 'i', 'j'], 'к': ['k', 'c'], 'л': ['l'], 'м': ['m'], 'н': ['n'], 'о': ['o'],
+        'п': ['p'], 'р': ['r'], 'с': ['s'], 'т': ['t'], 'у': ['u'], 'ф': ['f'], 'х': ['kh','ch', 'h', 'x'],
+        'ц': ['ts', 'c'], 'ч': ['ch'], 'ш': ['sh'], 'щ': ['shch'], 'ъ': [''], 'ы': ['y'], 'ь': [''],
+        'э': ['e'], 'ю': ['yu', 'iu'], 'я': ['ya', 'ia'],
+        'a': ['а'], 'b': ['б'], 'c': ['ц', 'к'], 'd': ['д'], 'e': ['е', 'ё'], 'f': ['ф'], 'g': ['г'], 'h': ['х'],
+        'i': ['и', 'й'], 'j': ['ж'], 'k': ['к'], 'l': ['л'], 'm': ['м'], 'n': ['н'], 'o': ['о'], 'p': ['п'],
+        'q': ['к'], 'r': ['р'], 's': ['с'], 't': ['т'], 'u': ['у'], 'v': ['в'], 'w': ['в'], 'x': ['х'], 'y': ['ы'],
+        'z': ['з']
+    }
 
+    if word.isalpha():
+        result = ['']
+        for letter in word:
+            if letter in conversion:
+                converted = conversion[letter]
+                temp_result = []
+                for w in result:
+                    for char in converted:
+                        temp_result.append(w + char)
+                result = temp_result
+            elif letter == 'й':
+                converted = conversion[letter]
+                temp_result = []
+                for w in result:
+                    for char in converted:
+                        temp_result.append(w + char)
+                        if char == 'i':
+                            temp_result.append(w + 'y')
+                        elif char == 'j':
+                            temp_result.append(w + 'y')
+                            temp_result.append(w + 'i')
+                result = temp_result
+        return result
+    else:
+        return []
 
-# def mapgen(locations):
-#     # Create map
-#     map_object = folium.Map(location=[41.28927613679946, 69.31295641163192], zoom_start=12)
+def latin_change_liters(value1):
+    liters = ['h kh', 'h x', 'x h', 'x kh', 'kh h', 'kh x', 'y j', 'y i', 'j y', 'j i', 'i j', 'i y', 'c ts', 'ts c', 'yu iu', 'iu yu', 'ya ia', 'ia ya']
+    result = []
+    result.append(value1)
+    for liter in liters:
+        replace_liters = liter.split()
+        value2 = value1.replace(replace_liters[0], replace_liters[1])
+        if value2 != value1:
+            result.append(value2)
+    return result
 
-#     # Create marker cluster
-#     marker_cluster = MarkerCluster().add_to(map_object)
+def search_items(keyword, data):
+    result = []
+    normalized_keyword = str(keyword).lower()
 
-#     # Add markers to the cluster
-#     for location in locations:
-#         name = location[0]
-#         lat = location[2]
-#         lon = location[3]
-#         status = location[4]
+    # Транслитерация в обе стороны
+    cyrillic_variants = latin_change_liters(normalized_keyword)
+    latin_variants = transliterate_cyrillic_to_latin(normalized_keyword)
 
-#         # Create popup for the marker
-#         popup_html = generate_popup(location)
-#         popup = folium.Popup(popup_html, max_width='auto')
+    for item in data:
+        for element in item:
+            normalized_element = str(element).lower()
 
-#         # Set marker color based on status
-#         marker_color = 'black'
-#         if status == 1:
-#             marker_color = 'blue'
-#         elif status == 2:
-#             marker_color = 'orange'
-#         elif status == 3:
-#             marker_color = 'green'
-#         elif status == 4:
-#             marker_color = 'red'
+            # Поиск по кириллице
+            if any(variant.lower() in normalized_element.lower() for variant in cyrillic_variants):
+                result.append(item)
+                break
 
-#         # Create marker with popup
-#         marker = folium.Marker(location=[lat, lon], popup=popup, icon=folium.Icon(color=marker_color))
-#         marker.add_to(marker_cluster)
+            # Поиск по латинице
+            if any(variant.lower() in normalized_element.lower() for variant in latin_variants):
+                result.append(item)
+                break
 
-#     # Generate HTML and save to file
-#     template = Template('''
-#         <html>
-#         <head>
-#             <meta charset="UTF-8">
-#             <title>Активные заявки</title>
-#             <style>
-#                 .button {
-#                     padding: 10px 20px;
-#                     display: inline-block;
-#                     border-radius: 4px;
-#                     font-size: 12px;
-#                     justify-self: flex-start;
-#                 }
-#                 .blue {
-#                     color: blue;
-#                 }
-#                 .orange {
-#                     color: orange;
-#                 }
-#                 .green {
-#                     color: green;
-#                 }
-#                 .red {
-#                     color: red;
-#                 }
-#                 .map-container {
-#                     height: calc(100% - 130px);
-#                     overflow: auto;
-#                 }
-#                 header {
-#                     height: 100px;
-#                     display: flex;
-#                     align-items: flex-start;
-#                     justify-content: space-between;
-#                 }
-#                 .logo {
-#                     margin-top: 20px;
-#                     margin-right: 20px;
-#                     align-self: flex-start;
-#                     justify-self: flex-end;
-#                 }
-#             </style>
-#         </head>
-#         <body>
-#             <header>
-#                 <div style="align-self: flex-start;">
-#                     <h1 style="margin-top: 0; margin-left: 20px;">Активные заявки</h1>
-#                     <button onclick="location.reload();" style="background-color: green; color: white; font-weight: bold; font-size: 18px; margin-top: -10px; margin-left: 20px;">Обновить страницу</button>
-#                 </div>
-#                 <div class="logo">
-#                     <img src="Logo.png" alt="Logo" style="height: 56px;">
-#                 </div>
-#             </header>
-#             <div class="map-container" style="width: 70%; float: right;">
-#                 {{ folium_map|safe }}
-#             </div>
-#             <div class="scrollable-list" style="width: 30%; float: left; height: calc(100% - 130px); overflow: auto;">
-#                 <div style="margin-bottom: 20px;">
-#                     <h2 style="color: black; font-size: 18px; font-weight: bold;">Условные обозначения</h2>
-#                     <p style="color: blue; font-size: 14px;">████ - Заявки не принятые мастерами</p>
-#                     <p style="color: orange; font-size: 14px;">████ - Заявки у мастеров</p>
-#                     <p style="color: green; font-size: 14px;">████ - Выполненные заявки</p>
-#                     <p style="color: red; font-size: 14px;">████ - Отмененные заявки</p>
-#                     <br>
-#                 </div>
-#                 {% for location in locations %}
-#                     <div style="margin-bottom: 20px;">
-#                         {{ generate_marker_html(location) }}
-#                     </div>
-#                 {% endfor %}
-#             </div>
-
-#             <script type="text/javascript">
-#                 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-#                     window.location.href = "http://81.200.149.148/map.html";
-#                 }
-#             </script>
-#         </body>
-#         </html>
-#     ''')
-#     folium_map = map_object._repr_html_()
-#     html = template.render(folium_map=folium_map, locations=locations, generate_marker_html=generate_marker_html)
-
-#     with io.open('public/map.html', 'w', encoding='utf-8') as file:
-#         file.write(html)
+    return result
