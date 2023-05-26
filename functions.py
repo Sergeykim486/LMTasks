@@ -1,5 +1,5 @@
 from db import Database
-import os, folium, logging
+import os, folium, logging, re
 from folium.plugins import MarkerCluster
 from jinja2 import Template
 import io
@@ -393,15 +393,15 @@ def mapgen(locations):
 
 def transliterate_cyrillic_to_latin(word):
     conversion = {
-        'а': ['a'], 'б': ['b'], 'в': ['v'], 'г': ['g'], 'д': ['d'], 'е': ['e'], 'ё': ['e'], 'ж': ['zh', 'j', 'dj'],
-        'з': ['z'], 'и': ['i'], 'й': ['y', 'i', 'j'], 'к': ['k', 'c'], 'л': ['l'], 'м': ['m'], 'н': ['n'], 'о': ['o'],
-        'п': ['p'], 'р': ['r'], 'с': ['s'], 'т': ['t'], 'у': ['u'], 'ф': ['f'], 'х': ['kh','ch', 'h', 'x'],
+        'кс': ['x'], 'а': ['a', 'u'], 'б': ['b'], 'в': ['v'], 'г': ['g'], 'д': ['d'], 'е': ['e', 'a'], 'ё': ['e'], 'ж': ['zh', 'j', 'dj'],
+        'з': ['z'], 'и': ['i'], 'й': ['y', 'i', 'j'], 'к': ['k', 'q'], 'л': ['l'], 'м': ['m'], 'н': ['n'], 'о': ['o'],
+        'п': ['p'], 'р': ['r'], 'с': ['s', 'c', 'ce', 'se'], 'т': ['t'], 'у': ['u', "o'"], 'ф': ['f'], 'х': ['kh', 'h', 'x'],
         'ц': ['ts', 'c'], 'ч': ['ch'], 'ш': ['sh'], 'щ': ['shch'], 'ъ': [''], 'ы': ['y'], 'ь': [''],
-        'э': ['e'], 'ю': ['yu', 'iu'], 'я': ['ya', 'ia'],
-        'a': ['а'], 'b': ['б'], 'c': ['ц', 'к'], 'd': ['д'], 'e': ['е', 'ё'], 'f': ['ф'], 'g': ['г'], 'h': ['х'],
-        'i': ['и', 'й'], 'j': ['ж'], 'k': ['к'], 'l': ['л'], 'm': ['м'], 'n': ['н'], 'o': ['о'], 'p': ['п'],
-        'q': ['к'], 'r': ['р'], 's': ['с'], 't': ['т'], 'u': ['у'], 'v': ['в'], 'w': ['в'], 'x': ['х'], 'y': ['ы'],
-        'z': ['з']
+        'э': ['e', 'a'], 'ю': ['yu', 'iu'], 'я': ['ya', 'ia'],
+        'a': ['а', 'э', 'е'], 'b': ['б'], 'c': ['ц', 'с', 'к'], 'd': ['д'], 'e': ['е', 'ё', 'и'], 'f': ['ф'], 'g': ['г', 'дж'], 'h': ['х'],
+        'i': ['и', 'й', 'ай'], 'j': ['ж', 'дж'], 'k': ['к'], 'l': ['л'], 'm': ['м'], 'n': ['н'], 'o': ['о'], 'p': ['п'],
+        'q': ['к'], 'r': ['р'], 's': ['с'], 't': ['т'], 'u': ['у', 'ю'], 'v': ['в'], 'w': ['в'], 'x': ['х', 'кс'], 'y': ['ы'],
+        'z': ['з'], 'ce': ['с'], 'se': ['с'], 'ya': ['я'], 'yu': ['ю'], 'yo': ['ё'], 'ia': ['я'], 'iu': ['ю'], 'io': ['ё'], "o'": ['у']
     }
 
     if word.isalpha():
@@ -442,25 +442,57 @@ def latin_change_liters(value1):
     return result
 
 def search_items(keyword, data):
-    result = []
-    normalized_keyword = str(keyword).lower()
+    result = set()  # Используем множество для исключения дубликатов
+
+    # Приведение к нижнему регистру
+    normalized_keyword = keyword.lower()
 
     # Транслитерация в обе стороны
     cyrillic_variants = latin_change_liters(normalized_keyword)
     latin_variants = transliterate_cyrillic_to_latin(normalized_keyword)
 
+    # Поиск по всей строке целиком
     for item in data:
         for element in item:
             normalized_element = str(element).lower()
 
             # Поиск по кириллице
-            if any(variant.lower() in normalized_element.lower() for variant in cyrillic_variants):
-                result.append(item)
+            if normalized_keyword in normalized_element:
+                result.add(item)
                 break
 
             # Поиск по латинице
-            if any(variant.lower() in normalized_element.lower() for variant in latin_variants):
-                result.append(item)
+            if any(variant in normalized_element for variant in latin_variants):
+                result.add(item)
                 break
 
-    return result
+            # Поиск по расшифровке английских слов
+            english_variants = latin_change_liters(normalized_keyword)
+            if any(variant in normalized_element for variant in english_variants):
+                result.add(item)
+                break
+
+    # Поиск по каждому слову отдельно
+    keywords = re.findall(r'\w+', normalized_keyword)
+    for item in data:
+        for element in item:
+            normalized_element = str(element).lower()
+
+            for word in keywords:
+                # Поиск по кириллице
+                if word in normalized_element:
+                    result.add(item)
+                    break
+
+                # Поиск по латинице
+                if any(variant in normalized_element for variant in latin_variants):
+                    result.add(item)
+                    break
+
+                # Поиск по расшифровке английских слов
+                english_variants = latin_change_liters(word)
+                if any(variant in normalized_element for variant in english_variants):
+                    result.add(item)
+                    break
+
+    return list(result)  # Преобразуем множество обратно в список
