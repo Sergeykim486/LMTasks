@@ -1,4 +1,4 @@
-import io, os, config, telebot, functions, buttons, logging, time, csv, asyncio, threading
+import io, os, config, telebot, functions, buttons, logging, time, datetime, asyncio, threading
 from telebot import TeleBot, types
 from db import Database
 from datetime import datetime
@@ -206,29 +206,74 @@ def sendrep(message, tasks):
         )
     return
 # Отправка отчета в виде таблицы
+import openpyxl
+
 def sendrepfile(message, tasks):
+    print(tasks)
+    processing = bot.send_message(message.chat.id, '⏳')
     rep = []
-    rep.append(['№','Зарегистрирована','Менеджер','Принята мастером','мастер','Выполнена','Контрагент','Заявка'])
+    # шапка
+    rep.append(['№','Контрагент','Заявка','Зарегистрирована','Менеджер','Выполнена','мастер'])
+
+    # Объединение ячеек в шапке
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
     for task in tasks:
-        line = []
-        line.append(task[0])
-        line.append(task[1])
-        line.append(str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1]))
-        line.append(task[5])
-        line.append(str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1]))
-        line.append(task[7])
-        line.append(db.get_record_by_id('Contragents', task[3])[1])
-        line.append(task[4])
-        rep.append(line)
-    with io.open('data.csv', 'w', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile, delimiter=';')
+        manager = str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
+        master = str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
+        contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) is not None else '')
+        line1 = [task[0], contr, task[4], task[1], manager, task[7], master]
+        rep.append(line1)
 
-        for row in rep:
-            writer.writerow(row)
+    for row in rep:
+        ws.append(row)
 
-    file_path = os.path.join(os.getcwd(), 'data.csv')  # Получаем путь к файлу
-    with open(file_path, 'rb') as f:
-        bot.send_document(message.chat.id, f)
+    # Установка ширины ячеек
+    for column_cells in ws.columns:
+        max_length = 0
+        column = column_cells[0].column_letter
+        for cell in column_cells:
+            cell_value = str(cell.value)
+            if len(cell_value) > max_length:
+                max_length = len(cell_value)
+        adjusted_width = (max_length + 2) * 1.2
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Ширина столбцов B и C
+    ws.column_dimensions['B'].width = 41.22
+    ws.column_dimensions['C'].width = 41.22
+
+    # Включение переноса слов во всех ячейках
+    for row in ws.iter_rows():
+        for cell in row:
+            cell.alignment = cell.alignment + openpyxl.styles.Alignment(wrapText=True)
+
+    # Выравнивание строк
+    for row in ws.iter_rows(min_row=2):
+        for cell in row:
+            cell.alignment = openpyxl.styles.Alignment(vertical='center', horizontal='left')
+
+    # Выравнивание шапки
+    for cell in ws[1]:
+        cell.alignment = openpyxl.styles.Alignment(vertical='center', horizontal='center')
+        cell.font = openpyxl.styles.Font(bold=True)
+
+    # Установка границ
+    thin_border = openpyxl.styles.Border(
+        left=openpyxl.styles.Side(style='thin'),
+        right=openpyxl.styles.Side(style='thin'),
+        top=openpyxl.styles.Side(style='thin'),
+        bottom=openpyxl.styles.Side(style='thin')
+    )
+    for row in ws.iter_rows():
+        for cell in row:
+            cell.border = thin_border
+
+    file_path = os.path.join(os.getcwd(), 'data.xlsx')
+    wb.save(file_path)
+    bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
+    bot.send_document(message.chat.id, open(file_path, 'rb'))
     os.remove(file_path)
 
 # Дневной отчет для рассылки по расписанию
@@ -543,7 +588,7 @@ class MainMenu:
             bot.send_message(
                 message.chat.id,
                 'Выберите какой отчет Вам нужен\nПоказать все не выполненные заявки, или показать итоги дня.',
-                reply_markup=buttons.Buttons(['📋 Заявки у мастеров', '🖨️ Техника у мастеров', '📊 Итоги дня', '🚫 Отмена'])
+                reply_markup=buttons.Buttons(['📋 Заявки у мастеров', '🖨️ Техника у мастеров', '📊 Итоги дня', '📆 За период', '🚫 Отмена'])
             )
             if message.message_id is not None:
                 bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
@@ -2337,6 +2382,13 @@ class report:
             )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, report.reportall1)
+        elif message.text == '📆 За период':
+            bot.send_message(
+                message.chat.id,
+                'Укажите начало периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                reply_markup = buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, report.period1)
         elif message.text == '🚫 Отмена':
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -2353,6 +2405,191 @@ class report:
                 reply_markup=buttons.Buttons(['📋 Заявки у мастеров', '🖨️ Техника у мастеров', '📊 Итоги дня', '🚫 Отмена'])
             )
             bot.register_next_step_handler(message, report.reportall)
+    # period
+    def period1(message):# с
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+        global ActiveUser
+        m1 = message.text
+        m1 = m1.replace(' ', '.')
+        m1 = m1.replace(',', '.')
+        m = m1.split('.')
+        if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
+            ActiveUser[message.chat.id]['daterepf'] = m1
+            bot.send_message(
+                message.chat.id,
+                'Укажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, report.period2)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Не верный формат даты...\nУкажите начало периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, report.period1)
+    def period2(message):# по
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+        global ActiveUser
+        m1 = message.text
+        m1 = m1.replace(' ', '.')
+        m1 = m1.replace(',', '.')
+        m = m1.split('.')
+        if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
+            ActiveUser[message.chat.id]['daterept'] = m1
+            fr = ActiveUser[message.chat.id]['daterepf']
+            t = ActiveUser[message.chat.id]['daterept']
+            bot.send_message(
+                message.chat.id,
+                f'Выбран период с {fr} по {t}\nКакой отчет вывести?',
+                reply_markup=buttons.Buttons(['Все заявки','по мастерам','по клиенту'])
+            )
+            bot.register_next_step_handler(message, report.period3)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Не верный формат даты...\nУкажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, report.period2)
+    def period3(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+        global ActiveUser
+        if message.text == 'Все заявки':
+            fr = ActiveUser[message.chat.id]['daterepf']
+            t = ActiveUser[message.chat.id]['daterept']
+            print(f'c {fr} по {t}')
+            rept = db.select_table_with_filters('Tasks', {'status': 3}, ['done'], [fr+' 00:00'], [t+' 23:59'])
+            sendrepfile(message, rept)
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        elif message.text == 'по мастерам':
+            users = db.select_table('Users')
+            btn = []
+            for user in users:
+                line = str(user[0]) + ' ' + str(user[2]) + ' ' + str(user[1])
+                btn.append(line)
+            bot.send_message(
+                message.chat.id,
+                'Выберите мастера.',
+                reply_markup=buttons.Buttons(btn,1)
+            )
+            bot.register_next_step_handler(message, report.period4)
+        elif message.text == 'по клиенту':
+            bot.send_message(
+                message.chat.id,
+                'Введите ИНН, ПИНФЛ или серию пвсспоррта клиента.\nТак же Вы можете попытаться поискать контрагента по наименованию или его части\nНапримар:\nmonohrom\nВыдаст все компании из базы бота у которых в названии есть monohrom',
+                reply_markup=buttons.Buttons(['🚫 Отмена'])
+            )
+            bot.register_next_step_handler(message, report.period5)
+
+    def period4(message): # по мастерам
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+        global ActiveUser
+        uid = message.text.split()[0]
+        selecteduser = db.get_record_by_id('Users', uid)
+        if uid.isdigit() and selecteduser != None:
+            fr = str(ActiveUser[message.chat.id]['daterepf'])+' 00:00'
+            t = str(ActiveUser[message.chat.id]['daterept'])+' 23:59'
+            print(f'c {fr} по {t}')
+            rept = db.select_table_with_filters('Tasks', {'master': selecteduser[0], 'status': 3}, ['done'], [fr], [t])
+            sendrepfile(message, rept)
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        else:
+            users = db.select_table('Users')
+            btn = []
+            for user in users:
+                line = str(user[0]) + ' ' + str(user[2]) + ' ' + str(user[1])
+                btn.append(line)
+            bot.send_message(
+                message.chat.id,
+                'Выберите мастера.',
+                reply_markup=buttons.Buttons(btn,1)
+            )
+            bot.register_next_step_handler(message, report.period4)
+    def period5(message): # по клиентам
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+        global ActiveUser
+        if message.text == '🚫 Отмена':
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            bot.register_next_step_handler(message, MainMenu.Main2)
+        elif message.text.split()[0].isdigit():
+            processing = bot.send_message(message.chat.id, '⏳')
+            inn = message.text.split()[0]
+            fr = str(ActiveUser[message.chat.id]['daterepf'])+' 00:00'
+            t = str(ActiveUser[message.chat.id]['daterept'])+' 23:59'
+            print(f'c {fr} по {t}')
+            client = db.get_record_by_id('Contragents', inn)
+            if client[5] is not None:
+                fr = ActiveUser[message.chat.id]['daterepf']
+                t = ActiveUser[message.chat.id]['daterept']
+                rept = db.select_table_with_filters('Tasks', {'contragent': inn, 'status': 3}, ['done'], [fr], [t])
+                sendrepfile(message, rept)
+                bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите операцию.',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
+                bot.register_next_step_handler(message, MainMenu.Main2)
+            else:
+                bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
+                bot.send_message(
+                    message.chat.id,
+                    'Контрагент не найден.',
+                    reply_markup=buttons.Buttons(['🚫 Отмена'])
+                )
+                bot.register_next_step_handler(message, report.period5)
+        else:
+            processing = bot.send_message(message.chat.id, '⏳')
+            contrs = db.select_table('Contragents')
+            res = functions.search_items(message.text, contrs)
+            contbuttons = []
+            contbuttons.append('🚫 Отмена')
+            if len(res) > 0:
+                for i in res:
+                    line = str(i[0]) + ' ' + str(i[1])
+                    if len(contbuttons) < 20:
+                        contbuttons.append(line)
+                bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
+                try:
+                    bot.send_message(
+                        message.chat.id,
+                        'Если нужный клиент не вышел в списке, попробуйте перефразировать и ввести снова.\nВыберите контрагента из списка, или введите его ИНН, ПИНФЛ, серию пасспорта или повторите поиск.',
+                        reply_markup=buttons.Buttons(contbuttons, 1)
+                    )
+                except Exception as e:
+                    logging.error(e)
+                    pass
+            else:
+                bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
+                bot.send_message(
+                    message.chat.id,
+                    'Контрагент не найден.',
+                    reply_markup=buttons.Buttons(contbuttons, 1)
+                )
+            bot.register_next_step_handler(message, report.period5)
+
     # Итоги дня
     def reportall1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -2379,7 +2616,6 @@ class report:
                 reply_markup = buttons.Buttons(['🌞 Сегодня', '🗓️ Другой день'])
             )
             bot.register_next_step_handler(message, report.reportall1)
-    
     def reportallq(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -2391,7 +2627,6 @@ class report:
             reply_markup=buttons.Buttons(['Все', 'Только мои', 'У мастера'])
         )
         bot.register_next_step_handler(message, report.reportall2)
-    
     def reportall2(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
