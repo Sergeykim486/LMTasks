@@ -2,6 +2,7 @@ import io, os, config, telebot, functions, buttons, logging, time, datetime, asy
 from telebot import TeleBot, types
 from db import Database
 from datetime import datetime
+from openpyxl.styles import Alignment
 # логи
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 # Глобальная переменная, база и создание объекта бот
@@ -208,12 +209,78 @@ def sendrep(message, tasks):
 # Отправка отчета в виде таблицы
 import openpyxl
 
+# def sendrepfile(message, tasks):
+#     processing = bot.send_message(message.chat.id, '⏳')
+#     rep = []
+#     # шапка
+#     rep.append(['№','Контрагент','Заявка','Зарегистрирована','Менеджер','Выполнена','мастер'])
+
+#     # Объединение ячеек в шапке
+#     wb = openpyxl.Workbook()
+#     ws = wb.active
+
+#     for task in tasks:
+#         manager = str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
+#         master = str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
+#         contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) is not None else '')
+#         line1 = [task[0], contr, task[4], task[1], manager, task[7], master]
+#         rep.append(line1)
+
+#     for row in rep:
+#         ws.append(row)
+
+#     # Установка ширины ячеек
+#     for column_cells in ws.columns:
+#         max_length = 0
+#         column = column_cells[0].column_letter
+#         for cell in column_cells:
+#             cell_value = str(cell.value)
+#             if len(cell_value) > max_length:
+#                 max_length = len(cell_value)
+#         adjusted_width = (max_length + 2) * 1.2
+#         ws.column_dimensions[column].width = adjusted_width
+
+#     # Ширина столбцов B и C
+#     ws.column_dimensions['B'].width = 41.22
+#     ws.column_dimensions['C'].width = 41.22
+
+#     # Включение переноса слов во всех ячейках
+#     for row in ws.iter_rows():
+#         for cell in row:
+#             cell.alignment = cell.alignment.copy(wrapText=True)
+
+#     # Выравнивание строк
+#     for row in ws.iter_rows(min_row=2):
+#         for cell in row:
+#             cell.alignment = openpyxl.styles.Alignment(vertical='center', horizontal='left')
+
+#     # Выравнивание шапки
+#     for cell in ws[1]:
+#         cell.alignment = openpyxl.styles.Alignment(vertical='center', horizontal='center')
+#         cell.font = openpyxl.styles.Font(bold=True)
+
+#     # Установка границ
+#     thin_border = openpyxl.styles.Border(
+#         left=openpyxl.styles.Side(style='thin'),
+#         right=openpyxl.styles.Side(style='thin'),
+#         top=openpyxl.styles.Side(style='thin'),
+#         bottom=openpyxl.styles.Side(style='thin')
+#     )
+#     for row in ws.iter_rows():
+#         for cell in row:
+#             cell.border = thin_border
+
+#     file_path = os.path.join(os.getcwd(), 'data.xlsx')
+#     wb.save(file_path)
+#     bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
+#     bot.send_document(message.chat.id, open(file_path, 'rb'))
+#     os.remove(file_path)
+
 def sendrepfile(message, tasks):
-    print(tasks)
     processing = bot.send_message(message.chat.id, '⏳')
     rep = []
     # шапка
-    rep.append(['№','Контрагент','Заявка','Зарегистрирована','Менеджер','Выполнена','мастер'])
+    rep.append(['№', 'Контрагент', 'Заявка', 'Зарегистрирована', 'Менеджер', 'Выполнена', 'мастер'])
 
     # Объединение ячеек в шапке
     wb = openpyxl.Workbook()
@@ -247,16 +314,16 @@ def sendrepfile(message, tasks):
     # Включение переноса слов во всех ячейках
     for row in ws.iter_rows():
         for cell in row:
-            cell.alignment = cell.alignment + openpyxl.styles.Alignment(wrapText=True)
+            cell.alignment = Alignment(wrap_text=True)
 
     # Выравнивание строк
     for row in ws.iter_rows(min_row=2):
         for cell in row:
-            cell.alignment = openpyxl.styles.Alignment(vertical='center', horizontal='left')
+            cell.alignment = Alignment(vertical='center', horizontal='left')
 
     # Выравнивание шапки
     for cell in ws[1]:
-        cell.alignment = openpyxl.styles.Alignment(vertical='center', horizontal='center')
+        cell.alignment = Alignment(vertical='center', horizontal='center')
         cell.font = openpyxl.styles.Font(bold=True)
 
     # Установка границ
@@ -708,6 +775,25 @@ class editcont():
         global ActiveUser
         if message.text == '💾 Сохранить':
             print(ActiveUser[message.chat.id]['contnew'])
+            if ActiveUser[message.chat.id]['contnew'][0] != ActiveUser[message.chat.id]['contold'][0]:
+                tasks = db.select_table_with_filters('Tasks', {'contragent': ActiveUser[message.chat.id]['contold'][0]})
+                for task in tasks:
+                    db.update_records(
+                        'Tasks',
+                        ['contragent'],
+                        [ActiveUser[message.chat.id]['contnew'][0]],
+                        'id',
+                        task[0]
+                    )
+                locations = db.select_table_with_filters('Locations', {'inn': ActiveUser[message.chat.id]['contold'][0]})
+                for location in locations:
+                    db.update_records(
+                        'Locations',
+                        ['inn'],
+                        [ActiveUser[message.chat.id]['contnew'][0]],
+                        'id',
+                        location[0]
+                    )
             db.update_records(
                 'Contragents',
                 [
@@ -2390,8 +2476,6 @@ class report:
             )
             bot.register_next_step_handler(message, report.period1)
         elif message.text == '🚫 Отмена':
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -2461,7 +2545,6 @@ class report:
         if message.text == 'Все заявки':
             fr = ActiveUser[message.chat.id]['daterepf']
             t = ActiveUser[message.chat.id]['daterept']
-            print(f'c {fr} по {t}')
             rept = db.select_table_with_filters('Tasks', {'status': 3}, ['done'], [fr+' 00:00'], [t+' 23:59'])
             sendrepfile(message, rept)
             bot.send_message(
@@ -2497,10 +2580,9 @@ class report:
         uid = message.text.split()[0]
         selecteduser = db.get_record_by_id('Users', uid)
         if uid.isdigit() and selecteduser != None:
-            fr = str(ActiveUser[message.chat.id]['daterepf'])+' 00:00'
-            t = str(ActiveUser[message.chat.id]['daterept'])+' 23:59'
-            print(f'c {fr} по {t}')
-            rept = db.select_table_with_filters('Tasks', {'master': selecteduser[0], 'status': 3}, ['done'], [fr], [t])
+            fr = ActiveUser[message.chat.id]['daterepf']
+            t = ActiveUser[message.chat.id]['daterept']
+            rept = db.select_table_with_filters('Tasks', {'master': selecteduser[0], 'status': 3}, ['done'], [fr+' 00:00'], [t+' 23:59'])
             sendrepfile(message, rept)
             bot.send_message(
                 message.chat.id,
@@ -2525,8 +2607,6 @@ class report:
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         if message.text == '🚫 Отмена':
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.delete_message(chat_id=ActiveUser[message.chat.id]['sentmes'].chat.id, message_id=ActiveUser[message.chat.id]['sentmes'].message_id)
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -2534,18 +2614,13 @@ class report:
             )
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text.split()[0].isdigit():
-            processing = bot.send_message(message.chat.id, '⏳')
-            inn = message.text.split()[0]
-            fr = str(ActiveUser[message.chat.id]['daterepf'])+' 00:00'
-            t = str(ActiveUser[message.chat.id]['daterept'])+' 23:59'
-            print(f'c {fr} по {t}')
+            inn = int(message.text.split()[0])
             client = db.get_record_by_id('Contragents', inn)
             if client[5] is not None:
                 fr = ActiveUser[message.chat.id]['daterepf']
                 t = ActiveUser[message.chat.id]['daterept']
-                rept = db.select_table_with_filters('Tasks', {'contragent': inn, 'status': 3}, ['done'], [fr], [t])
+                rept = db.select_table_with_filters('Tasks', {'contragent': inn, 'status': 3}, ['done'], [fr+' 00:00'], [t+' 23:59'])
                 sendrepfile(message, rept)
-                bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
                 bot.send_message(
                     message.chat.id,
                     'Выберите операцию.',
@@ -2553,7 +2628,6 @@ class report:
                 )
                 bot.register_next_step_handler(message, MainMenu.Main2)
             else:
-                bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
                 bot.send_message(
                     message.chat.id,
                     'Контрагент не найден.',
@@ -2561,7 +2635,6 @@ class report:
                 )
                 bot.register_next_step_handler(message, report.period5)
         else:
-            processing = bot.send_message(message.chat.id, '⏳')
             contrs = db.select_table('Contragents')
             res = functions.search_items(message.text, contrs)
             contbuttons = []
@@ -2571,7 +2644,6 @@ class report:
                     line = str(i[0]) + ' ' + str(i[1])
                     if len(contbuttons) < 20:
                         contbuttons.append(line)
-                bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
                 try:
                     bot.send_message(
                         message.chat.id,
@@ -2582,7 +2654,6 @@ class report:
                     logging.error(e)
                     pass
             else:
-                bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
                 bot.send_message(
                     message.chat.id,
                     'Контрагент не найден.',
@@ -3028,12 +3099,12 @@ if __name__ == '__main__':
     thread = threading.Thread(target=asyncio.run, args=(main(),))
     thread.start()
     if continue_polling is True:
-        # bot.polling(none_stop=True, interval=0)
-        while True:
-            try:
-                bot.polling(none_stop=True, interval=0)
-                logging.info('запуск пула')
-                logging.info()
-            except Exception as e:
-                logging.error(e)
-                time.sleep(5)
+        bot.polling(none_stop=True, interval=0)
+        # while True:
+        #     try:
+        #         bot.polling(none_stop=True, interval=0)
+        #         logging.info('запуск пула')
+        #         logging.info()
+        #     except Exception as e:
+        #         logging.error(e)
+        #         time.sleep(5)

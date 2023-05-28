@@ -1,6 +1,5 @@
 import sqlite3
 import threading
-# import datetime
 from datetime import datetime
 
 class Database:
@@ -77,40 +76,6 @@ class Database:
         rows = self.execute_query(query, parameters)
         return rows[0] if rows else None
 
-    def select_table_with_filters(self, table_name, filters={}, date_columns=None, from_dates=None, to_dates=None):
-        filter_columns = []
-        filter_values = []
-        for column, value in filters.items():
-            if isinstance (value, list):
-                filter_columns.append(f"{column} IN ({','.join(['?' for _ in value])})")
-                filter_values.extend(value)
-            else:
-                filter_columns.append(f"{column} = ?")
-                filter_values.append(value)
-        date_filters = []
-        if date_columns is not None and from_dates is not None and to_dates is not None:
-            for i in range(len(date_columns)):
-                date_column = date_columns[i]
-                from_date = from_dates[i]
-                to_date = to_dates[i]
-                date_filter = f"{date_column} BETWEEN ? AND ?"
-                date_filters.append(date_filter)
-                filter_values.append(from_date)
-                filter_values.append(to_date)
-
-        if len(filter_columns) > 0 and len(date_filters) > 0:
-            where_clause = " WHERE " + " AND ".join(filter_columns) + " AND (" + " OR ".join(date_filters) + ")"
-        elif len(filter_columns) > 0:
-            where_clause = " WHERE " + " AND ".join(filter_columns)
-        elif len(date_filters) > 0:
-            where_clause = " WHERE " + " OR ".join(date_filters)
-        else:
-            where_clause = ""
-
-        query = f"SELECT * FROM {table_name}" + where_clause
-        rows = self.execute_query(query, filter_values)
-        return rows
-
     def add_column_to_table(self, table_name, column_name, column_type):
         try:
             query = f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"
@@ -121,4 +86,55 @@ class Database:
                 print(f"Column '{column_name}' already exists in table '{table_name}'. Skipping column creation.")
             else:
                 raise e
+   
+    def get_column_names(self, table_name):
+        conn = sqlite3.connect(self.dbname, check_same_thread=False)
+        cursor = conn.cursor()
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = cursor.fetchall()
+        conn.close()
+        column_names = [column[1] for column in columns]
+        return column_names
+    
+    def select_table_with_filters(self, table_name, filters={}, date_columns=None, from_dates=None, to_dates=None):
+        if not filters:
+            return self.select_table(table_name)
 
+        filter_conditions = []
+        parameters = []
+
+        col_indexes = []
+
+        for column, value in filters.items():
+            filter_conditions.append(f"{column} = ?")
+            parameters.append(value)
+
+        if date_columns:
+            column_names = self.get_column_names(table_name)
+            for column in date_columns:
+                if column in column_names:
+                    col_indexes.append(column_names.index(column))
+
+        query = f"SELECT * FROM {table_name} WHERE {' AND '.join(filter_conditions)}"
+        rows = self.execute_query(query, parameters)
+        
+        result_rows = []
+
+        if date_columns is not None and from_dates is not None and to_dates is not None:
+            for row in rows:
+                include_row = True
+                ind = 0
+                for i in col_indexes:
+                    date_value = datetime.strptime(row[i], "%d.%m.%Y %H:%M")
+                    from_date = datetime.strptime(from_dates[ind], "%d.%m.%Y %H:%M")
+                    to_date = datetime.strptime(to_dates[ind], "%d.%m.%Y %H:%M")
+                    ind = ind + 1
+                    if not (from_date <= date_value <= to_date):
+                        include_row = False
+                        break
+                if include_row:
+                    result_rows.append(row)
+        else:
+            result_rows = rows
+
+        return result_rows
