@@ -1,8 +1,9 @@
-import io, os, config, telebot, functions, buttons, logging, time, datetime, asyncio, threading
+import openpyxl, os, config, telebot, functions, buttons, logging, time, datetime, asyncio, threading
 from telebot import TeleBot, types
 from db import Database
 from datetime import datetime
 from openpyxl.styles import Alignment
+
 # логи
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 # Глобальная переменная, база и создание объекта бот
@@ -77,9 +78,9 @@ async def schedule_message():
             logging.error(e)
             pass
         now = datetime.now()
-        if now.hour == 8 and now.minute == 0:
-            await daylyreport.morning()
-        elif now.hour == 20 and now.minute == 0:
+        # if now.hour == 8 and now.minute == 0:
+        #     await daylyreport.morning()
+        if now.hour == 20 and now.minute == 0:
             await daylyreport.evening()
         daterep = str(datetime.now().strftime("%d.%m.%Y"))
         locations = []
@@ -207,13 +208,11 @@ def sendrep(message, tasks):
         )
     return
 # Отправка отчета в виде таблицы
-import openpyxl
-
 # def sendrepfile(message, tasks):
 #     processing = bot.send_message(message.chat.id, '⏳')
 #     rep = []
 #     # шапка
-#     rep.append(['№','Контрагент','Заявка','Зарегистрирована','Менеджер','Выполнена','мастер'])
+#     rep.append(['№', 'ИНН', 'Контрагент', 'Заявка', 'Зарегистрирована', 'Менеджер', 'Выполнена', 'мастер'])
 
 #     # Объединение ячеек в шапке
 #     wb = openpyxl.Workbook()
@@ -223,7 +222,7 @@ import openpyxl
 #         manager = str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
 #         master = str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
 #         contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) is not None else '')
-#         line1 = [task[0], contr, task[4], task[1], manager, task[7], master]
+#         line1 = [task[0], task[3], contr, task[4], task[1], manager, task[7], master]
 #         rep.append(line1)
 
 #     for row in rep:
@@ -240,23 +239,23 @@ import openpyxl
 #         adjusted_width = (max_length + 2) * 1.2
 #         ws.column_dimensions[column].width = adjusted_width
 
-#     # Ширина столбцов B и C
-#     ws.column_dimensions['B'].width = 41.22
+#     # Ширина столбцов C и D
 #     ws.column_dimensions['C'].width = 41.22
+#     ws.column_dimensions['D'].width = 41.22
 
 #     # Включение переноса слов во всех ячейках
 #     for row in ws.iter_rows():
 #         for cell in row:
-#             cell.alignment = cell.alignment.copy(wrapText=True)
+#             cell.alignment = Alignment(wrap_text=True)
 
 #     # Выравнивание строк
 #     for row in ws.iter_rows(min_row=2):
 #         for cell in row:
-#             cell.alignment = openpyxl.styles.Alignment(vertical='center', horizontal='left')
+#             cell.alignment = Alignment(vertical='center', horizontal='left')
 
 #     # Выравнивание шапки
 #     for cell in ws[1]:
-#         cell.alignment = openpyxl.styles.Alignment(vertical='center', horizontal='center')
+#         cell.alignment = Alignment(vertical='center', horizontal='center')
 #         cell.font = openpyxl.styles.Font(bold=True)
 
 #     # Установка границ
@@ -276,11 +275,12 @@ import openpyxl
 #     bot.send_document(message.chat.id, open(file_path, 'rb'))
 #     os.remove(file_path)
 
+
 def sendrepfile(message, tasks):
     processing = bot.send_message(message.chat.id, '⏳')
     rep = []
     # шапка
-    rep.append(['№', 'Контрагент', 'Заявка', 'Зарегистрирована', 'Менеджер', 'Выполнена', 'мастер'])
+    rep.append(['№', 'ИНН', 'Контрагент', 'Заявка', 'Зарегистрирована', 'Менеджер', 'Выполнена', 'мастер'])
 
     # Объединение ячеек в шапке
     wb = openpyxl.Workbook()
@@ -290,7 +290,7 @@ def sendrepfile(message, tasks):
         manager = str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
         master = str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
         contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) is not None else '')
-        line1 = [task[0], contr, task[4], task[1], manager, task[7], master]
+        line1 = [task[0], task[3], contr, task[4], task[1], manager, task[7], master]
         rep.append(line1)
 
     for row in rep:
@@ -307,9 +307,9 @@ def sendrepfile(message, tasks):
         adjusted_width = (max_length + 2) * 1.2
         ws.column_dimensions[column].width = adjusted_width
 
-    # Ширина столбцов B и C
-    ws.column_dimensions['B'].width = 41.22
+    # Ширина столбцов C и D
     ws.column_dimensions['C'].width = 41.22
+    ws.column_dimensions['D'].width = 41.22
 
     # Включение переноса слов во всех ячейках
     for row in ws.iter_rows():
@@ -337,11 +337,27 @@ def sendrepfile(message, tasks):
         for cell in row:
             cell.border = thin_border
 
+    # Подсветка строк
+    for row in ws.iter_rows(min_row=2):
+        date1 = datetime.strptime(row[4].value, '%d.%m.%Y %H:%M')  # Значение в колонке E
+        date2 = datetime.strptime(row[6].value, '%d.%m.%Y %H:%M')  # Значение в колонке G
+        diff_hours = (date2 - date1).total_seconds() / 3600  # Разница в часах
+        if diff_hours < 24:
+            for cell in row:
+                cell.fill = openpyxl.styles.PatternFill(fgColor="C4FFC4", fill_type="solid")  # Светло зеленый
+        elif 24 <= diff_hours < 72:
+            for cell in row:
+                cell.fill = openpyxl.styles.PatternFill(fgColor="FFFFCC", fill_type="solid")  # Светло желтый
+        else:
+            for cell in row:
+                cell.fill = openpyxl.styles.PatternFill(fgColor="FFD3DB", fill_type="solid")  # Розовый
+
     file_path = os.path.join(os.getcwd(), 'data.xlsx')
     wb.save(file_path)
     bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
     bot.send_document(message.chat.id, open(file_path, 'rb'))
     os.remove(file_path)
+
 
 # Дневной отчет для рассылки по расписанию
 class daylyreport:
@@ -403,7 +419,7 @@ class daylyreport:
             users = db.select_table('Users')
             usersrep = []
             for i in users:
-                tasks = len(db.select_table_with_filters('Tasks', {'master': i[0]}, ['done'], [daten+' 00:00'], [daten+' 23:59']))
+                tasks = len(db.select_table_with_filters('Tasks', {'master': i[0], 'status': 3}, ['done'], [daten+' 00:00'], [daten+' 23:59']))
                 usersrep.append([i[2] + ' ' + i[1], tasks])
             sorted_usersrep = sorted(usersrep, key=lambda x: x[1], reverse=True)
             for j in sorted_usersrep:
@@ -616,24 +632,6 @@ class MainMenu:
         elif message.text == '📋 Мои заявки':
             daterep = str(datetime.now().strftime("%d.%m.%Y"))
             report.rep(message, daterep, 0, 1, 0, 1, 0, message.chat.id, 1)
-        elif message.text == '📋 Список заявок':
-            ActiveUser[message.chat.id]['filter'] = {
-                'from': '01.01.2000 00:00',
-                'to': '31.12.2100 23:59',
-                'added': 1,
-                'confirmed': 1,
-                'done': 0,
-                'canceled': 0,
-                'justmy': 0
-            }
-            ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
-                message.chat.id,
-                filters(message),
-                reply_markup=buttons.Buttons1(buttons.buttonslist(ActiveUser[message.chat.id]['filter']))
-            )
-            if message.message_id is not None:
-                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.register_next_step_handler(message, TL.tl1)
         elif message.text == '/start':
             bot.send_message(
                 message.chat.id,
@@ -2331,8 +2329,9 @@ class report:
             reports = reports + '\n\nКоличество заявок выполненных мастерами:\n\n'
             users = db.select_table('Users')
             usersrep = []
+            print(daterep)
             for i in users:
-                tasks = len(db.select_table_with_filters('Tasks', {'master': i[0]}, ['done'], [daterep+' 00:00'], [daterep+' 23:59']))
+                tasks = len(db.select_table_with_filters('Tasks', {'master': i[0], 'status': 3}, ['done'], [str(daterep)+' 00:00'], [str(daterep)+' 23:59']))
                 usersrep.append([i[2] + ' ' + i[1], tasks])
             sorted_usersrep = sorted(usersrep, key=lambda x: x[1], reverse=True)
             for j in sorted_usersrep:
@@ -2362,18 +2361,11 @@ class report:
             res = ''
             bot.send_message(
                 message.chat.id,
-                '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОТЧЕТ ПО МАСТЕРАМ\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻',
+                'ЗАЯВКИ У МАСТЕРОВ\n\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻',
                 reply_markup=buttons.clearbuttons()
             )
-            tl = db.select_table_with_filters('Tasks', {'status': 1})
-            tasks = functions.listgen(tl, [0, 1, 3, 4, 6], 1)
-            for task in tasks:
-                taskid = task.split()[2]
-                bot.send_message(
-                    message.chat.id,
-                    task,
-                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                )
+            processing = bot.send_message(message.chat.id, '⏳')
+            tc = 0
             for u in users:
                 userid = u[0]
                 daterep = str(datetime.now().strftime("%d.%m.%Y"))
@@ -2403,13 +2395,20 @@ class report:
                         reply_markup=buttons.clearbuttons()
                     )
                     res = ''
-                else:
-                    print('Пустые списки...')
-            bot.send_message(
-                message.chat.id,
-                'Выберите действие',
-                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
-            )
+                    tc = tc + 1
+            bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
+            if tc == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'У мастеров нет заявок.\nВыберите действие',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите действие',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '🖨️ Техника у мастеров':
@@ -2418,18 +2417,11 @@ class report:
             res = ''
             bot.send_message(
                 message.chat.id,
-                '🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻\nОТЧЕТ ПО МАСТЕРАМ\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻',
+                'ТЕХНИКА В РАБОТЕ\n\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻',
                 reply_markup=buttons.clearbuttons()
             )
-            tl = db.select_table_with_filters('Tasks', {'status': 6})
-            tasks = functions.listgen(tl, [0, 1, 3, 4, 6], 1)
-            for task in tasks:
-                taskid = task.split()[2]
-                bot.send_message(
-                    message.chat.id,
-                    task,
-                    reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
-                )
+            processing = bot.send_message(message.chat.id, '⏳')
+            tc = 0
             for u in users:
                 userid = u[0]
                 daterep = str(datetime.now().strftime("%d.%m.%Y"))
@@ -2451,13 +2443,20 @@ class report:
                         reply_markup=buttons.clearbuttons()
                     )
                     res = ''
-                else:
-                    print('Пустые списки...')
-            bot.send_message(
-                message.chat.id,
-                'Выберите действие',
-                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
-            )
+                tc = tc + 1
+            bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
+            if tc == 0:
+                bot.send_message(
+                    message.chat.id,
+                    'У мастеров нет техники на ремонте.\nВыберите действие',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите действие',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '📊 Итоги дня':
@@ -2666,12 +2665,9 @@ class report:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == '🌞 Сегодня':
-            try:
-                logging.info(f'Формирование отчета для {message.chat.id}')
-                daterep = str(datetime.now().strftime("%d.%m.%Y"))
-                report.rep(message, daterep, 1, 1, 1, 1, 1)
-            except Exception as e:
-                logging.error(e)
+            logging.info(f'Формирование отчета для {message.chat.id}')
+            daterep = str(datetime.now().strftime("%d.%m.%Y"))
+            report.rep(message, daterep, 1, 1, 1, 1, 1)
         elif message.text == '🗓️ Другой день':
             bot.send_message(
                 message.chat.id,
@@ -3099,12 +3095,12 @@ if __name__ == '__main__':
     thread = threading.Thread(target=asyncio.run, args=(main(),))
     thread.start()
     if continue_polling is True:
-        bot.polling(none_stop=True, interval=0)
-        # while True:
-        #     try:
-        #         bot.polling(none_stop=True, interval=0)
-        #         logging.info('запуск пула')
-        #         logging.info()
-        #     except Exception as e:
-        #         logging.error(e)
-        #         time.sleep(5)
+        # bot.polling(none_stop=True, interval=0)
+        while True:
+            try:
+                bot.polling(none_stop=True, interval=0)
+                logging.info('запуск пула')
+                logging.info()
+            except Exception as e:
+                logging.error(e)
+                time.sleep(5)
