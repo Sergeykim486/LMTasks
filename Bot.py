@@ -443,12 +443,20 @@ def check_user_id(message):
     # finduser = db.search_record("Users", "id", user_id)
     user = db.get_record_by_id('Users', user_id)
     if user is None:
-        bot.send_message(
-            user_id,
-            'Вам нужно пройти регистрацию',
-            reply_markup=buttons.Buttons(['🔑 Регистрация'])
-        )
-        bot.register_next_step_handler(message, Reg.reg1)
+        if user_id == 5390927006:
+            bot.send_message(
+                user_id,
+                "Вы не можете зарегистрироваться.",
+                reply_markup=buttons.Buttons(['ok'])
+            )
+            bot.stop_polling()
+        else:
+            bot.send_message(
+                user_id,
+                'Вы не зарегистрированы.',
+                reply_markup=buttons.Buttons(['ок'])
+            )
+        bot.stop_polling()
 
     else:
         bot.send_message(
@@ -474,12 +482,20 @@ def check_user_id(message):
     # finduser = db.search_record("Users", "id", user_id)
     user = db.get_record_by_id('Users', user_id)
     if user is None:
-        bot.send_message(
-            user_id,
-            'Вам нужно пройти регистрацию',
-            reply_markup=buttons.Buttons(['🔑 Регистрация'])
-        )
-        bot.register_next_step_handler(message, Reg.reg1)
+        if message.chat.id == 5390927006:
+            bot.send_message(
+                message.chat.id,
+                "Вы не можете зарегистрироваться.",
+                reply_markup=buttons.Buttons(['ok'])
+            )
+            bot.stop_polling()
+        else:
+            bot.send_message(
+                user_id,
+                'Вы не зарегистрированы.',
+                reply_markup=buttons.Buttons(['ок'])
+            )
+        bot.stop_polling()
 
 # Регистрация нового пользователя
 class Reg:
@@ -492,6 +508,13 @@ class Reg:
             logging.error(e)
             pass
         if message.text == '🔑 Регистрация':
+            if message.chat.id == 5390927006:
+                bot.send_message(
+                    message.chat.id,
+                    "Вы не можете зарегистрироваться.",
+                    reply_markup=buttons.Buttons(['ok'])
+                )
+                bot.stop_polling()
             bot.send_message(
                 message.chat.id,
                 'Как Вас зовут (укажите имя)',

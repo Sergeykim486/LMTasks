@@ -42,7 +42,17 @@ def listgen(table, cols, tasks = 0):
                     curline = curline + str(cname) + '\n'
 
                 elif i == 6 and line[i]:
-                    Mastername = str(db.get_record_by_id("Users", line[i])[2]) + ' ' + str(db.get_record_by_id("Users", line[i])[1])
+                    if line [i] is None:
+                        Mastername = '-'
+                    else:
+                        try:
+                            user_record = db.get_record_by_id("Users", line[i])
+                            if user_record is not None:
+                                Mastername = str(user_record[2]) + ' ' + str(user_record[1])
+                            else:
+                                Mastername = "-"
+                        except TypeError:
+                            Mastername = "-"
                     curline = curline + '\nМастер: - ' + str(Mastername) + '\n'
 
                 else:
@@ -92,7 +102,16 @@ def curtask(id):
     messtext = messtext + '\nЗаявку зарегистрировал(а): ' + str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
 
     if task[11] == 2 or task[10] == 3:
-        messtext = messtext + '\nМастер ' + str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
+        
+        try:
+            user_record = db.get_record_by_id('Users', task[6])
+            if user_record is not None:
+                master = str(user_record[2]) + ' ' + str(user_record[1])
+            else:
+                master = "-"
+        except TypeError:
+            master = "-"
+        messtext = messtext + '\nМастер ' + master
         messtext = messtext + ' принял ' + str(task[5])
 
     elif task[11] == 4:
