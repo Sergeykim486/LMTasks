@@ -95,7 +95,7 @@ async def schedule_message():
                 name = '№ ' + str(task[0]) + '\n|=============================|\n' + str(company)
                 description = status + '\n | \n' + task[4]
                 location = db.get_record_by_id('Locations', task[12])
-                if task[12] is not None and location is not None:
+                if task[12] != None and location != None:
                     lat = location[3]
                     lon = location[4]
                 else:
@@ -209,7 +209,7 @@ def sendrep(message, tasks):
     return
 # Отправка отчета в виде таблицы
 # def sendrepfile(message, tasks):
-#     processing = bot.send_message(message.chat.id, '⏳')
+#     processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
 #     rep = []
 #     # шапка
 #     rep.append(['№', 'ИНН', 'Контрагент', 'Заявка', 'Зарегистрирована', 'Менеджер', 'Выполнена', 'мастер'])
@@ -221,7 +221,7 @@ def sendrep(message, tasks):
 #     for task in tasks:
 #         manager = str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
 #         master = str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
-#         contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) is not None else '')
+#         contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) != None else '')
 #         line1 = [task[0], task[3], contr, task[4], task[1], manager, task[7], master]
 #         rep.append(line1)
 
@@ -277,7 +277,7 @@ def sendrep(message, tasks):
 
 
 def sendrepfile(message, tasks):
-    processing = bot.send_message(message.chat.id, '⏳')
+    processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
     rep = []
     # шапка
     rep.append(['№', 'ИНН', 'Контрагент', 'Заявка', 'Зарегистрирована', 'Менеджер', 'Выполнена', 'мастер'])
@@ -289,7 +289,7 @@ def sendrepfile(message, tasks):
     for task in tasks:
         manager = str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
         master = str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
-        contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) is not None else '')
+        contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) != None else '')
         line1 = [task[0], task[3], contr, task[4], task[1], manager, task[7], master]
         rep.append(line1)
 
@@ -668,7 +668,7 @@ class MainMenu:
                 'Напишите Ваше сообщение и оно будет разослано всем.\nчтобы вернуться в главное меню нажмите [Главное меню]',
                 reply_markup=buttons.Buttons(['🏠 Главное меню'])
             )
-            if message.message_id is not None:
+            if message.message_id != None:
                 bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
             bot.register_next_step_handler(message, allchats.chat1)
@@ -678,7 +678,7 @@ class MainMenu:
                 'Выберите какой отчет Вам нужен\nПоказать все не выполненные заявки, или показать итоги дня.',
                 reply_markup=buttons.Buttons(['📋 Заявки у мастеров', '🖨️ Техника у мастеров', '📊 Итоги дня', '📆 За период', '🚫 Отмена'])
             )
-            if message.message_id is not None:
+            if message.message_id != None:
                 bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, report.reportall)
         elif message.text == '✏️ Редактировать контрагента':
@@ -700,7 +700,7 @@ class MainMenu:
                 reply_markup=markup
             )
             bot.register_next_step_handler(message, MainMenu.Main2)
-        elif message.text is not None:
+        elif message.text != None:
             if message.text.isdigit() or (len(message.text.split()) > 1 and message.text.split()[1].isdigit()):
                 if message.text.isdigit():
                     taskid = message.text
@@ -708,7 +708,7 @@ class MainMenu:
                     taskid = message.text.split()[1]
                 task = db.get_record_by_id('Tasks', taskid)
                 tasks = functions.listgen([task], [0, 1, 3, 4, 6], 1)
-                if task is not None:
+                if task != None:
                     bot.send_message(
                         message.chat.id,
                         tasks[0],
@@ -749,7 +749,7 @@ class editcont():
                     ActiveUser[message.chat.id]['contnew'].append(None)
                 else:
                     ActiveUser[message.chat.id]['contnew'].append(line)
-            if client is not None:
+            if client != None:
                 editcontragent(message)
                 bot.register_next_step_handler(message, editcont.ec2)
             else:
@@ -760,7 +760,7 @@ class editcont():
                 )
                 bot.register_next_step_handler(message, MainMenu.Main2)
         else:
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             contrs = db.select_table('Contragents')
             res = functions.search_items(message.text, contrs)
             contbuttons = []
@@ -982,7 +982,7 @@ class editcont():
         elif message.text == '↩️ Назад':
             editcontragent(message)
             bot.register_next_step_handler(message, editcont.ec2)
-        elif message.text.split()[0].isdigit() and db.get_record_by_id('Locations', message.text.split()[0]) is not None:
+        elif message.text.split()[0].isdigit() and db.get_record_by_id('Locations', message.text.split()[0]) != None:
             location = db.get_record_by_id('Locations', message.text.split()[0])
             loc = types.Location(location[4], location[3])
             bot.send_location(message.chat.id, loc.latitude, loc.longitude)
@@ -1147,7 +1147,7 @@ class NewTask:
             )
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text.split()[0].isdigit():
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             if message.text.split()[0].isdigit():
                 inn = message.text.split()[0]
             else:
@@ -1165,7 +1165,7 @@ class NewTask:
             else:
                 bot.delete_message(chat_id=message.chat.id, message_id=processing.message_id)
                 client = db.get_record_by_id('Contragents', inn)
-                if client[5] is not None and ActiveUser[message.chat.id]['nt'] == 1:
+                if client[5] != None and ActiveUser[message.chat.id]['nt'] == 1:
                     bot.send_message(
                         message.chat.id,
                         'Выбран клиент - ' + str(client[1]) + '\nЗаявка или техника?',
@@ -1189,7 +1189,7 @@ class NewTask:
                     )
                     bot.register_next_step_handler(message, NewTask.type1)
         else:
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             contrs = db.select_table('Contragents')
             res = functions.search_items(message.text, contrs)
             contbuttons = []
@@ -1566,7 +1566,7 @@ class NewTask:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser, continue_polling
-        processing = bot.send_message(message.chat.id, '⏳')
+        processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
         if message.text == '✅ Да':
             task = [
                 None,
@@ -1617,15 +1617,15 @@ def conf(message):
     confmes = 'Подтвердите заявку. \nЗаявка от: '
     confmes = confmes + ActiveUser[message.chat.id]['added']
     record = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['inn'])
-    if ActiveUser[message.chat.id]['location'] is not None:
+    if ActiveUser[message.chat.id]['location'] != None:
         location = db.get_record_by_id('Locations', ActiveUser[message.chat.id]['location'])[2]
     else:
         location = ''
-    confmes = confmes + '\nКлиент: ' + (record[1] if record[1] is not None else '') + (f" {location}" if ActiveUser[message.chat.id]['location'] is not None else '')
+    confmes = confmes + '\nКлиент: ' + (record[1] if record[1] != None else '') + (f" {location}" if ActiveUser[message.chat.id]['location'] != None else '')
     confmes = confmes + '\nТекст заявки: ' + ActiveUser[message.chat.id]['task']
-    confmes = confmes + '\nАдрес: ' + (record[2] if record[2] is not None else '')
-    confmes = confmes + '\nКонтактное лицо: ' + (record[3] if record[3] is not None else '')
-    confmes = confmes + '\nКонтактный номер: ' + (record[4] if record[4] is not None else '')
+    confmes = confmes + '\nАдрес: ' + (record[2] if record[2] != None else '')
+    confmes = confmes + '\nКонтактное лицо: ' + (record[3] if record[3] != None else '')
+    confmes = confmes + '\nКонтактный номер: ' + (record[4] if record[4] != None else '')
     bot.send_message(
         message.chat.id,
         confmes,
@@ -1640,7 +1640,7 @@ class Task:
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser, continue_polling
         if message.text == '👍 Принять':
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] == 5:
                 stat = 6
             else:
@@ -1663,7 +1663,7 @@ class Task:
                 mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\nПринял заявку:\n\n' + tk
                 mark = ''
                 exn = message.chat.id
-                if sendedmessages is not None:
+                if sendedmessages != None:
                     for line in sendedmessages:
                         try:
                             bot.delete_message(line[0], line[1])
@@ -1702,7 +1702,7 @@ class Task:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Task.task4)
         elif message.text == '✅ Выполнено':
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
             if manager == str(message.chat.id):
                 if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] == 2:
@@ -1735,7 +1735,7 @@ class Task:
         elif message.text == '🙅‍♂️ Отказаться от заявки':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
             if manager == str(message.chat.id):
-                processing = bot.send_message(message.chat.id, '⏳')
+                processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
                 confdate = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[5]
                 db.update_records(
                     'Tasks',
@@ -1808,7 +1808,7 @@ class Task:
         elif message.text == '📍 Локация':
             print('📍 Локация')
             location = db.get_record_by_id('Locations', db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[12])
-            if location is not None:
+            if location != None:
                 loc = types.Location(location[4], location[3])
                 bot.send_location(message.chat.id, loc.latitude, loc.longitude)
                 bot.send_message(
@@ -1936,7 +1936,7 @@ class Task:
         global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-        processing = bot.send_message(message.chat.id, '⏳')
+        processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
         db.update_records(
             'Tasks',[
                 'canceled',
@@ -1983,7 +1983,7 @@ class Task:
             bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             bot.register_next_step_handler(message, Task.task4)
         else:
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             userm = message.text.split()[1]
             
             db.update_records(
@@ -1999,7 +1999,7 @@ class Task:
                 'id',
                 ActiveUser[message.chat.id]['task']
             )
-            if sendedmessages is not None:
+            if sendedmessages != None:
                 for line in sendedmessages:
                     try:
                         bot.delete_message(line[0], line[1])
@@ -2022,7 +2022,7 @@ class Task:
         global ActiveUser, continue_polling
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-        processing = bot.send_message(message.chat.id, '⏳')
+        processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
         tasktext = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
         db.update_records(
             'Tasks',
@@ -2036,7 +2036,7 @@ class Task:
         mark = ''
         exn = message.chat.id
         sendtoall(mes, mark, exn)
-        if sendedmessages is not None:
+        if sendedmessages != None:
             for line in sendedmessages:
                 try:
                     bot.delete_message(line[0], line[1])
@@ -2056,7 +2056,7 @@ class Task:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == '✅ Да':
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             db.update_records(
                 'Tasks',
                 ['contragent'],
@@ -2111,7 +2111,7 @@ class Task:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == '✅ Да':
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             print(ActiveUser[message.chat.id]['newtasktext'])
             db.update_records(
                 'Tasks',
@@ -2387,7 +2387,7 @@ class report:
                 'ЗАЯВКИ У МАСТЕРОВ\n\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻',
                 reply_markup=buttons.clearbuttons()
             )
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             tc = 0
             for u in users:
                 userid = u[0]
@@ -2443,7 +2443,7 @@ class report:
                 'ТЕХНИКА В РАБОТЕ\n\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻',
                 reply_markup=buttons.clearbuttons()
             )
-            processing = bot.send_message(message.chat.id, '⏳')
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             tc = 0
             for u in users:
                 userid = u[0]
@@ -2638,7 +2638,7 @@ class report:
         elif message.text.split()[0].isdigit():
             inn = int(message.text.split()[0])
             client = db.get_record_by_id('Contragents', inn)
-            if client[5] is not None:
+            if client[5] != None:
                 fr = ActiveUser[message.chat.id]['daterepf']
                 t = ActiveUser[message.chat.id]['daterept']
                 rept = db.select_table_with_filters('Tasks', {'contragent': inn, 'status': 3}, ['done'], [fr+' 00:00'], [t+' 23:59'])
@@ -3050,7 +3050,7 @@ def tnl2(message):
 # реакция на инлайновые кнопки
 def callback_handler(call):
     global ActiveUser, sendedmessages, continue_polling
-    continue_polling = False
+    # continue_polling = False
     if call.data.split()[0] == 'tasklist':# Подробности заявки
         status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
         if status[11] == 1 or status[11] == 5:
