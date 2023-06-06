@@ -7,13 +7,19 @@ from openpyxl.styles import Alignment
 # логи
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 # Глобальная переменная, база и создание объекта бот
-ActiveUser = {}
-Pause_main_handler = False
+
+
+ActiveUser = {} # Глобальная переменная для каждого пользователя идентифицируется по ключу ключ - id пользователя
 sendedmessages = []
 dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 db = Database(dbname)
 bot = telebot.TeleBot(config.TOKEN)
 sch = 0
+
+
+# =====================================  ДОБАВЛЕНИЕ ТАБЛИЦ И КОЛОНОК В БАЗУ (временное потом убрать)  =====================================
+
+
 # Добавление в список пользователей клиентского бота
 if db.get_record_by_id('Users', 0) == None:
     db.insert_record(
@@ -49,6 +55,11 @@ TopCols = [
     "val INTEGER"
 ]
 db.create_table("Top10", TopCols)
+
+
+# =====================================  ФУНКЦИИ ВЫПОЛНЯЕМЫЕ ПО РАСПИСАНИЮ  =====================================
+
+
 try:
     if db.get_record_by_id('Statuses', 5) is None and db.get_record_by_id('Statuses', 6) is None and db.get_record_by_id('Statuses', 7) is None:
         db.insert_record('Statuses', [5, 'Зарегистрирована'])
@@ -423,7 +434,13 @@ class daylyreport:
                 if j[1] != 0:
                     reports = reports + '\n' + j[0] + ' - ' + str(j[1])
         sendtoall('ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports, '', 0)
+
+
+# =====================================  С Т А Р Т   Б О Т А  =====================================
+
+
 @bot.message_handler(commands=['start'])
+
 # проверка пользователя при первом запуске
 def check_user_id(message):
     user_id = message.from_user.id
@@ -435,6 +452,7 @@ def check_user_id(message):
         logging.error(e)
         pass
     ActiveUser[user_id] = {'id': user_id}
+    ActiveUser[user_id]['Pause_main_handler'] = False
     user = db.get_record_by_id('Users', user_id)
     if user is None:
         if user_id == 5390927006:
@@ -460,7 +478,12 @@ def check_user_id(message):
         )
         bot.register_next_step_handler(message, MainMenu.Main2)
 
+
+# =====================================  О С Н О В Н Ы Е   Х Е Н Д Л Е Р Ы  =====================================
+
+
 @bot.message_handler(func=lambda message: True)
+
 # проверка пользователя при первом запуске
 def check_user_id(message):
     user_id = message.from_user.id
@@ -491,6 +514,7 @@ def check_user_id(message):
 
 # Регистрация нового пользователя
 class Reg:
+
     # Запрос имени у пользователя
     def reg1(message):
         try:
@@ -525,6 +549,7 @@ class Reg:
             except Exception as e:
                 pass
             bot.register_next_step_handler(message, Reg.reg1)
+
     # Сохранение имени и запрос фамилии
     def reg2(message):
         try:
@@ -541,6 +566,7 @@ class Reg:
             reply_markup=buttons.clearbuttons()
         )
         bot.register_next_step_handler(message, Reg.reg3)
+
     # Сохранение фамилии и запрос номера телефона
     def reg3(message):
         try:
@@ -557,6 +583,7 @@ class Reg:
             reply_markup=buttons.clearbuttons()
         )
         bot.register_next_step_handler(message, Reg.reg4)
+
     # Сохранение телефона и запрос на подтверждение сохраненных данных
     def reg4(message):
         try:
@@ -573,6 +600,7 @@ class Reg:
             reply_markup=buttons.Buttons(['✅ Да', '⛔️ Нет'])
         )
         bot.register_next_step_handler(message, Reg.reg5)
+
     # Проверка подтверждения данных
     def reg5(message):
         try:
@@ -612,8 +640,10 @@ class Reg:
             )
             mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, Reg.reg5)
+
 # Главное меню и обработка кнопок главного меню
 class MainMenu:
+
     # Главное меню
     def Main1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -627,12 +657,13 @@ class MainMenu:
             )
             mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
+
     # Реакия на кнопки главного меню
     def Main2(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser, Pause_main_handler
-        if Pause_main_handler == False:
+        global ActiveUser
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == False:
             if message.text == '📝 Новая заявка':
                 processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
                 ActiveUser[message.chat.id]['nt'] = 1
@@ -710,15 +741,14 @@ class MainMenu:
                 )
                 bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '/start':
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
             bot.register_next_step_handler(message, MainMenu.Main2)
-        else:
-            return
+
 # Редактирование контрагента
 class editcont():
 
@@ -841,6 +871,11 @@ class editcont():
                 'Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
+            try:
+                mes = ActiveUser[message.chat.id]['edcon']
+                mesdel(mes.chat.id, mes.message_id)
+            except Exception as e:
+                pass
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '🏷️ ТИП':
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -1689,7 +1724,7 @@ class Task:
     def task1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser, Pause_main_handler
+        global ActiveUser
         if message.text == '👍 Принять':
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
             if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] == 5:
@@ -1724,7 +1759,7 @@ class Task:
                     'Вы приняли заявку.\n\nВыберите операцию',
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
-                Pause_main_handler = False
+                ActiveUser[message.chat.id]['Pause_main_handler'] = False
                 bot.register_next_step_handler(message, MainMenu.Main2)
             else:
                 bot.send_message(
@@ -1732,7 +1767,7 @@ class Task:
                     "Вы не можете принять эту заявку!",
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
-                Pause_main_handler = False
+                ActiveUser[message.chat.id]['Pause_main_handler'] = False
                 bot.register_next_step_handler(message, MainMenu.Main2)
             mesdel(message.chat.id, message.message_id)
         elif message.text == '🖊️ Дополнить':
@@ -1782,7 +1817,7 @@ class Task:
                     'Вы завершили заявку.',
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '🙅‍♂️ Отказаться от заявки':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[6])
@@ -1814,7 +1849,7 @@ class Task:
                     'Вы отказались от заявки.',
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
-                Pause_main_handler = False
+                ActiveUser[message.chat.id]['Pause_main_handler'] = False
                 bot.register_next_step_handler(message, MainMenu.Main2)
             else:
                 master = db.get_record_by_id('Users', manager)[1]
@@ -1824,7 +1859,7 @@ class Task:
                     reply_markup=buttons.Buttons(['🏠 Главное меню'])
                 )
                 mesdel(message.chat.id, message.message_id)
-                Pause_main_handler = False
+                ActiveUser[message.chat.id]['Pause_main_handler'] = False
                 bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '🚫 Отменить заявку':
             manager = str(db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[2])
@@ -1842,7 +1877,7 @@ class Task:
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
             mesdel(message.chat.id, message.message_id)
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '🤵 Изменить контрагента':
             bot.send_message(
@@ -1862,7 +1897,6 @@ class Task:
             mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, Task.task7_1)
         elif message.text == '📍 Локация':
-            print('📍 Локация')
             location = db.get_record_by_id('Locations', db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[12])
             if location != None:
                 loc = types.Location(location[4], location[3])
@@ -1886,11 +1920,11 @@ class Task:
                 'Ошибка ввода.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             bot.register_next_step_handler(message, MainMenu.Main2)
 
     def locations1(message):
-        global ActiveUser, Pause_main_handler
+        global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == '📍 Указать локацию':
@@ -1919,11 +1953,11 @@ class Task:
                 'Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             bot.register_next_step_handler(message, MainMenu.Main2)
 
     def locations2(message):
-        global ActiveUser, Pause_main_handler
+        global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['inn'] = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
@@ -1940,7 +1974,7 @@ class Task:
                 'Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text.split()[0].isdigit():
             selected = db.get_record_by_id('Locations', message.text.split()[0])
@@ -1956,7 +1990,7 @@ class Task:
                 f'Выбрана локация {selected[2]}',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             bot.register_next_step_handler(message, MainMenu.Main2)
         else:
             inn = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
@@ -1976,7 +2010,7 @@ class Task:
             bot.register_next_step_handler(message, Task.locations2)
 
     def task2(message):
-        global ActiveUser, Pause_main_handler
+        global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == '✅ Да':
@@ -1993,12 +2027,12 @@ class Task:
                 'Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task3(message):
-        global ActiveUser, Pause_main_handler
+        global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
@@ -2028,11 +2062,11 @@ class Task:
             'Заявка отменена\n\nВыберите операцию.',
             reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
         )
-        Pause_main_handler = False
+        ActiveUser[message.chat.id]['Pause_main_handler'] = False
         bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task4(message):
-        global ActiveUser, Pause_main_handler
+        global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] == 5:
@@ -2078,12 +2112,12 @@ class Task:
                 'Мастер назначен.\n\nВыберите операцию',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
 
     def task5(message):
-        global ActiveUser, Pause_main_handler
+        global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ")
@@ -2109,7 +2143,7 @@ class Task:
             'Заявка дополнена.\n\nВыберите операцию',
             reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
         )
-        Pause_main_handler = False
+        ActiveUser[message.chat.id]['Pause_main_handler'] = False
         mesdel(message.chat.id, message.message_id)
         bot.register_next_step_handler(message, MainMenu.Main2)
 
@@ -2168,7 +2202,7 @@ class Task:
         bot.register_next_step_handler(message, Task.task7_2)
 
     def task7_2(message):
-        global ActiveUser, Pause_main_handler
+        global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == '✅ Да':
@@ -2191,7 +2225,7 @@ class Task:
                 'Заявка успешно измненена.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '⛔️ Нет':
@@ -2200,7 +2234,7 @@ class Task:
                 'Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            Pause_main_handler = False
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
             mesdel(message.chat.id, message.message_id)
         else:
             bot.send_message(
@@ -2864,6 +2898,10 @@ class report:
             )
             bot.register_next_step_handler(message, report.reportall2)
 
+
+# =====================================  О Б Р А Б О Т К А   Л О К А Ц И Й  =====================================
+
+
 @bot.message_handler(content_types=['text', 'location'])
 
 # формирование гугл ссылки на карты по локации для адреса компании
@@ -3122,12 +3160,15 @@ def tnl2(message):
     bot.register_next_step_handler(message, Task.locations2)
 
 
+# =====================================  Р Е А К Ц И И   Н А   И Н Л А Й Н О В Ы Е   К Н О П К И  =====================================
+
+
 @bot.callback_query_handler(func=lambda call: True)
 
 # реакция на инлайновые кнопки
 def callback_handler(call):
-    global ActiveUser, sendedmessages, Pause_main_handler
-    Pause_main_handler = True
+    global ActiveUser, sendedmessages
+    ActiveUser[call.from_user.id]['Pause_main_handler'] = True
     if call.data.split()[0] == 'tasklist':# Подробности заявки
         status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
         if status[11] == 1 or status[11] == 5:
@@ -3178,10 +3219,8 @@ def callback_handler(call):
                 "Вы приняли заявку...",
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            # bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
             deletentm(call.data.split()[1])
-        Pause_main_handler = False
-        # bot.register_next_step_handler(call.message, MainMenu.Main2)
+        ActiveUser[call.from_user.id]['Pause_main_handler'] = False
     elif call.data.split()[0] == 'set':# Назначение мастера
         users = db.select_table('Users')
         bot.send_message(
@@ -3198,9 +3237,12 @@ def callback_handler(call):
             'Ошибка ввода.\nВыберите действие',
             reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
         )
-        Pause_main_handler = False
-        # bot.register_next_step_handler(call.message, MainMenu.Main2)
-        
+        ActiveUser[call.from_user.id]['Pause_main_handler'] = False
+
+
+# =====================================  Ц И К Л И Ч Е С К И Й   З А П У С К   Б О Т А  =====================================
+
+  
 # Запуск бота
 if __name__ == '__main__':
     sendtoall('‼️‼️‼️Сервер бота был перезагружен...‼️‼️‼️\nНажмите кнопку "/start"', buttons.Buttons(['/start']), 0, 0, True)
