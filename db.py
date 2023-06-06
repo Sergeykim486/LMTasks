@@ -1,6 +1,7 @@
-import sqlite3
-import threading
+import sqlite3, logging, threading, inspect
 from datetime import datetime
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
 
 class Database:
     def __init__(self, dbname):
@@ -21,29 +22,71 @@ class Database:
         return rows
 
     def create_table(self, table_name, columns):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция create_table была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         query = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(columns)})"
         self.execute_query(query)
 
     def delete_all_records(self, table_name):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция delete_all_records была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         query = f"DELETE FROM {table_name}"
         self.execute_query(query)
 
     def insert_record(self, table_name, values):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция insert_record была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         placeholders = ",".join(["?" for _ in values])
         query = f"INSERT INTO {table_name} VALUES ({placeholders})"
         self.execute_query(query, values)
 
     def update_record(self, table_name, set_column, set_value, where_column, where_value):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция update_record была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         query = f"UPDATE {table_name} SET {set_column} = ? WHERE {where_column} = ?"
         parameters = (set_value, where_value)
         self.execute_query(query, parameters)
 
     def delete_record(self, table_name, where_column, where_value):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция delete_record была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         query = f"DELETE FROM {table_name} WHERE {where_column} = ?"
         parameters = (where_value,)
         self.execute_query(query, parameters)
 
     def select_table(self, table_name, filter_column=None, filter_value=None):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция select_table была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         if filter_column is not None and filter_value is not None:
             query = f"SELECT * FROM {table_name} WHERE {filter_column} = ?"
             parameters = (filter_value,)
@@ -54,29 +97,64 @@ class Database:
         return rows
 
     def search_record(self, table_name, search_column, search_value):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция search_record была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         query = f"SELECT * FROM {table_name} WHERE {search_column} LIKE ?"
         parameters = (f"%{search_value}%",)
         rows = self.execute_query(query, parameters)
         return rows
 
     def update_records(self, table_name, set_columns, set_values, where_column, where_value):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция update_records была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         set_clause = ", ".join([f"{col} = ?" for col in set_columns])
         query = f"UPDATE {table_name} SET {set_clause} WHERE {where_column} = ?"
         parameters = [*set_values, where_value]
         self.execute_query(query, parameters)
 
     def get_last_record(self, table_name):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция get_last_record была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         query = f"SELECT * FROM {table_name} WHERE id = (SELECT MAX(id) FROM {table_name})"
         rows = self.execute_query(query)
         return rows[0] if rows else None
 
     def get_record_by_id(self, table_name, id_value):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция get_record_by_id была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         query = f"SELECT * FROM {table_name} WHERE id = ?"
         parameters = (id_value,)
         rows = self.execute_query(query, parameters)
         return rows[0] if rows else None
 
     def add_column_to_table(self, table_name, column_name, column_type):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция add_column_to_table была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         try:
             query = f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"
             self.execute_query(query)
@@ -88,6 +166,13 @@ class Database:
                 raise e
    
     def get_column_names(self, table_name):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция get_column_names была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         conn = sqlite3.connect(self.dbname, check_same_thread=False)
         cursor = conn.cursor()
         cursor.execute(f"PRAGMA table_info({table_name})")
@@ -97,6 +182,13 @@ class Database:
         return column_names
     
     def select_table_with_filters(self, table_name, filters={}, date_columns=None, from_dates=None, to_dates=None):
+        stack = inspect.stack()
+        # stack[1] содержит информацию о вызывающем коде
+        calling_frame = stack[1]
+        calling_filename = calling_frame.filename
+        calling_line_number = calling_frame.lineno
+        calling_function_name = calling_frame.function
+        logging.info("Функция select_table_with_filters была вызвана из файла '{}', в строке {} из функции '{}'".format(calling_filename, calling_line_number, calling_function_name))
         if not filters:
             return self.select_table(table_name)
 

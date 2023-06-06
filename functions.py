@@ -32,12 +32,11 @@ def listgen(table, cols, tasks = 0):
                     curline = curline + ' от ' + str(line[i]) + '\n'
 
                 elif i == 3:
-                    try:
-                        location = db.get_record_by_id('Locations', line[12])[2]
-                    except Exception as e:
-                        logging.error(e)
+                    loc = db.get_record_by_id('Locations', line[12])
+                    if loc == None:
                         location = ''
-                        pass
+                    else:
+                        location = loc[2]
                     cname = str(db.get_record_by_id('Contragents', line[i])[0]) + " " + str(db.get_record_by_id('Contragents', line[i])[1]) + "\n Локация - " + location + "\nДоговор: " + str(db.get_record_by_id('Contragents', line[i])[6])
                     curline = curline + str(cname) + '\n'
 
@@ -119,12 +118,11 @@ def curtask(id):
 
     if task[10] is not None:
         messtext = messtext + '\n❗️ ' + str(task[10])
-    try:
-        location = db.get_record_by_id('Locations', task[12])[2]
-    except Exception as e:
-        logging.error(e)
+    loc = db.get_record_by_id('Locations', task[12])
+    if loc == None:
         location = ''
-        pass
+    else:
+        location = loc[2]
     messtext = messtext + '\n\nПоступила от: ' + str(db.get_record_by_id('Contragents', task[3])[0]) + " " + str(db.get_record_by_id('Contragents', task[3])[1]) + " \nЛокация - " + location + "\nДоговор: " +str(db.get_record_by_id('Contragents', task[3])[6])
     messtext = messtext + '\n\nЗАПРОС:\n' + str(task[4])
     messtext = messtext + '\n\nКОНТАКТЫ ЗАКАЗЧИКА:\n' + str(db.get_record_by_id('Contragents', task[3])[3]) + ' - ' + str(db.get_record_by_id('Contragents', task[3])[4])
