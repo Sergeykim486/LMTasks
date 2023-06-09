@@ -1,13 +1,10 @@
-import os, config, telebot, functions, buttons, logging, time, pickle, asyncio, threading
-from db import Database
+import os, Classes.config as config, telebot, Classes.functions as functions, Classes.buttons as buttons, logging, time, pickle, asyncio, threading
+from Classes.db import Database
 from datetime import datetime
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # Объявляем глобальные переменные
-ActiveUser = {}
-# Путь к базе
-dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
-db = Database(dbname)
+from Classes.config import ActiveUser, sendedmessages, db, mainclass
 cols = [
     "id INTEGER PRIMARY KEY",
     "code INTEGER",
@@ -42,61 +39,65 @@ async def schedule_message():
             t = db.get_record_by_id('Tasks', task[0])
             if task[2] != t[11]:
                 for client in clients:
-                    if t[11] == 1:
-                        if db.get_record_by_id("Clients", client[0])[6] == "ru":
-                            mm = f"🔵 Ваша заявка № {task[0]} успешно зарегистрирована"
-                        elif db.get_record_by_id("Clients", client[0])[6] == "en":
-                            mm = f"🔵 Your request № {task[0]} has been successfully registered"
-                        elif db.get_record_by_id("Clients", client[0])[6] == "uz":
-                            mm = f"🔵 Sizning so'rovingiz № {task[0]} muvaffaqiyatli ro'yxatga olingan"
-                        bot.send_message(
-                            client[0],
-                            mm
-                        )
-                    elif t[11] == 2:
-                        master = db.get_record_by_id('Users', t[6])
-                        mas = str(master[2]) + ' ' + str(master[1])
-                        if db.get_record_by_id("Clients", client[0])[6] == "ru":
-                            mm = f"🟡 Вашу заявку № {task[0]} Принял мастер: {mas}\nКонтактный телефон: {str(master[3])}"
-                        elif db.get_record_by_id("Clients", client[0])[6] == "en":
-                            mm = f"🟡 Your request № {task[0]} has been accepted by the master: {mas}\nContact phone: {str(master[3])}"
-                        elif db.get_record_by_id("Clients", client[0])[6] == "uz":
-                            mm = f"🟡 {task[0]}-raqamli so'rovingiz qabul qilindi\n ustasi: {mas}\nAloqa raqami: {str(master[3])}"
-                        bot.send_message(
-                            client[0],
-                            mm
-                        )
-                    elif t[11] == 3:
-                        master = db.get_record_by_id('Users', t[6])
-                        mas = str(master[2]) + ' ' + str(master[1])
-                        if db.get_record_by_id("Clients", client[0])[6] == "ru":
-                            mm = f"🟢 Мастер {mas} завершил вашу заявку № {task[0]}."
-                        elif db.get_record_by_id("Clients", client[0])[6] == "en":
-                            mm = f"🟢 Master {mas} has completed your request № {task[0]}."
-                        elif db.get_record_by_id("Clients", client[0])[6] == "uz":
-                            mm = f"🟢 {mas} ustasi sizning {task[0]}-raqamli buyurtmangizni tugatdi."
-                        bot.send_message(
-                            client[0],
-                            mm
-                        )
-                    elif t[11] == 4:
-                        master = db.get_record_by_id('Users', t[6])
-                        if master is None:
-                            mas = '-'
-                        else:
+                    try:
+                        if t[11] == 1:
+                            if db.get_record_by_id("Clients", client[0])[6] == "ru":
+                                mm = f"🔵 Ваша заявка № {task[0]} успешно зарегистрирована"
+                            elif db.get_record_by_id("Clients", client[0])[6] == "en":
+                                mm = f"🔵 Your request № {task[0]} has been successfully registered"
+                            elif db.get_record_by_id("Clients", client[0])[6] == "uz":
+                                mm = f"🔵 Sizning so'rovingiz № {task[0]} muvaffaqiyatli ro'yxatga olingan"
+                            bot.send_message(
+                                client[0],
+                                mm
+                            )
+                        elif t[11] == 2:
+                            master = db.get_record_by_id('Users', t[6])
                             mas = str(master[2]) + ' ' + str(master[1])
-                        canceled = db.get_record_by_id('Users', t[9])[2] + ' ' + db.get_record_by_id('Users', t[9])[1]
-                        reson = t[10]
-                        if db.get_record_by_id("Clients", client[0])[6] == "ru":
-                            mm = f"🔴 Ваша заявка была отменена.\n№ {task[0]}\nМастер {mas}\nЗаявку отменил: {canceled}\nПричина:\n{reson}"
-                        elif db.get_record_by_id("Clients", client[0])[6] == "en":
-                            mm = f"🔴 Your request has been canceled.\n№ {task[0]}\nMaster: {mas}\nCanceled by: {canceled}\nReason:\n{reson}"
-                        elif db.get_record_by_id("Clients", client[0])[6] == "uz":
-                            mm = f"🔴 Sizning so'rovingiz bekor qilindi.\n№ {task[0]}\nUsta: {mas}\nBekor qilgan: {canceled}\nSabab:\n{reson}"
-                        bot.send_message(
-                            client[0],
-                            mm
-                        )
+                            if db.get_record_by_id("Clients", client[0])[6] == "ru":
+                                mm = f"🟡 Вашу заявку № {task[0]} Принял мастер: {mas}\nКонтактный телефон: {str(master[3])}"
+                            elif db.get_record_by_id("Clients", client[0])[6] == "en":
+                                mm = f"🟡 Your request № {task[0]} has been accepted by the master: {mas}\nContact phone: {str(master[3])}"
+                            elif db.get_record_by_id("Clients", client[0])[6] == "uz":
+                                mm = f"🟡 {task[0]}-raqamli so'rovingiz qabul qilindi\n ustasi: {mas}\nAloqa raqami: {str(master[3])}"
+                            bot.send_message(
+                                client[0],
+                                mm
+                            )
+                        elif t[11] == 3:
+                            master = db.get_record_by_id('Users', t[6])
+                            mas = str(master[2]) + ' ' + str(master[1])
+                            if db.get_record_by_id("Clients", client[0])[6] == "ru":
+                                mm = f"🟢 Мастер {mas} завершил вашу заявку № {task[0]}."
+                            elif db.get_record_by_id("Clients", client[0])[6] == "en":
+                                mm = f"🟢 Master {mas} has completed your request № {task[0]}."
+                            elif db.get_record_by_id("Clients", client[0])[6] == "uz":
+                                mm = f"🟢 {mas} ustasi sizning {task[0]}-raqamli buyurtmangizni tugatdi."
+                            bot.send_message(
+                                client[0],
+                                mm
+                            )
+                        elif t[11] == 4:
+                            master = db.get_record_by_id('Users', t[6])
+                            if master is None:
+                                mas = '-'
+                            else:
+                                mas = str(master[2]) + ' ' + str(master[1])
+                            canceled = db.get_record_by_id('Users', t[9])[2] + ' ' + db.get_record_by_id('Users', t[9])[1]
+                            reson = t[10]
+                            if db.get_record_by_id("Clients", client[0])[6] == "ru":
+                                mm = f"🔴 Ваша заявка была отменена.\n№ {task[0]}\nМастер {mas}\nЗаявку отменил: {canceled}\nПричина:\n{reson}"
+                            elif db.get_record_by_id("Clients", client[0])[6] == "en":
+                                mm = f"🔴 Your request has been canceled.\n№ {task[0]}\nMaster: {mas}\nCanceled by: {canceled}\nReason:\n{reson}"
+                            elif db.get_record_by_id("Clients", client[0])[6] == "uz":
+                                mm = f"🔴 Sizning so'rovingiz bekor qilindi.\n№ {task[0]}\nUsta: {mas}\nBekor qilgan: {canceled}\nSabab:\n{reson}"
+                            bot.send_message(
+                                client[0],
+                                mm
+                            )
+                    except Exception as e:
+                        logging.error(e)
+                        pass
                 db.update_records(
                     'ClTasks',
                     ['status'],
@@ -104,7 +105,7 @@ async def schedule_message():
                     'id',
                     t[0]
                 )
-        await asyncio.sleep(15)  # проверка каждую минуту
+        await asyncio.sleep(30)  # проверка каждую минуту
 async def main():
     await job()
 
@@ -237,7 +238,7 @@ class Main():
             )
             bot.register_next_step_handler(message, Main.confirmtask0)
         elif message.text == ActiveUser[message.chat.id]["dict"]["mytasks"]:
-            filt = {'contragent': db.get_record_by_id("Clients", message.chat.id)[1], 'status': [1, 2]}
+            filt = {'contragent': db.get_record_by_id("Clients", message.chat.id)[1], 'status': 2, 'status': 1, 'status': 4}
             print(filt)
             tasks = functions.listgen(db.select_table_with_filters('Tasks', filt), [0, 1, 3, 4, 6], 1)
             if len(tasks) != 0:
