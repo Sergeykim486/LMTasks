@@ -1,11 +1,12 @@
-from Classes.db import Database
-import os, folium, logging, re
+import os, folium, openpyxl, re, io, Classes.buttons as buttons
 from folium.plugins import MarkerCluster
 from jinja2 import Template
-import io
 from folium import IFrame
 from urllib.parse import quote
-from Classes.config import ActiveUser, bot, sendedmessages, db, mainclass
+from Classes.db import Database
+from datetime import datetime
+from openpyxl.styles import Alignment
+from Classes.config import bot, sendedmessages, db
 
 dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 db = Database(dbname)
@@ -164,8 +165,45 @@ def getuserlist():
         userlist.append(line[0])
     return userlist
 
-# Карта заявок
+# Добавление счетчика в частые
+def top10add(client, user):
+    Top = db.select_table_with_filters("Top10", {'uid': user})
+    finded = False
+    for i in Top:
+        if i[2] == client[0]:
+            quantity = db.get_record_by_id('Top10', i[0])[3] + 1
+            db.update_records(
+                'Top10',
+                ['val'],
+                [quantity],
+                "id",
+                i[0]
+            )
+            finded = True
+    if finded == False:
+        db.insert_record(
+            "Top10",
+            [
+                None,
+                user,
+                client[0],
+                1
+            ]
+        )
+def top10buttons(user):
+    data = db.select_table_with_filters('Top10', {'uid': user})
+    sorted_data = sorted(data, key=lambda x: x[3], reverse=True)
+    top_10 = sorted_data[:5] if len(sorted_data) >= 5 else sorted_data
+    buttonscont = []
+    buttonscont.append('🚫 Отмена')
+    for contr in top_10:
+        cont = db.get_record_by_id('Contragents', contr[2])
+        line = str(cont[0]) + ' ' + str(cont[1])
+        buttonscont.append(line)
+    return buttonscont
 
+
+# Карта заявок
 
 def mmapgen(locations):
     # Создание объекта карты
@@ -540,3 +578,107 @@ def search_items(keyword, data):
                     break
 
     return list(result)  # Преобразуем множество обратно в список
+
+# ======================================================================================================
+
+# отправка заявок по отчетам
+def sendrep(message, tasks):
+    tasksl = listgen(tasks, [0, 1, 3, 4, 6], 1)
+    for task in tasksl:
+        bot.send_message(
+            message.chat.id,
+            task,
+            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+task[0]]])
+        )
+    return
+# Отчет в экселе
+def sendrepfile(message, tasks):
+    processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+    rep = []
+    # шапка
+    rep.append(['№', 'ИНН', 'Контрагент', 'Заявка', 'Зарегистрирована', 'Менеджер', 'Выполнена', 'мастер'])
+
+    # Объединение ячеек в шапке
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
+    for task in tasks:
+        manager = str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
+        master = str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
+        contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) != None else '')
+        line1 = [task[0], task[3], contr, task[4], task[1], manager, task[7], master]
+        rep.append(line1)
+
+    for row in rep:
+        ws.append(row)
+
+    # Установка ширины ячеек
+    for column_cells in ws.columns:
+        max_length = 0
+        column = column_cells[0].column_letter
+        for cell in column_cells:
+            cell_value = str(cell.value)
+            if len(cell_value) > max_length:
+                max_length = len(cell_value)
+        adjusted_width = (max_length + 2) * 1.2
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Ширина столбцов C и D
+    ws.column_dimensions['C'].width = 41.22
+    ws.column_dimensions['D'].width = 41.22
+
+    # Включение переноса слов во всех ячейках
+    for row in ws.iter_rows():
+        for cell in row:
+            cell.alignment = Alignment(wrap_text=True)
+
+    # Выравнивание строк
+    for row in ws.iter_rows(min_row=2):
+        for cell in row:
+            cell.alignment = Alignment(vertical='center', horizontal='left')
+
+    # Выравнивание шапки
+    for cell in ws[1]:
+        cell.alignment = Alignment(vertical='center', horizontal='center')
+        cell.font = openpyxl.styles.Font(bold=True)
+
+    # Установка границ
+    thin_border = openpyxl.styles.Border(
+        left=openpyxl.styles.Side(style='thin'),
+        right=openpyxl.styles.Side(style='thin'),
+        top=openpyxl.styles.Side(style='thin'),
+        bottom=openpyxl.styles.Side(style='thin')
+    )
+    for row in ws.iter_rows():
+        for cell in row:
+            cell.border = thin_border
+
+    # Подсветка строк
+    for row in ws.iter_rows(min_row=2):
+        date1 = datetime.strptime(row[4].value, '%d.%m.%Y %H:%M')  # Значение в колонке E
+        date2 = datetime.strptime(row[6].value, '%d.%m.%Y %H:%M')  # Значение в колонке G
+        diff_hours = (date2 - date1).total_seconds() / 3600  # Разница в часах
+        if diff_hours < 24:
+            for cell in row:
+                cell.fill = openpyxl.styles.PatternFill(fgColor="C4FFC4", fill_type="solid")  # Светло зеленый
+        elif 24 <= diff_hours < 72:
+            for cell in row:
+                cell.fill = openpyxl.styles.PatternFill(fgColor="FFFFCC", fill_type="solid")  # Светло желтый
+        else:
+            for cell in row:
+                cell.fill = openpyxl.styles.PatternFill(fgColor="FFD3DB", fill_type="solid")  # Розовый
+
+    file_path = os.path.join(os.getcwd(), 'data.xlsx')
+    wb.save(file_path)
+    mesdel(message.chat.id, processing.message_id)
+    bot.send_document(message.chat.id, open(file_path, 'rb'))
+    os.remove(file_path)
+# Удаление сообщений о новой заявке
+def deletentm(taskid):
+    messages = db.select_table_with_filters('NewTasksMessages', {'taskid': taskid})
+    for mes in messages:
+        try:
+            mesdel(mes[2], mes[3])
+            db.delete_record('NewTasksMessages', 'id', mes[0])
+        except Exception as e:
+            pass

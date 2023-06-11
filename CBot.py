@@ -238,7 +238,7 @@ class Main():
             )
             bot.register_next_step_handler(message, Main.confirmtask0)
         elif message.text == ActiveUser[message.chat.id]["dict"]["mytasks"]:
-            filt = {'contragent': db.get_record_by_id("Clients", message.chat.id)[1], 'status': 2, 'status': 1, 'status': 4}
+            filt = {'contragent': db.get_record_by_id("Clients", message.chat.id)[1], 'status': 2, 'status': 1}
             print(filt)
             tasks = functions.listgen(db.select_table_with_filters('Tasks', filt), [0, 1, 3, 4, 6], 1)
             if len(tasks) != 0:
