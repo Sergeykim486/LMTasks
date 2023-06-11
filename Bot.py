@@ -650,8 +650,6 @@ class MainMenu:
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
-        f1 = ActiveUser[message.chat.id]['Pause_main_handler']
-        f2 = ActiveUser[message.chat.id]['Finishedop']
         if ActiveUser[message.chat.id]['Pause_main_handler'] == False or ActiveUser[message.chat.id]['Finishedop'] == True:
             if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
                 ActiveUser[message.chat.id]['Pause_main_handler'] = False
@@ -2593,7 +2591,8 @@ def callback_handler(call):
         elif status[11] == 2 or status[11] == 6:
             markdownt = buttons.Buttons(['✅ Выполнено', '🖊️ Дополнить', '🙅‍♂️ Отказаться от заявки', '📎 Переназначить', '🤵 Изменить контрагента', '✏️ Изменить текст заявки', '📍 Локация', '🚫 Отменить заявку', '↩️ Назад'], 3)
         else:
-            markdownt = buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '📋 Мои заявки', '✏️ Редактировать контрагента', '✏️ Изменить текст заявки', '📍 Локация', '📈 Отчеты', '📢 Написать всем'],3)
+            markdownt = buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            ActiveUser[call.from_user.id]['Finishedop'] = True
         ActiveUser[call.from_user.id]['sentmes'] = bot.send_message(
             call.from_user.id,
             functions.curtask(call.data.split()[1]),
@@ -2638,6 +2637,7 @@ def callback_handler(call):
             )
             deletentm(call.data.split()[1])
         ActiveUser[call.from_user.id]['Pause_main_handler'] = False
+        ActiveUser[call.from_user.id]['Finishedop'] = True
     elif call.data.split()[0] == 'set':# Назначение мастера
         users = db.select_table('Users')
         bot.send_message(
