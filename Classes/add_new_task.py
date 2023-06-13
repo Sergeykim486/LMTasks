@@ -9,9 +9,9 @@ class NewTask:
 
     # Поиск контрагента по ИНН
     def nt1(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['added'] = datetime.now().strftime("%d.%m.%Y %H:%M")
         ActiveUser[message.chat.id]['manager'] = message.chat.id
         ActiveUser[message.chat.id]['status'] = 1
@@ -23,6 +23,7 @@ class NewTask:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text.split()[0].isdigit():
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
             if message.text.split()[0].isdigit():
@@ -98,9 +99,9 @@ class NewTask:
 
     # Техника
     def tech1(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == '📝 Заявка':
             bot.send_message(
                 message.chat.id,
@@ -125,9 +126,9 @@ class NewTask:
             bot.register_next_step_handler(message, NewTask.tech1)
 
     def tech2(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['task'] = message.text
         bot.send_message(
             message.chat.id,
@@ -137,9 +138,9 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.tech3)
 
     def tech3(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['task'] = ActiveUser[message.chat.id]['task'] + '\n======================\n' + message.text
         bot.send_message(
             message.chat.id,
@@ -150,9 +151,9 @@ class NewTask:
 
     # Тип соглашения контрагента если не добавлен в реквизиты контрагента
     def type1(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Разовый':
             ActiveUser[message.chat.id]['ds'] = 1
             bot.send_message(
@@ -186,9 +187,9 @@ class NewTask:
             bot.register_next_step_handler(message, NewTask.type1)
 
     def type2(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['contract'] = message.text
         db.update_records(
             "Contragents",
@@ -205,9 +206,9 @@ class NewTask:
 
     # Обработка ошибки ввода ИНН
     def innerror(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Ввести снова':
             contragents = db.select_table('Contragents', ['id', 'cname'])
             bot.send_message(
@@ -215,7 +216,6 @@ class NewTask:
                 'Выберите клиента или введите его ИНН.',
                 reply_markup=buttons.Buttons(functions.listgen(contragents, [0, 1], 2))
             )
-            functions.mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, NewTask.nt1)
         elif message.text == '🏠 Главное меню':
             ActiveUser[message.chat.id].clear()
@@ -224,15 +224,15 @@ class NewTask:
                 'Добро пожаловать в систему. Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            functions.mesdel(message.chat.id, message.message_id)
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
 
     # Добавление нового контрагента
     def NeContr1(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == 'Разовый':
             ActiveUser[message.chat.id]['ds'] = 1
             ActiveUser[message.chat.id]['contract'] = '...'
@@ -268,9 +268,9 @@ class NewTask:
             bot.register_next_step_handler(message, NewTask.NeContr1)
 
     def NeContr2(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['contract'] = message.text
         bot.send_message(
             message.chat.id,
@@ -280,9 +280,9 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.NeContr3)
 
     def NeContr3(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['cname'] = message.text
         bot.send_message(
             message.chat.id,
@@ -297,9 +297,9 @@ class NewTask:
             bot.register_next_step_handler(message, NeContr4)
 
     def NeContr6(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['cphone'] = message.text
         ActiveUser[message.chat.id]['mess'] = 'Подтвердите информацию:\n\n'
         if ActiveUser[message.chat.id]['ds'] == 1:
@@ -324,10 +324,10 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.NeContr7)
 
     def NeContr7(message):
-        if message.text == '✅ Да':
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
             logging.info(f'{username} Отправил запрос - {message.text}')
-            global ActiveUser
+        if message.text == '✅ Да':
             contragent = [
                 ActiveUser[message.chat.id]['inn'],
                 ActiveUser[message.chat.id]['cname'],
@@ -353,6 +353,7 @@ class NewTask:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         else:
             bot.send_message(
                 message.chat.id,
@@ -363,9 +364,9 @@ class NewTask:
 
     # Выбор локации
     def ntlocation1(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         if ActiveUser[message.chat.id]['status'] == 1:
             ActiveUser[message.chat.id]['task'] = message.text
         else:
@@ -393,9 +394,9 @@ class NewTask:
 
     # Проверка нажатия на кнопки выбора локаций
     def ntlocation2(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         if message.text == '⏩ Пропустить':
             ActiveUser[message.chat.id]['location'] = None
             conf(message)
@@ -446,18 +447,18 @@ class NewTask:
 
     # Добавление новой заявки в базу данных
     def nt2(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         ActiveUser[message.chat.id]['location'] = 999
         ActiveUser[message.chat.id]['task'] = ActiveUser[message.chat.id]['task'] + '\n======================\n' + message.text
         conf(message)
         bot.register_next_step_handler(message, NewTask.nt3)
 
     def nt3(message):
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
-        global ActiveUser
+        if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+            username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+            logging.info(f'{username} Отправил запрос - {message.text}')
         processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
         if message.text == '✅ Да':
             task = [
@@ -495,19 +496,19 @@ class NewTask:
                 'Заявка успешно зарегистрирована.\nВыберрите операцию',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            functions.mesdel(message.chat.id, message.message_id)
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '⛔️ Нет':
             bot.send_message(
                 message.chat.id,
                 'Новая заявка удалена.\nВыберрите операцию',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
-            functions.mesdel(message.chat.id, message.message_id)
             functions.mesdel(message.chat.id, processing.message_id)
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         else:
             bot.send_message(
                 message.chat.id,
@@ -540,9 +541,9 @@ def conf(message):
 
 # Формирование гугл ссылки на карты по локации для адреса при добавлении нового контрагента
 def NeContr4(message):
-    username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
-    global ActiveUser
+    if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
     if message.content_type == 'location':
         lon, lat = message.location.longitude, message.location.latitude
         url = f'GOOGLE: https://www.google.com/maps/search/?api=1&query={lat},{lon}\nAPPLE: http://maps.apple.com/maps?ll={lat},{lon}'
@@ -557,9 +558,9 @@ def NeContr4(message):
     bot.register_next_step_handler(message, NeContr5)
 
 def NeContr5(message):
-    username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
-    global ActiveUser
+    if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
     if ActiveUser[message.chat.id]['ds'] == 3:
         if message.content_type == 'location':
             lon, lat = message.location.longitude, message.location.latitude
@@ -578,9 +579,9 @@ def NeContr5(message):
 
 # Добавление локации филиала в новой заявке
 def newlocationintask1(message):
-    username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
-    global ActiveUser
+    if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
     if message.content_type == 'location':
         ActiveUser[message.chat.id]['lon'], ActiveUser[message.chat.id]['lat'] = message.location.longitude, message.location.latitude
         bot.send_message(
@@ -598,9 +599,9 @@ def newlocationintask1(message):
         bot.register_next_step_handler(message, newlocationintask1)
 
 def newlocationintask2(message):
-    username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
-    global ActiveUser
+    if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'{username} Отправил запрос - {message.text}')
     ActiveUser[message.chat.id]['locationname'] = message.text
     db.insert_record(
         'Locations',

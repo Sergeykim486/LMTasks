@@ -16,7 +16,6 @@ class editcont():
         logging.info(f'{username} Отправил запрос - {message.text}')
         global ActiveUser
         if message.text == '🚫 Отмена':
-            functions.mesdel(message.chat.id, message.message_id)
             functions.mesdel(ActiveUser[message.chat.id]['sentmes'].chat.id, ActiveUser[message.chat.id]['sentmes'].message_id)
             bot.send_message(
                 message.chat.id,
@@ -25,6 +24,7 @@ class editcont():
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text.split()[0].isdigit():
             inn = message.text.split()[0]
             ActiveUser[message.chat.id]['inn'] = inn
@@ -47,6 +47,7 @@ class editcont():
                 )
                 ActiveUser[message.chat.id]['Pause_main_handler'] = False
                 ActiveUser[message.chat.id]['Finishedop'] = True
+                ActiveUser[message.chat.id]['block_main_menu'] = False
         else:
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
             contrs = db.select_table('Contragents')
@@ -75,7 +76,6 @@ class editcont():
                     'Введите ИНН клиента.\nИли вы можете поискать по названию',
                     reply_markup=buttons.Buttons(['🚫 Отмена'])
                 )
-            functions.mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, editcont.ec1)
 
     # Реакция на нажатие кнопок в меню редактирования
@@ -126,6 +126,7 @@ class editcont():
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '🚫 Отмена':
             bot.send_message(
                 message.chat.id,
@@ -139,13 +140,13 @@ class editcont():
                 pass
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '🏷️ ТИП':
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
                 f'Введите новое значение ({message.text})',
                 reply_markup=buttons.Buttons(['Разовый', 'Долгосрочный', 'Физ. лицо'])
             )
-            functions.mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, editcont.TYPE)
         elif message.text == '🛣️ АДРЕС':
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
@@ -153,7 +154,6 @@ class editcont():
                 'Введите новый адрес или отправьте локацию.',
                 reply_markup=buttons.clearbuttons()
             )
-            functions.mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, CADR1)
         elif message.text == '📍 ЛОКАЦИИ':
             # ИЗМЕНЕНИЕ ЛОКАЦИЙ КОНТРАГЕНТА
@@ -188,19 +188,14 @@ class editcont():
                 reply_markup=buttons.clearbuttons()
             )
             if message.text == '🆔 ИНН':
-                functions.mesdel(message.chat.id, message.message_id)
                 bot.register_next_step_handler(message, editcont.INN)
             elif message.text == '🏢 НАИМЕНОВАНИЕ':
-                functions.mesdel(message.chat.id, message.message_id)
                 bot.register_next_step_handler(message, editcont.CNAME)
             elif message.text == '🙋‍♂️ КОНТАКТНОЕ ЛИЦО':
-                functions.mesdel(message.chat.id, message.message_id)
                 bot.register_next_step_handler(message, editcont.CPERSON)
             elif message.text == '📞 ТЕЛЕФОН':
-                functions.mesdel(message.chat.id, message.message_id)
                 bot.register_next_step_handler(message, editcont.CPHONE)
             elif message.text == '📄 ДОГОВОР':
-                functions.mesdel(message.chat.id, message.message_id)
                 bot.register_next_step_handler(message, editcont.CCONTRACT)
 
     # ИНН

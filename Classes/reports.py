@@ -170,9 +170,9 @@ class report:
                     'Выберите операцию.',
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
-        functions.mesdel(message.chat.id, message.message_id)
         ActiveUser[message.chat.id]['Pause_main_handler'] = False
         ActiveUser[message.chat.id]['Finishedop'] = True
+        ActiveUser[message.chat.id]['block_main_menu'] = False
 
     # Реакия на нажатие кнопок меню отчетов
     def reportall(message):
@@ -232,9 +232,9 @@ class report:
                     'Выберите действие',
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
-            functions.mesdel(message.chat.id, message.message_id)
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '🖨️ Техника у мастеров':
             logging.info('план отправлен.')
             users = db.select_table('Users')
@@ -281,16 +281,15 @@ class report:
                     'Выберите действие',
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
-            functions.mesdel(message.chat.id, message.message_id)
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '📊 Итоги дня':
             bot.send_message(
                 message.chat.id,
                 'Какой день вы хотите увидеть?',
                 reply_markup = buttons.Buttons(['🌞 Сегодня', '🗓️ Другой день'])
             )
-            functions.mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, report.reportall1)
         elif message.text == '📆 За период':
             bot.send_message(
@@ -307,6 +306,7 @@ class report:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         else:
             bot.send_message(
                 message.chat.id,
@@ -382,6 +382,7 @@ class report:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == 'по мастерам':
             users = db.select_table('Users')
             btn = []
@@ -420,6 +421,7 @@ class report:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         else:
             users = db.select_table('Users')
             btn = []
@@ -445,6 +447,7 @@ class report:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text.split()[0].isdigit():
             inn = int(message.text.split()[0])
             client = db.get_record_by_id('Contragents', inn)
@@ -460,6 +463,7 @@ class report:
                 )
                 ActiveUser[message.chat.id]['Pause_main_handler'] = False
                 ActiveUser[message.chat.id]['Finishedop'] = True
+                ActiveUser[message.chat.id]['block_main_menu'] = False
             else:
                 bot.send_message(
                     message.chat.id,
@@ -508,7 +512,6 @@ class report:
                 'Укажите дату в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
                 reply_markup = buttons.clearbuttons()
             )
-            functions.mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, report.reportallq)
         else:
             bot.send_message(
@@ -561,6 +564,7 @@ class report:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == 'Все':
             bot.send_message(
                 message.chat.id,
@@ -577,6 +581,7 @@ class report:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == 'Только мои':
             bot.send_message(
                 message.chat.id,
@@ -593,6 +598,7 @@ class report:
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == 'У мастера':
             users = db.select_table('Users')
             masters = []
