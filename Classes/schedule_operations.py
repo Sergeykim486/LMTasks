@@ -6,12 +6,13 @@ from Classes.reports import report
 from Classes.config import ActiveUser, bot, db
 # логи
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
+sended = 0
 
 # Проверка расписания
 async def job():
     await schedule_message()
 async def schedule_message():
+    global sended
     while True:
         try:
             Tasks = db.select_table_with_filters('Tasks', {'status': 0})
@@ -51,8 +52,12 @@ async def schedule_message():
         now = datetime.now()
         # if now.hour == 8 and now.minute == 0:
         #     await daylyreport.morning()
-        if now.hour == 20 and now.minute == 0:
-            await daylyreport.evening()
+        if now.hour == 20 and now.minute == 00:
+            if sended == 0:
+                sended = 1
+                await daylyreport.evening()
+        else:
+            sended = 0
         daterep = str(datetime.now().strftime("%d.%m.%Y"))
         locations = []
         addedlocs = db.select_table_with_filters('Tasks', {'status': 1})
@@ -173,29 +178,29 @@ class daylyreport:
         confirmedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 2}), [0, 1, 3, 4, 6], 1)
         addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
         canceledtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}, ['canceled'], [daten+' 00:00'], [daten+' 23:59']), [0, 1, 3, 4, 6], 1)
-        if len(confirmedtasks) != 0 and len(addedtasks) != 0:
-            functions.sendtoall('ИТОГИ ДНЯ:\nНа завтра остаются следующие заявки:', '', 0)
-        if len(donetasks) != 0:
-            functions.sendtoall('Выполненные заявки\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
-            for line in donetasks:
-                taskid = line.split()[2]
-                functions.sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-        if len(confirmedtasks) != 0:
-            functions.sendtoall('Заявки у мастеров\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
-            for line in confirmedtasks:
-                taskid = line.split()[2]
-                functions.sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-        if len(addedtasks) != 0:
-            functions.sendtoall('Не принятые заявки\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
-            for line in addedtasks:
-                taskid = line.split()[2]
-                functions.sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-        if len(canceledtasks) != 0:
-            functions.sendtoall('Отмененные\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
-            for line in canceledtasks:
-                taskid = line.split()[2]
-                functions.sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
-        reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
+        # if len(confirmedtasks) != 0 and len(addedtasks) != 0:
+        #     functions.sendtoall('ИТОГИ ДНЯ:\nНа завтра остаются следующие заявки:', '', 0)
+        # if len(donetasks) != 0:
+        #     functions.sendtoall('Выполненные заявки\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
+        #     for line in donetasks:
+        #         taskid = line.split()[2]
+        #         functions.sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        # if len(confirmedtasks) != 0:
+        #     functions.sendtoall('Заявки у мастеров\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
+        #     for line in confirmedtasks:
+        #         taskid = line.split()[2]
+        #         functions.sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        # if len(addedtasks) != 0:
+        #     functions.sendtoall('Не принятые заявки\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
+        #     for line in addedtasks:
+        #         taskid = line.split()[2]
+        #         functions.sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        # if len(canceledtasks) != 0:
+        #     functions.sendtoall('Отмененные\n🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻🔻', '', 0)
+        #     for line in canceledtasks:
+        #         taskid = line.split()[2]
+        #         functions.sendtoall(line, buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]]), 0)
+        reports = '\n🟢 Выполнено - ' + str(len(donetasks)) + '\n🔵 Не распределенных - ' + str(len(addedtasks)) + '\n🟡 В работе у мастеров - ' + str(len(confirmedtasks)) + '\n🔴 Отменено - ' + str(len(canceledtasks))
         if len(donetasks) == 0:
             reports = reports + '\n\nВыполненных заявок нет.'
         else:
@@ -206,8 +211,14 @@ class daylyreport:
                 tasks = len(db.select_table_with_filters('Tasks', {'master': i[0], 'status': 3}, ['done'], [daten+' 00:00'], [daten+' 23:59']))
                 usersrep.append([i[2] + ' ' + i[1], tasks])
             sorted_usersrep = sorted(usersrep, key=lambda x: x[1], reverse=True)
+            place = 1
             for j in sorted_usersrep:
                 if j[1] != 0:
-                    reports = reports + '\n' + j[0] + ' - ' + str(j[1])
-        functions.sendtoall('ИТОГИ ДНЯ\n🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺🔺' + reports, '', 0)
+                    reports = reports + '\n'+ placenum(str(place)) + '. ' + j[0] + ' - ' + str(j[1])
+                    place = place + 1
+        functions.sendtoall('🔲🔳🔲🔳🔲🔳🔲🔳🔲🔳🔲🔳🔲\n\nИТОГИ ДНЯ\n' + reports + '\n\n🔲🔳🔲🔳🔲🔳🔲🔳🔲🔳🔲🔳🔲', '', 0)
 
+def placenum(place):
+    digits = {'0': '0️⃣', '1': '1️⃣', '2': '2️⃣', '3': '3️⃣', '4': '4️⃣', '5': '5️⃣', '6': '6️⃣', '7': '7️⃣', '8': '8️⃣', '9': '9️⃣'}
+    result = ''.join(digits.get(c, c) for c in place)
+    return result

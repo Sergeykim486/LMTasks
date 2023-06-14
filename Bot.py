@@ -113,7 +113,7 @@ def handle_start(message):
         pass
     ActiveUser[user_id] = {'id': user_id}
     ActiveUser[user_id]['Pause_main_handler'] = False
-    ActiveUser[user_id]['Finishedop'] = False
+    ActiveUser[user_id]['Finishedop'] = True
     ActiveUser[user_id]['block_main_menu'] = False
     ActiveUser[user_id]['block_nt1'] = False
     user = db.get_record_by_id('Users', user_id)
@@ -152,8 +152,8 @@ def check_user_id(message):
     except Exception as e:
         logging.error(e)
         pass
-    ActiveUser[user_id]['Finishedop'] = True
     ActiveUser[user_id]['Pause_main_handler'] = False
+    ActiveUser[user_id]['Finishedop'] = True
     ActiveUser[user_id]['block_main_menu'] = False
     ActiveUser[user_id]['block_nt1'] = False
     user = db.get_record_by_id('Users', user_id)
@@ -329,10 +329,11 @@ def callback_handler(call):
 # =====================================  Ц И К Л И Ч Е С К И Й   З А П У С К   Б О Т А  =====================================
 
 if __name__ == '__main__':
-    # functions.sendtoall('‼️‼️‼️Сервер бота был перезагружен...‼️‼️‼️\nНажмите кнопку "/start"', buttons.Buttons(['/start']), 0, 0, True)
     users = db.select_table('Users')
     for user in users:
-        ActiveUser[user[0]]= {'id': user[0]}
+        ActiveUser[user[0]] = {'id': user[0]}
+        ActiveUser[user[0]]['Pause_main_handler'] = False
+        ActiveUser[user[0]]['Finishedop'] = True
         ActiveUser[user[0]]['block_main_menu'] = False
         ActiveUser[user[0]]['block_nt1'] = False
     thread = threading.Thread(target=asyncio.run, args=(schedule.main(),))
