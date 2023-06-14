@@ -54,10 +54,10 @@ def listgen(table, cols, tasks = 0):
             if tasks == 1:
 
                 if i == 0:
-                    curline = curline + '№ ' + str(line[i]) + '\n'
+                    curline = curline + '№ ' + (str(line[i]) if line[i] is not None else '-') + '\n'
 
                 elif i == 1:
-                    curline = curline + ' от ' + str(line[i]) + '\n'
+                    curline = curline + ' от ' + (str(line[i]) if line[i] is not None else '') + '\n'
 
                 elif i == 3:
                     loc = db.get_record_by_id('Locations', line[12])

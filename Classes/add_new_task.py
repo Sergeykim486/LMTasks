@@ -4,11 +4,13 @@ import Classes.buttons as buttons
 from datetime import datetime
 from Classes.config import ActiveUser, bot, sendedmessages, db, mainclass
 
+
 # Новая заявка
 class NewTask:
 
     # Поиск контрагента по ИНН
     def nt1(message):
+        ActiveUser[message.chat.id]['block_nt1'] = True
         if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
             logging.info(f'{username} Отправил запрос - {message.text}')
@@ -24,6 +26,7 @@ class NewTask:
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
+            ActiveUser[message.chat.id]['block_nt1'] = False
         elif message.text.split()[0].isdigit():
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
             if message.text.split()[0].isdigit():
@@ -39,6 +42,7 @@ class NewTask:
                     'Контрагент с указанным Вами ИНН не найден. \nБудет добавлен новый.\nВыберите тип клиента',
                     reply_markup=buttons.Buttons(['Разовый', 'Долгосрочный', 'Физ. лицо'])
                 )
+                ActiveUser[message.chat.id]['block_nt1'] = False
                 bot.register_next_step_handler(message, NewTask.NeContr1)
             else:
                 functions.mesdel(message.chat.id, processing.message_id)
@@ -50,6 +54,7 @@ class NewTask:
                         reply_markup=buttons.Buttons(['📝 Заявка','🖨️ Техника'])
                     )
                     functions.top10add(client, message.chat.id)
+                    ActiveUser[message.chat.id]['block_nt1'] = False
                     bot.register_next_step_handler(message, NewTask.tech1)
                 else:
                     bot.send_message(
@@ -58,6 +63,7 @@ class NewTask:
                         reply_markup=buttons.Buttons(['Разовый', 'Долгосрочный', 'Физ. лицо'])
                     )
                     functions.top10add(client, message.chat.id)
+                    ActiveUser[message.chat.id]['block_nt1'] = False
                     bot.register_next_step_handler(message, NewTask.type1)
         else:
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
@@ -95,6 +101,7 @@ class NewTask:
                         '⚠️ ВНИМЕНИЕ!\nКонтрагент не найден.\nПопробуйте перефразировать.',
                         reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
                     )
+            ActiveUser[message.chat.id]['block_nt1'] = False
             bot.register_next_step_handler(message, NewTask.nt1)
 
     # Техника
