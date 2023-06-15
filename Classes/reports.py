@@ -2,6 +2,8 @@ import logging, Classes.functions as functions, Classes.buttons as buttons
 from datetime import datetime
 from Classes.config import ActiveUser, bot, sendedmessages, db, mainclass
 
+num = 0
+
 # отчеты
 class report:
     
@@ -176,10 +178,14 @@ class report:
 
     # Реакия на нажатие кнопок меню отчетов
     def reportall(message):
+        global num
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос - {message.text}')
+        if num == 0:
+            num = 1
+        print(num)
         if message.text == '📋 Заявки у мастеров':
-            logging.info('план отправлен.')
+            num = 0
             users = db.select_table('Users')
             res = ''
             bot.send_message(
@@ -236,7 +242,7 @@ class report:
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '🖨️ Техника у мастеров':
-            logging.info('план отправлен.')
+            num = 0
             users = db.select_table('Users')
             res = ''
             bot.send_message(
@@ -285,6 +291,7 @@ class report:
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '📊 Итоги дня':
+            num = 0
             bot.send_message(
                 message.chat.id,
                 'Какой день вы хотите увидеть?',
@@ -292,6 +299,7 @@ class report:
             )
             bot.register_next_step_handler(message, report.reportall1)
         elif message.text == '📆 За период':
+            num = 0
             bot.send_message(
                 message.chat.id,
                 'Укажите начало периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
@@ -299,6 +307,7 @@ class report:
             )
             bot.register_next_step_handler(message, report.period1)
         elif message.text == '🚫 Отмена':
+            num = 0
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -308,12 +317,16 @@ class report:
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
         else:
-            bot.send_message(
-                message.chat.id,
-                'Выберите какой отчет Вам нужен\nПоказать все не выполненные заявки, или показать итоги дня.',
-                reply_markup=buttons.Buttons(['📋 Заявки у мастеров', '🖨️ Техника у мастеров', '📊 Итоги дня', '📆 За период', '🚫 Отмена'])
-            )
-            bot.register_next_step_handler(message, report.reportall)
+            if num == 1:
+                num = num + 1
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите какой отчет Вам нужен\nПоказать все не выполненные заявки, или показать итоги дня.',
+                    reply_markup=buttons.Buttons(['📋 Заявки у мастеров', '🖨️ Техника у мастеров', '📊 Итоги дня', '📆 За период', '🚫 Отмена'])
+                )
+                bot.register_next_step_handler(message, report.reportall)
+            else:
+                bot.register_next_step_handler(message, report.reportall)
 
     # period
     def period1(message):# с

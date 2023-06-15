@@ -3,13 +3,16 @@ import Classes.functions as functions
 import Classes.buttons as buttons
 from datetime import datetime
 from Classes.config import ActiveUser, bot, sendedmessages, db, mainclass
-
+num = 0
 
 # Новая заявка
 class NewTask:
 
     # Поиск контрагента по ИНН
     def nt1(message):
+        global num
+        if num == 0:
+            num = 1
         ActiveUser[message.chat.id]['block_nt1'] = True
         if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -18,6 +21,7 @@ class NewTask:
         ActiveUser[message.chat.id]['manager'] = message.chat.id
         ActiveUser[message.chat.id]['status'] = 1
         if message.text == '🚫 Отмена':
+            num = 0
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -66,43 +70,47 @@ class NewTask:
                     ActiveUser[message.chat.id]['block_nt1'] = False
                     bot.register_next_step_handler(message, NewTask.type1)
         else:
-            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
-            contrs = db.select_table('Contragents')
-            res = functions.search_items(message.text, contrs)
-            contbuttons = []
-            contbuttons.append('🚫 Отмена')
-            if len(res) > 0:
-                for i in res:
-                    line = str(i[0]) + ' ' + str(i[1])
-                    if len(contbuttons) < 20:
-                        contbuttons.append(line)
-                functions.mesdel(message.chat.id, processing.message_id)
-                try:
-                    bot.send_message(
-                        message.chat.id,
-                        'Если нужный клиент не вышел в списке, попробуйте перефразировать и ввести снова.\nВыберите контрагента из списка, или введите его ИНН, ПИНФЛ, серию пасспорта или повторите поиск.',
-                        reply_markup=buttons.Buttons(contbuttons, 1)
-                    )
-                except Exception as e:
-                    logging.error(e)
-                    pass
-            else:
-                functions.mesdel(message.chat.id, processing.message_id)
-                print(message.text)
-                if message.text == '📝 Новая заявка' or message.text == None:
-                    bot.send_message(
-                        message.chat.id,
-                        'Введите ИНН, ПИНФЛ или серию пвсспоррта клиента.\nТак же Вы можете попытаться поискать контрагента по наименованию или его части\nНапримар:\nmonohrom\nВыдаст все компании из базы бота у которых в названии есть monohrom',
-                        reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
-                    )
+            if num == 1:
+                num = num + 1
+                processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+                contrs = db.select_table('Contragents')
+                res = functions.search_items(message.text, contrs)
+                contbuttons = []
+                contbuttons.append('🚫 Отмена')
+                if len(res) > 0:
+                    for i in res:
+                        line = str(i[0]) + ' ' + str(i[1])
+                        if len(contbuttons) < 20:
+                            contbuttons.append(line)
+                    functions.mesdel(message.chat.id, processing.message_id)
+                    try:
+                        bot.send_message(
+                            message.chat.id,
+                            'Если нужный клиент не вышел в списке, попробуйте перефразировать и ввести снова.\nВыберите контрагента из списка, или введите его ИНН, ПИНФЛ, серию пасспорта или повторите поиск.',
+                            reply_markup=buttons.Buttons(contbuttons, 1)
+                        )
+                    except Exception as e:
+                        logging.error(e)
+                        pass
                 else:
-                    bot.send_message(
-                        message.chat.id,
-                        '⚠️ ВНИМЕНИЕ!\nКонтрагент не найден.\nПопробуйте перефразировать.',
-                        reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
-                    )
-            ActiveUser[message.chat.id]['block_nt1'] = False
-            bot.register_next_step_handler(message, NewTask.nt1)
+                    functions.mesdel(message.chat.id, processing.message_id)
+                    print(message.text)
+                    if message.text == '📝 Новая заявка' or message.text == None:
+                        bot.send_message(
+                            message.chat.id,
+                            'Введите ИНН, ПИНФЛ или серию пвсспоррта клиента.\nТак же Вы можете попытаться поискать контрагента по наименованию или его части\nНапримар:\nmonohrom\nВыдаст все компании из базы бота у которых в названии есть monohrom',
+                            reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
+                        )
+                    else:
+                        bot.send_message(
+                            message.chat.id,
+                            '⚠️ ВНИМЕНИЕ!\nКонтрагент не найден.\nПопробуйте перефразировать.',
+                            reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
+                        )
+                ActiveUser[message.chat.id]['block_nt1'] = False
+                bot.register_next_step_handler(message, NewTask.nt1)
+            else:
+                bot.register_next_step_handler(message, NewTask.nt1)
 
     # Техника
     def tech1(message):
@@ -213,6 +221,7 @@ class NewTask:
 
     # Обработка ошибки ввода ИНН
     def innerror(message):
+        global num
         if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
             logging.info(f'{username} Отправил запрос - {message.text}')
@@ -225,6 +234,7 @@ class NewTask:
             )
             bot.register_next_step_handler(message, NewTask.nt1)
         elif message.text == '🏠 Главное меню':
+            num = 0
             ActiveUser[message.chat.id].clear()
             bot.send_message(
                 message.chat.id,
@@ -331,6 +341,7 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.NeContr7)
 
     def NeContr7(message):
+        global num
         if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
             logging.info(f'{username} Отправил запрос - {message.text}')
@@ -353,6 +364,7 @@ class NewTask:
                 )
                 bot.register_next_step_handler(message, NewTask.tech1)
         elif message.text == '⛔️ Нет':
+            num = 0
             bot.send_message(
                 message.chat.id,
                 'Контрагент не добавлен.\nВыберите операцию.',
@@ -463,6 +475,7 @@ class NewTask:
         bot.register_next_step_handler(message, NewTask.nt3)
 
     def nt3(message):
+        global num
         if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
             logging.info(f'{username} Отправил запрос - {message.text}')
@@ -503,6 +516,7 @@ class NewTask:
                 'Заявка успешно зарегистрирована.\nВыберрите операцию',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
+            num = 0
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
@@ -513,6 +527,7 @@ class NewTask:
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
             functions.mesdel(message.chat.id, processing.message_id)
+            num = 0
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False

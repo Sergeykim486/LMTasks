@@ -9,6 +9,8 @@ from Classes.config import ActiveUser, bot, sendedmessages, db
 # логи
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
+# Вспомогательная функция для обработки нажатий кнопок
+
 def MenuReactions(message):
 
     if ActiveUser[message.chat.id]['Pause_main_handler'] == False or ActiveUser[message.chat.id]['Finishedop'] == True:
@@ -21,17 +23,21 @@ def MenuReactions(message):
             ActiveUser[message.chat.id]['Finishedop'] = False
             if ActiveUser[message.chat.id]['block_nt1'] == False:
                 ActiveUser[message.chat.id]['block_nt1'] = True
+                ActiveUser[message.chat.id]['block_main_menu'] = True
                 NewTask.nt1(message)
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '🔃 Обновить список заявок':
+            ActiveUser[message.chat.id]['block_main_menu'] = True
             daterep = str(datetime.now().strftime("%d.%m.%Y"))
             report.rep(message, daterep, 0, 1, 1, 0, 0)
             ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '🖨️ Обновить список техники':
+            ActiveUser[message.chat.id]['block_main_menu'] = True
             daterep = str(datetime.now().strftime("%d.%m.%Y"))
             report.rep(message, daterep, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1)
             ActiveUser[message.chat.id]['block_main_menu'] = False
         elif message.text == '📋 Мои заявки':
+            ActiveUser[message.chat.id]['block_main_menu'] = True
             daterep = str(datetime.now().strftime("%d.%m.%Y"))
             report.rep(message, daterep, 0, 1, 0, 1, 0, message.chat.id, 1)
             ActiveUser[message.chat.id]['block_main_menu'] = False
@@ -45,14 +51,17 @@ def MenuReactions(message):
         elif message.text == '📈 Отчеты':
             ActiveUser[message.chat.id]['Pause_main_handler'] = True
             ActiveUser[message.chat.id]['Finishedop'] = False
+            ActiveUser[message.chat.id]['block_main_menu'] = True
             report.reportall(message)
             bot.register_next_step_handler(message, MainMenu.Main2)
         elif message.text == '✏️ Редактировать контрагента':
             ActiveUser[message.chat.id]['Pause_main_handler'] = True
             ActiveUser[message.chat.id]['Finishedop'] = False
+            ActiveUser[message.chat.id]['block_main_menu'] = True
             bot.register_next_step_handler(message, MainMenu.Main2)
             editcont.ec1(message)
         elif message.text == '🗺️ Карта':
+            ActiveUser[message.chat.id]['block_main_menu'] = True
             markup = telebot.types.InlineKeyboardMarkup()
             button = telebot.types.InlineKeyboardButton(text='Открыть карту', url='http://81.200.149.148/map.html')
             markup.add(button)
@@ -111,11 +120,6 @@ def handle_start(message):
     except Exception as e:
         logging.error(e)
         pass
-    ActiveUser[user_id] = {'id': user_id}
-    ActiveUser[user_id]['Pause_main_handler'] = False
-    ActiveUser[user_id]['Finishedop'] = True
-    ActiveUser[user_id]['block_main_menu'] = False
-    ActiveUser[user_id]['block_nt1'] = False
     user = db.get_record_by_id('Users', user_id)
     if user is None:
         bot.send_message(
@@ -152,10 +156,6 @@ def check_user_id(message):
     except Exception as e:
         logging.error(e)
         pass
-    ActiveUser[user_id]['Pause_main_handler'] = False
-    ActiveUser[user_id]['Finishedop'] = True
-    ActiveUser[user_id]['block_main_menu'] = False
-    ActiveUser[user_id]['block_nt1'] = False
     user = db.get_record_by_id('Users', user_id)
     if user is None:
         bot.send_message(
@@ -329,13 +329,6 @@ def callback_handler(call):
 # =====================================  Ц И К Л И Ч Е С К И Й   З А П У С К   Б О Т А  =====================================
 
 if __name__ == '__main__':
-    users = db.select_table('Users')
-    for user in users:
-        ActiveUser[user[0]] = {'id': user[0]}
-        ActiveUser[user[0]]['Pause_main_handler'] = False
-        ActiveUser[user[0]]['Finishedop'] = True
-        ActiveUser[user[0]]['block_main_menu'] = False
-        ActiveUser[user[0]]['block_nt1'] = False
     thread = threading.Thread(target=asyncio.run, args=(schedule.main(),))
     thread.start()
 

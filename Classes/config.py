@@ -25,7 +25,13 @@ mainclass = None
 dbname = os.path.dirname(os.path.abspath(__file__)) + '/Database/' + 'lmtasksbase.db'
 db = Database(dbname)
 bot = telebot.TeleBot(TOKEN)
-
+users = db.select_table('Users')
+for user in users:
+    ActiveUser[user[0]] = {'id': user[0]}
+    ActiveUser[user[0]]['Pause_main_handler'] = False
+    ActiveUser[user[0]]['Finishedop'] = True
+    ActiveUser[user[0]]['block_main_menu'] = False
+    ActiveUser[user[0]]['block_nt1'] = False
 
 # РУСКИЙ ЯЗЫК КНОПКИ И СООБЩЕНИЯ
 ru = {
