@@ -30,11 +30,11 @@ async def schedule_message():
                             )
                             db.insert_record('NewTasksMessages', [None, tid, uid, mid.message_id])
                         except Exception as e:
-                            # logging.error(e)
+                            # logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
                             pass
                     db.update_records('Tasks', ['status'], [1], 'id', line[0])
         except Exception as e:
-            # logging.error(e)
+            # logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
             pass
         try:
             revs = db.select_table_with_filters('rev', {'status': 0})
@@ -47,7 +47,7 @@ async def schedule_message():
                     mes = mes + '\n\nот ' + str(line[1])
                     functions.sendtoall(mes, '', 0)
         except Exception as e:
-            # logging.error(e)
+            # logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
             pass
         now = datetime.now()
         # if now.hour == 8 and now.minute == 0:

@@ -116,9 +116,9 @@ def handle_start(message):
     user_id = message.from_user.id
     try:
         username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     except Exception as e:
-        logging.error(e)
+        logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
         pass
     user = db.get_record_by_id('Users', user_id)
     if user is None:
@@ -152,9 +152,9 @@ def check_user_id(message):
     user_id = message.from_user.id
     try:
         username = db.get_record_by_id('Users', user_id)[2] + ' ' + db.get_record_by_id('Users', user_id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     except Exception as e:
-        logging.error(e)
+        logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
         pass
     user = db.get_record_by_id('Users', user_id)
     if user is None:
@@ -171,7 +171,7 @@ def check_user_id(message):
 class MainMenu:
     def Main1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if message.text == '🏠 Главное меню' or message.text == 'Вернуться':
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
@@ -184,7 +184,7 @@ class MainMenu:
         try:
             if ActiveUser[message.chat.id]['Pause_main_handler'] == False:
                 username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-                logging.info(f'{username} Отправил запрос - {message.text}')
+                logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         except Exception as e:
             pass
         if ActiveUser[message.chat.id]['block_main_menu'] == False:
@@ -194,7 +194,7 @@ class MainMenu:
 # фильтр для запроса в базу
 def filters(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     messagetouser = 'По каким параметрам формировать список\n'
     if ActiveUser[message.chat.id]['filter']['from'] == '01.01.2000 00:00':
         messagetouser = messagetouser + '📅 Будут показаны все заявки за весь период.\n'
@@ -218,9 +218,8 @@ class allchats:
     # пересылка пользовательского сообщения всем
     def chat1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос в отправке всем пользователям - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if message.text == '🏠 Главное меню' or message.text == '/start':
-            logging.info('main')
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -230,17 +229,21 @@ class allchats:
             functions.mesdel(message.chat.id, message.message_id)
             bot.register_next_step_handler(message, MainMenu.Main2)
         else:
-            logging.info('message to all')
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
             users = db.select_table('Users')
             for user in users:
                 try:
-                    # logging.info(f'sended message to user {user[2]} {user[1]}')
+                    # logging.info(f'\nℹ️ sended message to user {user[2]} {user[1]}')
                     if user[0] != message.chat.id:
                         bot.forward_message(user[0], message.chat.id, message.message_id)
                 except Exception as e:
                     pass
             functions.mesdel(message.chat.id, processing.message_id)
+            bot.send_message(
+                message.chat.id,
+                'Напишите Ваше сообщение и оно будет разослано всем.\nчтобы вернуться в главное меню нажмите [Главное меню]',
+                reply_markup=buttons.Buttons(['🏠 Главное меню'])
+            )
             bot.register_next_step_handler(message, allchats.chat1)
 
 # =====================================  Р Е А К Ц И И   Н А   И Н Л А Й Н О В Ы Е   К Н О П К И  =====================================
@@ -248,6 +251,12 @@ class allchats:
 @bot.callback_query_handler(func=lambda call: True)
 # реакция на инлайновые кнопки
 def callback_handler(call):
+    try:
+        username = db.get_record_by_id('Users', call.message.chat.id)[2] + ' ' + db.get_record_by_id('Users', call.message.chat.id)[1]
+        logging.info(f'\nℹ️ {username} Нажал на кнопку\n    -    [{call.data}]\n')
+    except Exception as e:
+        logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
+        pass
     ActiveUser[call.from_user.id]['Pause_main_handler'] = True
     ActiveUser[call.from_user.id]['Finishedop'] = False
     if call.data.split()[0] == 'tasklist':# Подробности заявки
@@ -337,5 +346,5 @@ if __name__ == '__main__':
 try:
     bot.polling()
 except Exception as e:
-    logging.error(e)
+    logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
     pass

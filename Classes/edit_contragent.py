@@ -13,7 +13,7 @@ class editcont():
     # Поиск контрагента по ИНН и генераия основной формы def editcontragent(message)
     def ec1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == '🚫 Отмена':
             functions.mesdel(ActiveUser[message.chat.id]['sentmes'].chat.id, ActiveUser[message.chat.id]['sentmes'].message_id)
@@ -67,7 +67,7 @@ class editcont():
                         reply_markup=buttons.Buttons(contbuttons, 1)
                     )
                 except Exception as e:
-                    logging.error(e)
+                    logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
                     pass
             else:
                 functions.mesdel(message.chat.id, processing.message_id)
@@ -81,7 +81,7 @@ class editcont():
     # Реакция на нажатие кнопок в меню редактирования
     def ec2(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == '💾 Сохранить':
             print(ActiveUser[message.chat.id]['contnew'])
@@ -164,7 +164,7 @@ class editcont():
                 for location in locations:
                     buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
             except Exception as e:
-                logging.error(e)
+                logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
                 time.sleep(5)
             buttonsloc.append('↩️ Назад')
             if len(locations) > 2:
@@ -201,7 +201,7 @@ class editcont():
     # ИНН
     def INN(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text.isdigit():
             ActiveUser[message.chat.id]['contnew'][0] = message.text
@@ -218,7 +218,7 @@ class editcont():
     # Наименование организаии
     def CNAME(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         ActiveUser[message.chat.id]['contnew'][1] = message.text
         editcont.editcontragent(message)
@@ -227,7 +227,7 @@ class editcont():
     # Тип договора разовый или долгосрочный
     def TYPE(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == 'Разовый':
             ActiveUser[message.chat.id]['contnew'][5] = 1
@@ -241,7 +241,7 @@ class editcont():
     # Контактное лио
     def CPERSON(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         ActiveUser[message.chat.id]['contnew'][3] = message.text
         editcont.editcontragent(message)
@@ -250,7 +250,7 @@ class editcont():
     # Контактный телефон
     def CPHONE(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         ActiveUser[message.chat.id]['contnew'][4] = message.text
         editcont.editcontragent(message)
@@ -259,7 +259,7 @@ class editcont():
     # Номер и дата договора (если долгосрочный)
     def CCONTRACT(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         ActiveUser[message.chat.id]['contnew'][6] = message.text
         editcont.editcontragent(message)
@@ -268,7 +268,7 @@ class editcont():
     # Меню и список локаций
     def locations1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == '🆕 Добавить':
             bot.send_message(
@@ -301,7 +301,7 @@ class editcont():
     # Редактирование выбранной локации
     def locations2(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == 'Изменить локацию':
             bot.send_message(
@@ -334,7 +334,7 @@ class editcont():
                 for location in locations:
                     buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
             except Exception as e:
-                logging.error(e)
+                logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
                 time.sleep(5)
             buttonsloc.append('↩️ Назад')
             if len(locations) > 2:
@@ -355,7 +355,7 @@ class editcont():
     # Сохранение имени новой локации
     def locations3(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         db.update_records(
             'Locations',
@@ -374,7 +374,7 @@ class editcont():
     # Удаление локации
     def locations4(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == '✅ Да':
             db.delete_record('Locations', 'id', ActiveUser[message.chat.id]['curlocation'])
@@ -434,7 +434,7 @@ class editcont():
 # формирование гугл ссылки на карты по локации для адреса компании
 def CADR1(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     global ActiveUser
     if message.content_type == 'location':
         lon, lat = message.location.longitude, message.location.latitude
@@ -448,7 +448,7 @@ def CADR1(message):
 # Изменение локаии контрагента
 def editcontlocation1(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     global ActiveUser
     if message.content_type == 'location':
         lon, lat = message.location.longitude, message.location.latitude
@@ -482,7 +482,7 @@ def editcontlocation1(message):
 # Добавление новой локации в список локаций в редактировании контрагента
 def newlocation(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     global ActiveUser
     if message.content_type == 'location':
         ActiveUser[message.chat.id]['lon'], ActiveUser[message.chat.id]['lat'] = message.location.longitude, message.location.latitude
@@ -502,7 +502,7 @@ def newlocation(message):
 
 def newlocation1(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     global ActiveUser
     ActiveUser[message.chat.id]['locationname'] = message.text
     db.insert_record(
@@ -527,7 +527,7 @@ def newlocation1(message):
         for location in locations:
             buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
     except Exception as e:
-        logging.error(e)
+        logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
         time.sleep(5)
     buttonsloc.append('↩️ Назад')
     if len(locations) > 2:

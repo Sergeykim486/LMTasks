@@ -12,7 +12,7 @@ class Task:
 
     def task1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == '👍 Принять':
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
@@ -209,7 +209,7 @@ class Task:
     def locations1(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if message.text == '📍 Указать локацию':
             logging.info('Локации')
             inn = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
@@ -243,7 +243,7 @@ class Task:
     def locations2(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         ActiveUser[message.chat.id]['inn'] = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
         if message.text == '🆕 Добавить филиал':
             bot.send_message(
@@ -298,7 +298,7 @@ class Task:
     def task2(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if message.text == '✅ Да':
             bot.send_message(
                 message.chat.id,
@@ -319,7 +319,7 @@ class Task:
     def task3(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
         db.update_records(
             'Tasks',[
@@ -354,7 +354,7 @@ class Task:
     def task4(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] == 5:
             stat = 6
         else:
@@ -404,7 +404,7 @@ class Task:
     def task5(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
         tasktext = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
         db.update_records(
@@ -435,7 +435,7 @@ class Task:
     def task6(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if message.text == '✅ Да':
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
             db.update_records(
@@ -473,7 +473,7 @@ class Task:
     def task7_1(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         taskt = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
         ActiveUser[message.chat.id]['newtasktext'] = message.text
         bot.send_message(
@@ -486,7 +486,7 @@ class Task:
     def task7_2(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if message.text == '✅ Да':
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
             print(ActiveUser[message.chat.id]['newtasktext'])
@@ -530,7 +530,7 @@ class Task:
 # Добавление локации филиала в акнивной заявке
 def tnl1(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     global ActiveUser
     if message.content_type == 'location':
         lon, lat = message.location.longitude, message.location.latitude
@@ -551,7 +551,7 @@ def tnl1(message):
 
 def tnl2(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    logging.info(f'{username} Отправил запрос - {message.text}')
+    logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
     global ActiveUser
     ActiveUser[message.chat.id]['locationname'] = message.text
     ActiveUser[message.chat.id]['inn'] = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]

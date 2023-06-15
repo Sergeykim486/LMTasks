@@ -10,9 +10,9 @@ class Reg:
     def reg1(message):
         try:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-            logging.info(f'{username} Отправил запрос - {message.text}')
+            logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         except Exception as e:
-            logging.error(e)
+            logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
             pass
         if message.text == '🔑 Регистрация':
             if message.chat.id == 5390927006:
@@ -39,9 +39,9 @@ class Reg:
     def reg2(message):
         try:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-            logging.info(f'{username} Отправил запрос - {message.text}')
+            logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         except Exception as e:
-            logging.error(e)
+            logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
             pass
         global ActiveUser
         ActiveUser[message.chat.id]['FirstName'] = message.text
@@ -55,9 +55,9 @@ class Reg:
     def reg3(message):
         try:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-            logging.info(f'{username} Отправил запрос - {message.text}')
+            logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         except Exception as e:
-            logging.error(e)
+            logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
             pass
         global ActiveUser
         ActiveUser[message.chat.id]['LastName'] = message.text
@@ -71,9 +71,9 @@ class Reg:
     def reg4(message):
         try:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-            logging.info(f'{username} Отправил запрос - {message.text}')
+            logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         except Exception as e:
-            logging.error(e)
+            logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
             pass
         global ActiveUser
         ActiveUser[message.chat.id]['PhoneNumber'] = message.text
@@ -87,9 +87,9 @@ class Reg:
     def reg5(message):
         try:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-            logging.info(f'{username} Отправил запрос - {message.text}')
+            logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         except Exception as e:
-            logging.error(e)
+            logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
             pass
         global ActiveUser
         if message.text == '✅ Да':

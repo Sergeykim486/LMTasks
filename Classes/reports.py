@@ -18,7 +18,6 @@ class report:
                 filt = {'status': 7, 'master': master}
             else:
                 filt = {'status': 7}
-            logging.info(f'Запрос в базу на технику у мастеров за {daterep}')
             tdonetasks = functions.listgen(db.select_table_with_filters('Tasks', filt, ['done'], [daterep+' 00:00'], [daterep+' 23:59']), [0, 1, 3, 4, 6], 1)
             if len(tdonetasks) != 0:
                 bot.send_message(
@@ -38,7 +37,6 @@ class report:
                 filt = {'status': 6, 'master': master}
             else:
                 filt = {'status': 6}
-            logging.info(f'Запрос в базу на технику у мастеров за {daterep}')
             tconftasks = functions.listgen(db.select_table_with_filters('Tasks', filt), [0, 1, 3, 4, 6], 1)
             if len(tconftasks) != 0:
                 bot.send_message(
@@ -54,7 +52,6 @@ class report:
                         reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                     )
         if tadded == 1:
-            logging.info(f'Запрос в базу на принятую технику.')
             taddedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 5}), [0, 1, 3, 4, 6], 1)
             if len(taddedtasks) != 0:
                 bot.send_message(
@@ -74,7 +71,6 @@ class report:
                 filt = {'status': 3, 'master': master}
             else:
                 filt = {'status': 3}
-            logging.info(f'Запрос в базу на выполненные заявки за {daterep}')
             donetasks = functions.listgen(db.select_table_with_filters('Tasks', filt, ['done'], [daterep+' 00:00'], [daterep+' 23:59']), [0, 1, 3, 4, 6], 1)
             if len(donetasks) != 0:
                 bot.send_message(
@@ -90,7 +86,6 @@ class report:
                         reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                     )
         if conf == 1:
-            logging.info(f'Запрос в базу на принятые заявки за {daterep}')
             if master == 0:
                 filt = {'status': 2}
             else:
@@ -116,7 +111,6 @@ class report:
                         reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                     )
         if added == 1:
-            logging.info(f'Запрос в базу на зарегистрированные заявки за {daterep}')
             addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
             if len(addedtasks) != 0:
                 bot.send_message(
@@ -132,7 +126,6 @@ class report:
                         reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
                     )
         if canc == 1:
-            logging.info(f'Запрос в базу на отмененные заявки за {daterep}')
             canceledtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}, ['canceled'], [daterep+' 00:00'], [daterep+' 23:59']), [0, 1, 3, 4, 6], 1)
             if len(canceledtasks) != 0:
                 bot.send_message(
@@ -152,7 +145,6 @@ class report:
             reports = reports + '\n\nКоличество заявок выполненных мастерами:\n\n'
             users = db.select_table('Users')
             usersrep = []
-            print(daterep)
             for i in users:
                 tasks = len(db.select_table_with_filters('Tasks', {'master': i[0], 'status': 3}, ['done'], [str(daterep)+' 00:00'], [str(daterep)+' 23:59']))
                 usersrep.append([i[2] + ' ' + i[1], tasks])
@@ -180,10 +172,10 @@ class report:
     def reportall(message):
         global num
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        if num != 0:
+            logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if num == 0:
             num = 1
-        print(num)
         if message.text == '📋 Заявки у мастеров':
             num = 0
             users = db.select_table('Users')
@@ -331,7 +323,7 @@ class report:
     # period
     def period1(message):# с
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         m1 = message.text
         m1 = m1.replace(' ', '.')
@@ -355,7 +347,7 @@ class report:
 
     def period2(message):# по
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         m1 = message.text
         m1 = m1.replace(' ', '.')
@@ -381,7 +373,7 @@ class report:
 
     def period3(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == 'Все заявки':
             fr = ActiveUser[message.chat.id]['daterepf']
@@ -418,7 +410,7 @@ class report:
 
     def period4(message): # по мастерам
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         uid = message.text.split()[0]
         selecteduser = db.get_record_by_id('Users', uid)
@@ -450,7 +442,7 @@ class report:
 
     def period5(message): # по клиентам
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         global ActiveUser
         if message.text == '🚫 Отмена':
             bot.send_message(
@@ -501,7 +493,7 @@ class report:
                         reply_markup=buttons.Buttons(contbuttons, 1)
                     )
                 except Exception as e:
-                    logging.error(e)
+                    logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
                     pass
             else:
                 bot.send_message(
@@ -514,9 +506,8 @@ class report:
     # Итоги дня
     def reportall1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         if message.text == '🌞 Сегодня':
-            logging.info(f'Формирование отчета для {message.chat.id}')
             daterep = str(datetime.now().strftime("%d.%m.%Y"))
             report.rep(message, daterep, 1, 1, 1, 1, 1)
         elif message.text == '🗓️ Другой день':
@@ -537,7 +528,7 @@ class report:
     def reportallq(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         ActiveUser[message.chat.id]['repotherdate'] = message.text
         bot.send_message(
             message.chat.id,
@@ -549,7 +540,7 @@ class report:
     def reportall2(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'{username} Отправил запрос - {message.text}')
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
         m1 = ActiveUser[message.chat.id]['repotherdate']
         m1 = m1.replace(' ', '.')
         m1 = m1.replace(',', '.')
@@ -557,9 +548,7 @@ class report:
         if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
             ActiveUser[message.chat.id]['daterep'] = m1
         daterep = str(ActiveUser[message.chat.id]['daterep'])
-        print(daterep)
         if message.text.split()[0].isdigit():
-            print('master')
             masterid = int(message.text.split()[0])
             mastername = str(db.get_record_by_id('Users', masterid)[2]) + ' ' + str(db.get_record_by_id('Users', masterid)[1])
             bot.send_message(

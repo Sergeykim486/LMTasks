@@ -15,7 +15,7 @@ def sendtoall(message, markdown, exeptions, nt = 0, notific = False):
     global sendedmessages
     users = db.select_table('Users')
     for user in users:
-        # logging.info(f'sended message to user {user[2]} {user[1]}')
+        # logging.info(f'\nℹ️ sended message to user {user[2]} {user[1]}')
         try:
             if user[0] != exeptions:
                 mes = bot.send_message(
