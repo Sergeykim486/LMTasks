@@ -388,9 +388,11 @@ class Task:
                 for line in sendedmessages:
                     functions.mesdel(line[0], line[1])
             tk = functions.curtask(ActiveUser[message.chat.id]['task'])
-            mes = str(db.get_record_by_id('Users', userm)[2]) + ' ' + str(db.get_record_by_id('Users', userm)[1]) + '\nбыл назначен исполнителем заявки:\n\n' + tk
+            manager = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1])
+            mes = str(db.get_record_by_id('Users', userm)[2]) + ' ' + str(db.get_record_by_id('Users', userm)[1]) + '\nбыл назначен исполнителем заявки:\n Назначил: '+ manager + '\n\n' + tk
             exn = message.chat.id
             functions.sendtoall(mes, '', exn)
+            functions.deletentm(ActiveUser[message.chat.id]['task'])
             functions.mesdel(message.chat.id, processing.message_id)
             bot.send_message(
                 message.chat.id,
@@ -478,7 +480,7 @@ class Task:
         ActiveUser[message.chat.id]['newtasktext'] = message.text
         bot.send_message(
             message.chat.id,
-            f'Текст заявку будет изменен с:\n{taskt}\nНа:\n{message.text}\n\n Подтвердите информацию...',
+            f'Текст заявки будет изменен с:\n{taskt}\nНа:\n{message.text}\n\n Подтвердите информацию...',
             reply_markup=buttons.Buttons(['✅ Да','⛔️ Нет'])
         )
         bot.register_next_step_handler(message, Task.task7_2)

@@ -616,7 +616,7 @@ def newlocationintask1(message):
         bot.send_message(
             message.chat.id,
             'Вы должны были отправить локацию.\nОтправьте локацию.',
-            reply_markup=buttons.clearbuttons
+            reply_markup=buttons.clearbuttons()
         )
         bot.register_next_step_handler(message, newlocationintask1)
 
