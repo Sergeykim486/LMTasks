@@ -11,6 +11,7 @@ class NewTask:
     # Поиск контрагента по ИНН
     def nt1(message):
         global num
+        print(num)
         if ActiveUser[message.chat.id]['Pause_main_handler'] == True:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
             if num != 0:
@@ -22,6 +23,7 @@ class NewTask:
         ActiveUser[message.chat.id]['manager'] = message.chat.id
         ActiveUser[message.chat.id]['status'] = 1
         if message.text == '🚫 Отмена':
+            print('cancel')
             num = 0
             bot.send_message(
                 message.chat.id,
@@ -71,8 +73,9 @@ class NewTask:
                     ActiveUser[message.chat.id]['block_nt1'] = False
                     bot.register_next_step_handler(message, NewTask.type1)
         else:
+            print('else')
             if num == 1:
-                num = num + 1
+                # num = num + 1
                 processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
                 contrs = db.select_table('Contragents')
                 res = functions.search_items(message.text, contrs)
