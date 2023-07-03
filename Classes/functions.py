@@ -592,6 +592,9 @@ def sendrep(message, tasks):
         )
     return
 # Отчет в экселе
+
+
+
 def sendrepfile(message, tasks):
     processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
     rep = []
@@ -601,14 +604,70 @@ def sendrepfile(message, tasks):
     # Объединение ячеек в шапке
     wb = openpyxl.Workbook()
     ws = wb.active
+    masterr = []
+    top10conts = []
+    taskquantity = 0
 
     for task in tasks:
-        manager = str(db.get_record_by_id('Users', task[2])[2]) + ' ' + str(db.get_record_by_id('Users', task[2])[1])
-        master = str(db.get_record_by_id('Users', task[6])[2]) + ' ' + str(db.get_record_by_id('Users', task[6])[1])
-        contr = (str(db.get_record_by_id('Contragents', task[3])[1]) if db.get_record_by_id('Contragents', task[3]) != None else '')
+        manager_record = db.get_record_by_id('Users', task[2])
+        manager = f"{manager_record[2]} {manager_record[1]}" if manager_record is not None else ""
+
+        master_record = db.get_record_by_id('Users', task[6])
+        master = f"{master_record[2]} {master_record[1]}" if master_record is not None else ""
+
+        contr_record = db.get_record_by_id('Contragents', task[3])
+        contr = contr_record[1] if contr_record is not None else ""
+
         line1 = [task[0], task[3], contr, task[4], task[1], manager, task[7], master]
+        
         rep.append(line1)
 
+        if len(masterr) > 0:
+            finded = 0
+            for mast in masterr:
+                if mast[0] == master:
+                    mast[1] = mast[1] + 1
+                    finded = 1
+            if finded == 0:
+                masterr.append([master, 1])
+        else:
+            masterr.append([master, 1])
+
+        if task[3] != 303128034 and task[3] != 301263843:
+            if len(top10conts) > 0:
+                finded = 0
+                for client in top10conts:
+                    if client[0] == contr:
+                        client[1] = client[1] + 1
+                        finded = 1
+                if finded == 0:
+                    top10conts.append([contr, 1])
+            else:
+                top10conts.append([contr, 1])
+        taskquantity = taskquantity + 1
+    print(taskquantity)
+    sorted_masterr = sorted(masterr, key=lambda x: x[1], reverse=True)
+    sorted_top10conts = sorted(top10conts, key=lambda x: x[1], reverse=True)
+    masterrating = '╔═════════════════╗\n  РЕЙТИНГ ПО МАСТЕРАМ:\n╚═════════════════╝\n'
+    for element in sorted_masterr:
+        masterrating = masterrating + '\n' + element[0] + ' - ' + str(element[1])
+        pr = element[1]/(taskquantity/100)
+        bar = ''
+        k = 0
+        l = 0
+        while k < int(pr/5):
+            bar = bar + '■'
+            k = k + 1
+        while l < 20 - int(pr/5):
+            bar = bar + '□'
+            l = l + 1
+        masterrating = masterrating + '\n' + bar + ' ' + str(round(pr, 2)) + '%\n'
+    masterrating1 = '╔════════════╗\n   Топ 10 клиентов:\n╚════════════╝\n'
+    i = 0
+    while i < 10:
+        masterrating1 = masterrating1 + '\n' + sorted_top10conts[i][0] + ' - ' + str(sorted_top10conts[i][1])
+        i = i + 1
+            
     for row in rep:
         ws.append(row)
 
@@ -672,7 +731,18 @@ def sendrepfile(message, tasks):
     wb.save(file_path)
     mesdel(message.chat.id, processing.message_id)
     bot.send_document(message.chat.id, open(file_path, 'rb'))
+    bot.send_message(
+        message.chat.id,
+        masterrating
+    )
+    bot.send_message(
+        message.chat.id,
+        masterrating1
+    )
     os.remove(file_path)
+
+
+
 # Удаление сообщений о новой заявке
 def deletentm(taskid):
     messages = db.select_table_with_filters('NewTasksMessages', {'taskid': taskid})
