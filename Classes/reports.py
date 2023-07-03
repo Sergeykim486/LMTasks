@@ -321,6 +321,56 @@ class report:
                 bot.register_next_step_handler(message, report.reportall)
 
     # period
+    # def period1(message):# с
+    #     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+    #     logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
+    #     global ActiveUser
+    #     m1 = message.text
+    #     m1 = m1.replace(' ', '.')
+    #     m1 = m1.replace(',', '.')
+    #     m = m1.split('.')
+    #     if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
+    #         ActiveUser[message.chat.id]['daterepf'] = m1
+    #         bot.send_message(
+    #             message.chat.id,
+    #             'Укажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+    #             reply_markup=buttons.clearbuttons()
+    #         )
+    #         bot.register_next_step_handler(message, report.period2)
+    #     else:
+    #         bot.send_message(
+    #             message.chat.id,
+    #             'Не верный формат даты...\nУкажите начало периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+    #             reply_markup=buttons.clearbuttons()
+    #         )
+    #         bot.register_next_step_handler(message, report.period1)
+
+    # def period2(message):# по
+    #     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+    #     logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
+    #     m1 = message.text
+    #     m1 = m1.replace(' ', '.')
+    #     m1 = m1.replace(',', '.')
+    #     m = m1.split('.')
+    #     if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
+    #         ActiveUser[message.chat.id]['daterept'] = m1
+    #         fr = ActiveUser[message.chat.id]['daterepf']
+    #         t = ActiveUser[message.chat.id]['daterept']
+    #         bot.send_message(
+    #             message.chat.id,
+    #             f'Выбран период с {fr} по {t}\nКакой отчет вывести?',
+    #             reply_markup=buttons.Buttons(['Все заявки','по мастерам','по клиенту'])
+    #         )
+    #         bot.register_next_step_handler(message, report.period3)
+    #     else:
+    #         bot.send_message(
+    #             message.chat.id,
+    #             'Не верный формат даты...\nУкажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+    #             reply_markup=buttons.clearbuttons()
+    #         )
+    #         bot.register_next_step_handler(message, report.period2)
+
+
     def period1(message):# с
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
@@ -330,13 +380,21 @@ class report:
         m1 = m1.replace(',', '.')
         m = m1.split('.')
         if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
-            ActiveUser[message.chat.id]['daterepf'] = m1
-            bot.send_message(
-                message.chat.id,
-                'Укажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, report.period2)
+            try:
+                ActiveUser[message.chat.id]['daterepf'] = m1
+                bot.send_message(
+                    message.chat.id,
+                    'Укажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, report.period2)
+            except ValueError:
+                bot.send_message(
+                    message.chat.id,
+                    'Некорректная дата...\nУкажите начало периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, report.period1)
         else:
             bot.send_message(
                 message.chat.id,
@@ -348,21 +406,38 @@ class report:
     def period2(message):# по
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        global ActiveUser
         m1 = message.text
         m1 = m1.replace(' ', '.')
         m1 = m1.replace(',', '.')
         m = m1.split('.')
         if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
-            ActiveUser[message.chat.id]['daterept'] = m1
-            fr = ActiveUser[message.chat.id]['daterepf']
-            t = ActiveUser[message.chat.id]['daterept']
-            bot.send_message(
-                message.chat.id,
-                f'Выбран период с {fr} по {t}\nКакой отчет вывести?',
-                reply_markup=buttons.Buttons(['Все заявки','по мастерам','по клиенту'])
-            )
-            bot.register_next_step_handler(message, report.period3)
+            try:
+                start_date = datetime.strptime(ActiveUser[message.chat.id]['daterepf'], "%d.%m.%Y")
+                end_date = datetime.strptime(m1, "%d.%m.%Y")
+                fr = ActiveUser[message.chat.id]['daterepf']
+                if end_date >= start_date:
+                    ActiveUser[message.chat.id]['daterept'] = m1
+                    t = ActiveUser[message.chat.id]['daterept']
+                    bot.send_message(
+                        message.chat.id,
+                        f'Выбран период с {fr} по {t}\nКакой отчет вывести?',
+                        reply_markup=buttons.Buttons(['Все заявки','по мастерам','по клиенту'])
+                    )
+                    bot.register_next_step_handler(message, report.period3)
+                else:
+                    bot.send_message(
+                        message.chat.id,
+                        'Дата окончания периода не может быть раньше даты начала периода. Пожалуйста, укажите корректную дату.',
+                        reply_markup=buttons.clearbuttons()
+                    )
+                    bot.register_next_step_handler(message, report.period2)
+            except ValueError:
+                bot.send_message(
+                    message.chat.id,
+                    'Некорректная дата...\nУкажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, report.period2)
         else:
             bot.send_message(
                 message.chat.id,
@@ -370,6 +445,7 @@ class report:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, report.period2)
+
 
     def period3(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
