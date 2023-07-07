@@ -206,17 +206,17 @@ class report:
                         for i in confirmed:
                             contr = db.get_record_by_id('Contragents', i[3])[1]
                             adr = db.get_record_by_id('Contragents', i[3])[2]
-                            res = res + f'\n🟡 - №{i[0]} от {i[1]} | {contr}\n{adr}'
+                            res = res + f'\n\n🟡 - №{i[0]} от {i[1]} | {contr}\n{adr}'
                     if len(done) > 0:
                         for j in done:
                             contr = db.get_record_by_id('Contragents', j[3])[1]
                             adr = db.get_record_by_id('Contragents', j[3])[2]
-                            res = res + f'\n🟢 - №{j[0]} от {j[1]} | {contr}\n{adr}'
+                            res = res + f'\n\n🟢 - №{j[0]} от {j[1]} | {contr}\n{adr}'
                     if len(canceled) > 0:
                         for k in canceled:
                             contr = db.get_record_by_id('Contragents', k[3])[1]
                             adr = db.get_record_by_id('Contragents', k[3])[2]
-                            res = res + f'\n🔴 - №{k[0]} от {k[1]} | {contr}\n{adr}'
+                            res = res + f'\n\n🔴 - №{k[0]} от {k[1]} | {contr}\n{adr}'
                     bot.send_message(
                         message.chat.id,
                         res,
@@ -261,11 +261,11 @@ class report:
                     if len(confirmed) > 0:
                         for i in confirmed:
                             tech = i[4].split('\n======================\n')[0] + '\n' + i[4].split('\n======================\n')[1]
-                            res = res + f'\n🟨 - №{i[0]} от {i[1]}\n{tech}'
+                            res = res + f'\n\n🟨 - №{i[0]} от {i[1]}\n{tech}'
                     if len(done) > 0:
                         for j in done:
                             tech = j[4].split('\n======================\n')[0] + '\n' + j[4].split('\n======================\n')[1]
-                            res = res + f'\n🟩 - №{j[0]} от {j[1]}\n{tech}'
+                            res = res + f'\n\n🟩 - №{j[0]} от {j[1]}\n{tech}'
                     bot.send_message(
                         message.chat.id,
                         res,
