@@ -13,6 +13,16 @@ def Buttons(buttons, r = 2, cancelbut = None):
         markup.row(*line)
     return markup
 
+def reportbuttons(line1, line2, line3, line4, line5):
+    markup = telebot.types.ReplyKeyboardRemove()
+    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.row(*line1)
+    markup.row(*line2)
+    markup.row(*line3)
+    markup.row(*line4)
+    markup.row(*line5)
+    return markup
+
 def Buttons1(buttons, r = 3):
     markup = telebot.types.ReplyKeyboardRemove()
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)

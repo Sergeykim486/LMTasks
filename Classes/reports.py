@@ -1,6 +1,13 @@
-import logging, Classes.functions as functions, Classes.buttons as buttons
+import logging, Classes.functions as functions, Classes.buttons as buttons, calendar
 from datetime import datetime
 from Classes.config import ActiveUser, bot, sendedmessages, db, mainclass
+
+months = {
+    '1': ['01','03'],
+    '2': ['04','06'],
+    '3': ['07','09'],
+    '4': ['10','12']
+}
 
 num = 0
 
@@ -294,10 +301,10 @@ class report:
             num = 0
             bot.send_message(
                 message.chat.id,
-                'Укажите начало периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
-                reply_markup = buttons.clearbuttons()
+                'За какой период сформировать отчет?',
+                reply_markup = buttons.Buttons(['Месяц\Квартал\Год','Указать вручную'])
             )
-            bot.register_next_step_handler(message, report.period1)
+            bot.register_next_step_handler(message, report.period0)
         elif message.text == '🚫 Отмена':
             num = 0
             bot.send_message(
@@ -320,61 +327,120 @@ class report:
             else:
                 bot.register_next_step_handler(message, report.reportall)
 
-    # period
-    # def period1(message):# с
-    #     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    #     logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-    #     global ActiveUser
-    #     m1 = message.text
-    #     m1 = m1.replace(' ', '.')
-    #     m1 = m1.replace(',', '.')
-    #     m = m1.split('.')
-    #     if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
-    #         ActiveUser[message.chat.id]['daterepf'] = m1
-    #         bot.send_message(
-    #             message.chat.id,
-    #             'Укажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
-    #             reply_markup=buttons.clearbuttons()
-    #         )
-    #         bot.register_next_step_handler(message, report.period2)
-    #     else:
-    #         bot.send_message(
-    #             message.chat.id,
-    #             'Не верный формат даты...\nУкажите начало периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
-    #             reply_markup=buttons.clearbuttons()
-    #         )
-    #         bot.register_next_step_handler(message, report.period1)
+    def period0(message):# Выбор типа периода
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
+        if message.text == 'Указать вручную':
+            bot.send_message(
+                message.chat.id,
+                'Укажите начало периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
+                reply_markup = buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, report.period1)
+        elif message.text == 'Месяц\Квартал\Год':
+            ActiveUser[message.chat.id]['monthrep'] = 1
+            ActiveUser[message.chat.id]['mf'] = '01'
+            ActiveUser[message.chat.id]['mt'] = '12'
+            ActiveUser[message.chat.id]['y'] = str(datetime.now().year)
+            ActiveUser[message.chat.id]['settingsmes'] = None
+            ActiveUser[message.chat.id]['daterepf'] = '01.' +  ActiveUser[message.chat.id]['mf'] + '.' + ActiveUser[message.chat.id]['y']
+            ActiveUser[message.chat.id]['daterept'] = str(calendar.monthrange(int(ActiveUser[message.chat.id]['y']), int(ActiveUser[message.chat.id]['mt']))[1]) + '.' + ActiveUser[message.chat.id]['mt'] + '.' + ActiveUser[message.chat.id]['y']
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
+    
+    def settingshandler(message):
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
+        functions.mesdel(message.chat.id, message.message_id)
+        if message.text == '✅Сформировать':
+            fr = ActiveUser[message.chat.id]['daterepf']
+            t = ActiveUser[message.chat.id]['daterept']
+            bot.send_message(
+                message.chat.id,
+                f'Выбран период с {fr} по {t}\nКакой отчет вывести?',
+                reply_markup=buttons.Buttons(['Все заявки','по мастерам','по клиенту'])
+            )
+            bot.register_next_step_handler(message, report.period3)
+        elif message.text == '✅ Месяц' or message.text == 'Месяц':
+            ActiveUser[message.chat.id]['monthrep'] = 1
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
+        elif message.text == 'Квартал' or message.text == '✅ Квартал':
+            ActiveUser[message.chat.id]['monthrep'] = 0
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
+        elif message.text == 'Год' or message.text == '✅ Год':
+            ActiveUser[message.chat.id]['monthrep'] = 2
+            ActiveUser[message.chat.id]['mf'] = '01'
+            ActiveUser[message.chat.id]['mt'] = '12'
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
+        elif message.text.isdigit() == True and len(message.text) == 2:
+            ActiveUser[message.chat.id]['mf'] = message.text
+            ActiveUser[message.chat.id]['mt'] = message.text
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
+        elif message.text.isdigit() == True and len(message.text) == 1:
+            ActiveUser[message.chat.id]['mf'] = months[message.text][0]
+            ActiveUser[message.chat.id]['mt'] = months[message.text][1]
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
+        elif message.text == '◄':
+            ActiveUser[message.chat.id]['y'] = str(int(ActiveUser[message.chat.id]['y']) - 1)
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
+        elif message.text == '►':
+            ActiveUser[message.chat.id]['y'] = str(int(ActiveUser[message.chat.id]['y']) + 1)
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
+        elif message.text == '⛔️Отмена':
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
+            ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Не верная команда.'
+            )
+            report.repsettings(message)
+            bot.register_next_step_handler(message, report.settingshandler)
 
-    # def period2(message):# по
-    #     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-    #     logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-    #     m1 = message.text
-    #     m1 = m1.replace(' ', '.')
-    #     m1 = m1.replace(',', '.')
-    #     m = m1.split('.')
-    #     if len(m[0]) == 2 and len(m[1]) == 2 and len(m[2]) == 4 and len(m) == 3:
-    #         ActiveUser[message.chat.id]['daterept'] = m1
-    #         fr = ActiveUser[message.chat.id]['daterepf']
-    #         t = ActiveUser[message.chat.id]['daterept']
-    #         bot.send_message(
-    #             message.chat.id,
-    #             f'Выбран период с {fr} по {t}\nКакой отчет вывести?',
-    #             reply_markup=buttons.Buttons(['Все заявки','по мастерам','по клиенту'])
-    #         )
-    #         bot.register_next_step_handler(message, report.period3)
-    #     else:
-    #         bot.send_message(
-    #             message.chat.id,
-    #             'Не верный формат даты...\nУкажите конец периода в формате:\nПРИМЕР: 01.01.2023 или 01,01,2023',
-    #             reply_markup=buttons.clearbuttons()
-    #         )
-    #         bot.register_next_step_handler(message, report.period2)
-
+    def repsettings(message):
+        try:
+            functions.mesdel(message.chat.id, ActiveUser[message.chat.id]['settingsmes'].message_id)
+        except:
+            pass
+        ActiveUser[message.chat.id]['daterepf'] = '01.' +  ActiveUser[message.chat.id]['mf'] + '.' + ActiveUser[message.chat.id]['y']
+        ActiveUser[message.chat.id]['daterept'] = str(calendar.monthrange(int(ActiveUser[message.chat.id]['y']), int(ActiveUser[message.chat.id]['mt']))[1]) + '.' + ActiveUser[message.chat.id]['mt'] + '.' + ActiveUser[message.chat.id]['y']
+        fr = ActiveUser[message.chat.id]['daterepf']
+        t = ActiveUser[message.chat.id]['daterept']
+        if ActiveUser[message.chat.id]['monthrep'] == 1:
+            typebuttons = ['✅ Месяц','Квартал', 'Год']
+            buts = ['01','02','03','04','05','06']
+            buts2 = ['07','08','08','10','11','12']
+        elif ActiveUser[message.chat.id]['monthrep'] == 0:
+            typebuttons = ['Месяц','✅ Квартал', 'Год']
+            buts = ['1','2','3','4']
+            buts2 = []
+        else:
+            typebuttons = ['Месяц','Квартал', '✅ Год']
+            buts = []
+            buts2 = []
+        ActiveUser[message.chat.id]['settingsmes'] = bot.send_message(
+            message.chat.id,
+            f'ФОРМИРОВАНИЕ ОТЧЕТА:\nС {fr} ПО {t}\nКогда выберите период нажмите "Сформировать"\n\nЕсли ничего не менять то отчет будет сформирован за текущий год',
+            reply_markup = buttons.reportbuttons(typebuttons,['◄',ActiveUser[message.chat.id]['y'],'►'],buts,buts2,['✅Сформировать','⛔️Отмена'])
+        )
+        return
 
     def period1(message):# с
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        global ActiveUser
         m1 = message.text
         m1 = m1.replace(' ', '.')
         m1 = m1.replace(',', '.')
@@ -445,7 +511,6 @@ class report:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, report.period2)
-
 
     def period3(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
@@ -697,3 +762,11 @@ class report:
                 reply_markup=buttons.Buttons(['Все', 'Только мои', 'У мастера'])
             )
             bot.register_next_step_handler(message, report.reportall2)
+
+def callback_handler(call):
+    try:
+        username = db.get_record_by_id('Users', call.message.chat.id)[2] + ' ' + db.get_record_by_id('Users', call.message.chat.id)[1]
+        logging.info(f'\nℹ️ {username} Нажал на кнопку\n    -    [{call.data}]\n')
+    except Exception as e:
+        logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
+        pass
