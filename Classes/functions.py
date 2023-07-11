@@ -75,7 +75,7 @@ def listgen(table, cols, tasks = 0):
                         location = ''
                     else:
                         location = loc[2]
-                    cname = str(db.get_record_by_id('Contragents', line[i])[0]) + " " + str(db.get_record_by_id('Contragents', line[i])[1]) + "\n Локация - " + location + "\nДоговор: " + str(db.get_record_by_id('Contragents', line[i])[6])
+                    cname = str(db.get_record_by_id('Contragents', line[i])[0]) + " " + str(db.get_record_by_id('Contragents', line[i])[1]) + "\n Локация - " + location + "\nДоговор: " + str(db.get_record_by_id('Contragents', line[i])[6]) + '\n\n' + str(db.get_record_by_id('Contragents', line[i])[3]) + ': ' + str(db.get_record_by_id('Contragents', line[i])[4])
                     curline = curline + str(cname) + '\n'
 
                 elif i == 6 and line[i]:
