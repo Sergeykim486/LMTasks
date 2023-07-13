@@ -162,7 +162,7 @@ class Task:
                 reply_markup=buttons.Buttons(['✅ Да', '⛔️ Нет'])
             )
             bot.register_next_step_handler(message, Task.task2)
-        elif message.text == '↩️ Назад':
+        elif message.text == '↩️ Назад' or message.text == '/start':
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -229,7 +229,7 @@ class Task:
                 reply_markup=buttons.Buttons(buttonsloc, 2)
             )
             bot.register_next_step_handler(message, Task.locations2)
-        elif message.text == '🚫 Отмена':
+        elif message.text == '🚫 Отмена' or message.text == '/start':
             print('Нажата отмена')
             bot.send_message(
                 message.chat.id,
@@ -252,7 +252,7 @@ class Task:
                 reply_markup=buttons.clearbuttons()
             )
             bot.register_next_step_handler(message, tnl1)
-        elif message.text == '🚫 Отмена':
+        elif message.text == '🚫 Отмена' or message.text == '/start':
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -315,204 +315,217 @@ class Task:
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
+        elif message.text == '/start':
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
+            ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
 
     def task3(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
-        db.update_records(
-            'Tasks',[
-                'canceled',
-                'userc',
-                'more',
-                'status'
-            ],[
-                datetime.now().strftime("%d.%m.%Y %H:%M"),
+        if message.text == '/start':
+            bot.send_message(
                 message.chat.id,
-                message.text,
-                4
-            ],
-            'id',
-            ActiveUser[message.chat.id]['task']
-        )
-        tk = functions.curtask(ActiveUser[message.chat.id]['task'])
-        mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\nОтменил заявку:\n\n' + tk + '\n\nПРИЧИНА:\n' + message.text
-        mark = ''
-        exn = message.chat.id
-        functions.sendtoall(mes, mark, exn)
-        functions.mesdel(message.chat.id, processing.message_id)
-        bot.send_message(
-            message.chat.id,
-            'Заявка отменена\n\nВыберите операцию.',
-            reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
-        )
-        ActiveUser[message.chat.id]['Pause_main_handler'] = False
-        ActiveUser[message.chat.id]['Finishedop'] = True
-        ActiveUser[message.chat.id]['block_main_menu'] = False
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
+            ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
+        else:
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+            db.update_records(
+                'Tasks',[
+                    'canceled',
+                    'userc',
+                    'more',
+                    'status'
+                ],[
+                    datetime.now().strftime("%d.%m.%Y %H:%M"),
+                    message.chat.id,
+                    message.text,
+                    4
+                ],
+                'id',
+                ActiveUser[message.chat.id]['task']
+            )
+            tk = functions.curtask(ActiveUser[message.chat.id]['task'])
+            mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\nОтменил заявку:\n\n' + tk + '\n\nПРИЧИНА:\n' + message.text
+            mark = ''
+            exn = message.chat.id
+            functions.sendtoall(mes, mark, exn)
+            functions.mesdel(message.chat.id, processing.message_id)
+            bot.send_message(
+                message.chat.id,
+                'Заявка отменена\n\nВыберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
+            ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
 
     def task4(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] == 5:
-            stat = 6
-        else:
-            stat = 2
-        if message.text.split()[1] is None:
-            users = db.select_table('Users')
+        if message.text == '/start':
             bot.send_message(
                 message.chat.id,
-                'Выберите мастера...',
-                reply_markup=buttons.Buttons(functions.listgen(users, [0, 1, 2], 3), 1)
-            )
-            bot.register_next_step_handler(message, Task.task4)
-        else:
-            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
-            userm = message.text.split()[1]
-            
-            db.update_records(
-                'Tasks',
-                [
-                    'confirmed',
-                    'master',
-                    'status'
-                ], [
-                    datetime.now().strftime("%d.%m.%Y %H:%M"),
-                    userm, stat
-                ],
-                'id',
-                ActiveUser[message.chat.id]['task']
-            )
-            if sendedmessages != None:
-                for line in sendedmessages:
-                    functions.mesdel(line[0], line[1])
-            tk = functions.curtask(ActiveUser[message.chat.id]['task'])
-            manager = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1])
-            mes = str(db.get_record_by_id('Users', userm)[2]) + ' ' + str(db.get_record_by_id('Users', userm)[1]) + '\nбыл назначен исполнителем заявки:\n Назначил: '+ manager + '\n\n' + tk
-            exn = message.chat.id
-            functions.sendtoall(mes, '', exn)
-            functions.deletentm(ActiveUser[message.chat.id]['task'])
-            functions.mesdel(message.chat.id, processing.message_id)
-            bot.send_message(
-                message.chat.id,
-                'Мастер назначен.\n\nВыберите операцию',
+                'Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
+        else:
+            if db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[11] == 5:
+                stat = 6
+            else:
+                stat = 2
+            if message.text.split()[1] is None:
+                users = db.select_table('Users')
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите мастера...',
+                    reply_markup=buttons.Buttons(functions.listgen(users, [0, 1, 2], 3), 1)
+                )
+                bot.register_next_step_handler(message, Task.task4)
+            else:
+                processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+                userm = message.text.split()[1]
+                
+                db.update_records(
+                    'Tasks',
+                    [
+                        'confirmed',
+                        'master',
+                        'status'
+                    ], [
+                        datetime.now().strftime("%d.%m.%Y %H:%M"),
+                        userm, stat
+                    ],
+                    'id',
+                    ActiveUser[message.chat.id]['task']
+                )
+                if sendedmessages != None:
+                    for line in sendedmessages:
+                        functions.mesdel(line[0], line[1])
+                tk = functions.curtask(ActiveUser[message.chat.id]['task'])
+                manager = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1])
+                mes = str(db.get_record_by_id('Users', userm)[2]) + ' ' + str(db.get_record_by_id('Users', userm)[1]) + '\nбыл назначен исполнителем заявки:\n Назначил: '+ manager + '\n\n' + tk
+                exn = message.chat.id
+                functions.sendtoall(mes, '', exn)
+                functions.deletentm(ActiveUser[message.chat.id]['task'])
+                functions.mesdel(message.chat.id, processing.message_id)
+                bot.send_message(
+                    message.chat.id,
+                    'Мастер назначен.\n\nВыберите операцию',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
+                ActiveUser[message.chat.id]['Pause_main_handler'] = False
+                ActiveUser[message.chat.id]['Finishedop'] = True
+                ActiveUser[message.chat.id]['block_main_menu'] = False
 
     def task5(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
-        tasktext = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
-        db.update_records(
-            'Tasks',
-            ['task'],
-            [tasktext + '\n\n ' + username + ' дополнил(а) заявку...\n' + message.text],
-            'id',
-            ActiveUser[message.chat.id]['task']
-        )
-        tk = functions.curtask(ActiveUser[message.chat.id]['task'])
-        mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n дополнил(а) заявку:\n\n' + tk
-        mark = ''
-        exn = message.chat.id
-        functions.sendtoall(mes, mark, exn)
-        if sendedmessages != None:
-            for line in sendedmessages:
-                functions.mesdel(line[0], line[1])
-        functions.mesdel(message.chat.id, processing.message_id)
-        bot.send_message(
-            message.chat.id,
-            'Заявка дополнена.\n\nВыберите операцию',
-            reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
-        )
-        ActiveUser[message.chat.id]['Pause_main_handler'] = False
-        ActiveUser[message.chat.id]['Finishedop'] = True
-        ActiveUser[message.chat.id]['block_main_menu'] = False
+        if message.text == '/start':
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
+            ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
+        else:
+            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+            tasktext = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
+            db.update_records(
+                'Tasks',
+                ['task'],
+                [tasktext + '\n\n ' + username + ' дополнил(а) заявку...\n' + message.text],
+                'id',
+                ActiveUser[message.chat.id]['task']
+            )
+            tk = functions.curtask(ActiveUser[message.chat.id]['task'])
+            mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n дополнил(а) заявку:\n\n' + tk
+            mark = ''
+            exn = message.chat.id
+            functions.sendtoall(mes, mark, exn)
+            if sendedmessages != None:
+                for line in sendedmessages:
+                    functions.mesdel(line[0], line[1])
+            functions.mesdel(message.chat.id, processing.message_id)
+            bot.send_message(
+                message.chat.id,
+                'Заявка дополнена.\n\nВыберите операцию',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
+            ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
 
     def task6(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        if message.text == '✅ Да':
-            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
-            db.update_records(
-                'Tasks',
-                ['contragent'],
-                [ActiveUser[message.chat.id]['changecontrintask']],
-                'id',
-                ActiveUser[message.chat.id]['task']
-            )
-            client = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['changecontrintask'])[1]
-            tk = functions.curtask(ActiveUser[message.chat.id]['task'])
-            mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n Изменил(а) клиента в заявке:\n\n' + tk
-            mark = ''
-            functions.sendtoall(mes, mark, message.chat.id)
-            functions.mesdel(message.chat.id, processing.message_id)
-            bot.send_message(
-                message.chat.id,
-                f'Клиент в заявке изменен на {client}.\n\nВыберите операцию',
-                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
-            )
-        elif message.text == '⛔️ Нет':
+        if message.text == '/start':
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
                 reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
             )
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
+            ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
         else:
-            bot.send_message(
-                message.chat.id,
-                'Неверная команда',
-                reply_markup=buttons.Buttons(['✅ Да', '⛔️ Нет'])
-            )
-            bot.register_next_step_handler(message, Task.task6)
+            if message.text == '✅ Да':
+                processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+                db.update_records(
+                    'Tasks',
+                    ['contragent'],
+                    [ActiveUser[message.chat.id]['changecontrintask']],
+                    'id',
+                    ActiveUser[message.chat.id]['task']
+                )
+                client = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['changecontrintask'])[1]
+                tk = functions.curtask(ActiveUser[message.chat.id]['task'])
+                mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n Изменил(а) клиента в заявке:\n\n' + tk
+                mark = ''
+                functions.sendtoall(mes, mark, message.chat.id)
+                functions.mesdel(message.chat.id, processing.message_id)
+                bot.send_message(
+                    message.chat.id,
+                    f'Клиент в заявке изменен на {client}.\n\nВыберите операцию',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
+            elif message.text == '⛔️ Нет':
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите операцию.',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'Неверная команда',
+                    reply_markup=buttons.Buttons(['✅ Да', '⛔️ Нет'])
+                )
+                bot.register_next_step_handler(message, Task.task6)
 
     def task7_1(message):
         global ActiveUser
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        taskt = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
-        ActiveUser[message.chat.id]['newtasktext'] = message.text
-        bot.send_message(
-            message.chat.id,
-            f'Текст заявки будет изменен с:\n{taskt}\nНа:\n{message.text}\n\n Подтвердите информацию...',
-            reply_markup=buttons.Buttons(['✅ Да','⛔️ Нет'])
-        )
-        bot.register_next_step_handler(message, Task.task7_2)
-
-    def task7_2(message):
-        global ActiveUser
-        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
-        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        if message.text == '✅ Да':
-            processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
-            print(ActiveUser[message.chat.id]['newtasktext'])
-            db.update_records(
-                'Tasks',
-                ['task'],
-                [ActiveUser[message.chat.id]['newtasktext']],
-                'id',
-                ActiveUser[message.chat.id]['task']
-            )
-            tk = functions.curtask(ActiveUser[message.chat.id]['task'])
-            mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n внес изменения в заявку\n\n' + tk
-            mark = ''
-            functions.sendtoall(mes, mark, message.chat.id)
-            functions.mesdel(message.chat.id, processing.message_id)
-            bot.send_message(
-                message.chat.id,
-                'Заявка успешно измненена.',
-                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
-            )
-            ActiveUser[message.chat.id]['Pause_main_handler'] = False
-            ActiveUser[message.chat.id]['Finishedop'] = True
-            ActiveUser[message.chat.id]['block_main_menu'] = False
-        elif message.text == '⛔️ Нет':
+        if message.text == '/start':
             bot.send_message(
                 message.chat.id,
                 'Выберите операцию.',
@@ -522,63 +535,137 @@ class Task:
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
         else:
+            taskt = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[4]
+            ActiveUser[message.chat.id]['newtasktext'] = message.text
             bot.send_message(
                 message.chat.id,
-                'Вы не подтвердили информацию.\nЗаменить старый текст заявки на новый',
+                f'Текст заявки будет изменен с:\n{taskt}\nНа:\n{message.text}\n\n Подтвердите информацию...',
                 reply_markup=buttons.Buttons(['✅ Да','⛔️ Нет'])
             )
             bot.register_next_step_handler(message, Task.task7_2)
+
+    def task7_2(message):
+        global ActiveUser
+        username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
+        logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
+        if message.text == '/start':
+            bot.send_message(
+                message.chat.id,
+                'Выберите операцию.',
+                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+            )
+            ActiveUser[message.chat.id]['Pause_main_handler'] = False
+            ActiveUser[message.chat.id]['Finishedop'] = True
+            ActiveUser[message.chat.id]['block_main_menu'] = False
+        else:
+            if message.text == '✅ Да':
+                processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+                print(ActiveUser[message.chat.id]['newtasktext'])
+                db.update_records(
+                    'Tasks',
+                    ['task'],
+                    [ActiveUser[message.chat.id]['newtasktext']],
+                    'id',
+                    ActiveUser[message.chat.id]['task']
+                )
+                tk = functions.curtask(ActiveUser[message.chat.id]['task'])
+                mes = str(db.get_record_by_id('Users', message.chat.id)[2]) + ' ' + str(db.get_record_by_id('Users', message.chat.id)[1]) + '\n внес изменения в заявку\n\n' + tk
+                mark = ''
+                functions.sendtoall(mes, mark, message.chat.id)
+                functions.mesdel(message.chat.id, processing.message_id)
+                bot.send_message(
+                    message.chat.id,
+                    'Заявка успешно измненена.',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
+                ActiveUser[message.chat.id]['Pause_main_handler'] = False
+                ActiveUser[message.chat.id]['Finishedop'] = True
+                ActiveUser[message.chat.id]['block_main_menu'] = False
+            elif message.text == '⛔️ Нет':
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите операцию.',
+                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                )
+                ActiveUser[message.chat.id]['Pause_main_handler'] = False
+                ActiveUser[message.chat.id]['Finishedop'] = True
+                ActiveUser[message.chat.id]['block_main_menu'] = False
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'Вы не подтвердили информацию.\nЗаменить старый текст заявки на новый',
+                    reply_markup=buttons.Buttons(['✅ Да','⛔️ Нет'])
+                )
+                bot.register_next_step_handler(message, Task.task7_2)
 
 # Добавление локации филиала в акнивной заявке
 def tnl1(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
     logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-    global ActiveUser
-    if message.content_type == 'location':
-        lon, lat = message.location.longitude, message.location.latitude
-        ActiveUser[message.chat.id]['lon'] = lon
-        ActiveUser[message.chat.id]['lat'] = lat
+    if message.text == '/start':
         bot.send_message(
             message.chat.id,
-            'Укажите название локации\nНАПРИМЕР:\nФилиал чиланзар или головной офис',
+            'Выберите операцию.',
+            reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
         )
-        bot.register_next_step_handler(message, tnl2)
+        ActiveUser[message.chat.id]['Pause_main_handler'] = False
+        ActiveUser[message.chat.id]['Finishedop'] = True
+        ActiveUser[message.chat.id]['block_main_menu'] = False
     else:
-        bot.send_message(
-            message.chat.id,
-            'Вы должны были отправить локацию.\nОтправьте локацию.',
-            reply_markup=buttons.clearbuttons()
-        )
-        bot.register_next_step_handler(message, tnl1)
+        if message.content_type == 'location':
+            lon, lat = message.location.longitude, message.location.latitude
+            ActiveUser[message.chat.id]['lon'] = lon
+            ActiveUser[message.chat.id]['lat'] = lat
+            bot.send_message(
+                message.chat.id,
+                'Укажите название локации\nНАПРИМЕР:\nФилиал чиланзар или головной офис',
+            )
+            bot.register_next_step_handler(message, tnl2)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Вы должны были отправить локацию.\nОтправьте локацию.',
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, tnl1)
 
 def tnl2(message):
     username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
     logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-    global ActiveUser
-    ActiveUser[message.chat.id]['locationname'] = message.text
-    ActiveUser[message.chat.id]['inn'] = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
-    db.insert_record(
-        'Locations',
-        [
-            None,
-            ActiveUser[message.chat.id]['inn'],
-            ActiveUser[message.chat.id]['locationname'],
-            ActiveUser[message.chat.id]['lat'],
-            ActiveUser[message.chat.id]['lon']
-        ]
-    )
-    inn = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
-    locations = db.select_table_with_filters('Locations', {'inn': inn})
-    buttonsloc = []
-    buttonsloc.append('🆕 Добавить филиал')
-    if len(locations) > 0:
-        for location in locations:
-            buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
-    buttonsloc.append('🚫 Отмена')
-    if len(locations) > 0:
+    if message.text == '/start':
         bot.send_message(
             message.chat.id,
-            'Выберите филиал...',
-            reply_markup=buttons.Buttons(buttonsloc, 2)
+            'Выберите операцию.',
+            reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
         )
-    bot.register_next_step_handler(message, Task.locations2)
+        ActiveUser[message.chat.id]['Pause_main_handler'] = False
+        ActiveUser[message.chat.id]['Finishedop'] = True
+        ActiveUser[message.chat.id]['block_main_menu'] = False
+    else:
+        ActiveUser[message.chat.id]['locationname'] = message.text
+        ActiveUser[message.chat.id]['inn'] = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
+        db.insert_record(
+            'Locations',
+            [
+                None,
+                ActiveUser[message.chat.id]['inn'],
+                ActiveUser[message.chat.id]['locationname'],
+                ActiveUser[message.chat.id]['lat'],
+                ActiveUser[message.chat.id]['lon']
+            ]
+        )
+        inn = db.get_record_by_id('Tasks', ActiveUser[message.chat.id]['task'])[3]
+        locations = db.select_table_with_filters('Locations', {'inn': inn})
+        buttonsloc = []
+        buttonsloc.append('🆕 Добавить филиал')
+        if len(locations) > 0:
+            for location in locations:
+                buttonsloc.append(str(location[0]) + ' ' + str(location[2]))
+        buttonsloc.append('🚫 Отмена')
+        if len(locations) > 0:
+            bot.send_message(
+                message.chat.id,
+                'Выберите филиал...',
+                reply_markup=buttons.Buttons(buttonsloc, 2)
+            )
+        bot.register_next_step_handler(message, Task.locations2)
