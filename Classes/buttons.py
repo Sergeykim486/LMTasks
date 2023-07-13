@@ -66,12 +66,17 @@ def buttonslist(filter):
     return buttonsl
 
 def buttonsinline(buttons):
-    markup = telebot.types.ReplyKeyboardRemove()
     markup = telebot.types.InlineKeyboardMarkup()
+    row = []
     for button in buttons:
         tx = button[0]
         cd = button[1]
-        markup.add(telebot.types.InlineKeyboardButton(text=tx, callback_data=cd))
+        row.append(telebot.types.InlineKeyboardButton(text=tx, callback_data=cd))
+        if len(row) == 2:
+            markup.row(*row)
+            row = []
+    if row:
+        markup.row(*row)
     return markup
 
 def clearbuttons():

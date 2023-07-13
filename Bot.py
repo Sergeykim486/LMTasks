@@ -88,7 +88,7 @@ def MenuReactions(message):
                             bot.send_message(
                                 message.chat.id,
                                 tasks[0],
-                                reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                                reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid],['ЛОКАЦИЯ', 'location '+taskid]])
                             )
             ActiveUser[message.chat.id]['sentmes'] = bot.send_message(
                 message.chat.id,
@@ -263,85 +263,100 @@ def callback_handler(call):
         pass
     if ActiveUser[call.from_user.id]['Finishedop'] == True:
         bot.answer_callback_query(callback_query_id=call.id, text='👇🏻👇🏻👇🏻Прокрутите вниз...👇🏻👇🏻👇🏻', show_alert=False, cache_time=3)
-        # ActiveUser[call.from_user.id]['pressed'] = True
-        ActiveUser[call.from_user.id]['Pause_main_handler'] = True
-        ActiveUser[call.from_user.id]['Finishedop'] = False
-        if call.data.split()[0] == 'tasklist':# Подробности заявки
-            status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
-            if status[11] == 1 or status[11] == 5:
-                markdownt = buttons.Buttons(['👍 Принять', '🖊️ Дополнить', '📎 Назначить', '✏️ Изменить текст заявки', '📍 Локация', '🚫 Отменить заявку', '↩️ Назад'])
-            elif status[11] == 2 or status[11] == 6:
-                markdownt = buttons.Buttons(['✅ Выполнено', '🖊️ Дополнить', '🙅‍♂️ Отказаться от заявки', '📎 Переназначить', '✏️ Изменить текст заявки', '📍 Локация', '🚫 Отменить заявку', '↩️ Назад'], 3)
+        if call.data.split()[0] == 'location':
+            task = db.get_record_by_id('Tasks', call.data.split()[1])
+            if task[12] == None:
+                bot.send_message(
+                    call.from_user.id,
+                    '<b>У данной заявки нет закрепленной локации!</b>', parse_mode='HTML'
+                )
             else:
-                markdownt = buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
-                ActiveUser[call.from_user.id]['Finishedop'] = True
-            ActiveUser[call.from_user.id]['sentmes'] = bot.send_message(
-                call.from_user.id,
-                functions.curtask(call.data.split()[1]),
-                reply_markup=markdownt, disable_notification=True
-            )
-            if status[11] != 3:
-                ActiveUser[call.from_user.id]['task'] = call.data.split()[1]
-                bot.register_next_step_handler(call.message, Task.task1)
-            else:
+                location = db.get_record_by_id('Locations', task[12])
+                lat = location[3]
+                lon = location[4]
+                loc = telebot.types.Location(lon, lat)
+                # bot.send_location(call.from_user.id, loc.latitude, loc.longitude)
+                bot.send_venue(call.from_user.id, loc.latitude, loc.longitude, f'ЗАЯВКА №{call.data.split()[1]}', f'От {db.get_record_by_id("Contragents", task[3])[1]}', 'Дополнительная информация о месте',reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+str(task[0])]]))
+        else:
+            # ActiveUser[call.from_user.id]['pressed'] = True
+            ActiveUser[call.from_user.id]['Pause_main_handler'] = True
+            ActiveUser[call.from_user.id]['Finishedop'] = False
+            if call.data.split()[0] == 'tasklist':# Подробности заявки
+                status = db.get_record_by_id('Tasks', int(call.data.split()[1]))
+                if status[11] == 1 or status[11] == 5:
+                    markdownt = buttons.Buttons(['👍 Принять', '🖊️ Дополнить', '📎 Назначить', '✏️ Изменить текст заявки', '📍 Локация', '🚫 Отменить заявку', '↩️ Назад'])
+                elif status[11] == 2 or status[11] == 6:
+                    markdownt = buttons.Buttons(['✅ Выполнено', '🖊️ Дополнить', '🙅‍♂️ Отказаться от заявки', '📎 Переназначить', '✏️ Изменить текст заявки', '📍 Локация', '🚫 Отменить заявку', '↩️ Назад'], 3)
+                else:
+                    markdownt = buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                    ActiveUser[call.from_user.id]['Finishedop'] = True
+                ActiveUser[call.from_user.id]['sentmes'] = bot.send_message(
+                    call.from_user.id,
+                    functions.curtask(call.data.split()[1]),
+                    reply_markup=markdownt
+                )
+                if status[11] != 3:
+                    ActiveUser[call.from_user.id]['task'] = call.data.split()[1]
+                    bot.register_next_step_handler(call.message, Task.task1)
+                else:
+                    ActiveUser[call.from_user.id]['Pause_main_handler'] = False
+                    ActiveUser[call.from_user.id]['Finishedop'] = True
+            elif call.data.split()[0] == 'confirm':# Принятие заявки
+                processing = bot.send_sticker(call.from_user.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+                if db.get_record_by_id('Tasks', call.data.split()[1])[11] == 5:
+                    stat = 6
+                else:
+                    stat = 2
+                if db.get_record_by_id('Tasks', call.data.split()[1])[11] > 1:
+                    functions.mesdel(call.from_user.id, processing.message_id)
+                    bot.send_message(
+                        call.from_user.id,
+                        "Вы не можете принять эту заявку! ее уже принял " + db.get_record_by_id('Users', db.get_record_by_id('Tasks', call.data.split()[1])[6])[2] + ' ' + db.get_record_by_id('Users', db.get_record_by_id('Tasks', call.data.split()[1])[6])[1],
+                        reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                    )
+                else:
+                    db.update_records(
+                        'Tasks',
+                        [
+                            'confirmed',
+                            'master',
+                            'status'
+                        ], [
+                            datetime.now().strftime("%d.%m.%Y %H:%M"),
+                            call.from_user.id,
+                            stat
+                        ],
+                        'id',
+                        call.data.split()[1]
+                    )
+                    functions.sendtoall(str(db.get_record_by_id('Users', call.from_user.id)[2]) + ' ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nПринял заявку:\n\n' + functions.curtask(call.data.split()[1]), '', call.from_user.id)
+                    functions.mesdel(call.from_user.id, processing.message_id)
+                    bot.send_message(
+                        call.from_user.id,
+                        "Вы приняли заявку...",
+                        reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                    )
+                    functions.deletentm(call.data.split()[1])
                 ActiveUser[call.from_user.id]['Pause_main_handler'] = False
                 ActiveUser[call.from_user.id]['Finishedop'] = True
-        elif call.data.split()[0] == 'confirm':# Принятие заявки
-            processing = bot.send_sticker(call.from_user.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
-            if db.get_record_by_id('Tasks', call.data.split()[1])[11] == 5:
-                stat = 6
-            else:
-                stat = 2
-            if db.get_record_by_id('Tasks', call.data.split()[1])[11] > 1:
-                functions.mesdel(call.from_user.id, processing.message_id)
+            elif call.data.split()[0] == 'set':# Назначение мастера
+                users = db.select_table('Users')
                 bot.send_message(
                     call.from_user.id,
-                    "Вы не можете принять эту заявку! ее уже принял " + db.get_record_by_id('Users', db.get_record_by_id('Tasks', call.data.split()[1])[6])[2] + ' ' + db.get_record_by_id('Users', db.get_record_by_id('Tasks', call.data.split()[1])[6])[1],
-                    reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+                    'Выберите мастера...',
+                    reply_markup=buttons.Buttons(functions.listgen(users, [0, 1, 2], 3), 1)
                 )
+                bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
+                ActiveUser[call.from_user.id]['task'] = call.data.split()[1]
+                bot.register_next_step_handler(call.message, Task.task4)
             else:
-                db.update_records(
-                    'Tasks',
-                    [
-                        'confirmed',
-                        'master',
-                        'status'
-                    ], [
-                        datetime.now().strftime("%d.%m.%Y %H:%M"),
-                        call.from_user.id,
-                        stat
-                    ],
-                    'id',
-                    call.data.split()[1]
-                )
-                functions.sendtoall(str(db.get_record_by_id('Users', call.from_user.id)[2]) + ' ' + str(db.get_record_by_id('Users', call.from_user.id)[1]) + '\nПринял заявку:\n\n' + functions.curtask(call.data.split()[1]), '', call.from_user.id)
-                functions.mesdel(call.from_user.id, processing.message_id)
                 bot.send_message(
-                    call.from_user.id,
-                    "Вы приняли заявку...",
+                    call.message,
+                    'Ошибка ввода.\nВыберите действие',
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
-                functions.deletentm(call.data.split()[1])
-            ActiveUser[call.from_user.id]['Pause_main_handler'] = False
-            ActiveUser[call.from_user.id]['Finishedop'] = True
-        elif call.data.split()[0] == 'set':# Назначение мастера
-            users = db.select_table('Users')
-            bot.send_message(
-                call.from_user.id,
-                'Выберите мастера...',
-                reply_markup=buttons.Buttons(functions.listgen(users, [0, 1, 2], 3), 1)
-            )
-            bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
-            ActiveUser[call.from_user.id]['task'] = call.data.split()[1]
-            bot.register_next_step_handler(call.message, Task.task4)
-        else:
-            bot.send_message(
-                call.message,
-                'Ошибка ввода.\nВыберите действие',
-                reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
-            )
-            ActiveUser[call.from_user.id]['Pause_main_handler'] = False
-    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+                ActiveUser[call.from_user.id]['Pause_main_handler'] = False
+            bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
 
 # =====================================  Ц И К Л И Ч Е С К И Й   З А П У С К   Б О Т А  =====================================
 

@@ -48,7 +48,7 @@ class report:
                         bot.send_message(
                             message.chat.id,
                             line,
-                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid],['ЛОКАЦИЯ', 'location '+taskid]])
                         )
             if tconf == 1:
                 if my == 1:
@@ -67,7 +67,7 @@ class report:
                         bot.send_message(
                             message.chat.id,
                             line,
-                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                            reply_markup=buttons.buttonsinline([['📎 Переназначить', 'set ' + taskid], ['Показать подробности', 'tasklist '+taskid],['ЛОКАЦИЯ', 'location '+taskid]])
                         )
             if tadded == 1:
                 taddedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 5}), [0, 1, 3, 4, 6], 1)
@@ -82,7 +82,7 @@ class report:
                         bot.send_message(
                             message.chat.id,
                             line,
-                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                            reply_markup=buttons.buttonsinline([['👍 Принять', 'confirm ' + taskid], ['📎 Назначить', 'set ' + taskid], ['Показать подробности', 'tasklist '+taskid], ['ЛОКАЦИЯ', 'location '+taskid]])
                         )
             if done == 1:
                 if my == 1:
@@ -101,7 +101,7 @@ class report:
                         bot.send_message(
                             message.chat.id,
                             line,
-                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid],['ЛОКАЦИЯ', 'location '+taskid]])
                         )
             if conf == 1:
                 if master == 0:
@@ -126,7 +126,7 @@ class report:
                         bot.send_message(
                             message.chat.id,
                             line,
-                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                            reply_markup=buttons.buttonsinline([['📎 Переназначить', 'set ' + taskid], ['Показать подробности', 'tasklist '+taskid],['ЛОКАЦИЯ', 'location '+taskid]])
                         )
             if added == 1:
                 addedtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 1}), [0, 1, 3, 4, 6], 1)
@@ -141,7 +141,7 @@ class report:
                         bot.send_message(
                             message.chat.id,
                             line,
-                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                            reply_markup=buttons.buttonsinline([['👍 Принять', 'confirm ' + taskid], ['📎 Назначить', 'set ' + taskid], ['Показать подробности', 'tasklist '+taskid],['ЛОКАЦИЯ', 'location '+taskid]])
                         )
             if canc == 1:
                 canceledtasks = functions.listgen(db.select_table_with_filters('Tasks', {'status': 4}, ['canceled'], [daterep+' 00:00'], [daterep+' 23:59']), [0, 1, 3, 4, 6], 1)
@@ -156,7 +156,7 @@ class report:
                         bot.send_message(
                             message.chat.id,
                             line,
-                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid]])
+                            reply_markup=buttons.buttonsinline([['Показать подробности', 'tasklist '+taskid],['ЛОКАЦИЯ', 'location '+taskid]])
                         )
             if dr == 1:
                 reports = '\nВыполнено - ' + str(len(donetasks)) + '\nНе распределенных - ' + str(len(addedtasks)) + '\nВ работе у мастеров - ' + str(len(confirmedtasks)) + '\nОтменено - ' + str(len(canceledtasks))
