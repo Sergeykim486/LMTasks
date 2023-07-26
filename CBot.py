@@ -170,6 +170,81 @@ def settingsmes(userid):
         reply_markup=buttons.Buttons(but, 3)
     )
 
+def mainmenu(message):
+    if message.text == ActiveUser[message.chat.id]["dict"]["newtask"]:
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["entertask"],
+            reply_markup=buttons.clearbuttons()
+        )
+        bot.register_next_step_handler(message, Main.confirmtask0)
+    elif message.text == ActiveUser[message.chat.id]["dict"]["mytasks"]:
+        filt = {'contragent': db.get_record_by_id("Clients", message.chat.id)[1], 'status': 2, 'status': 1}
+        print(filt)
+        tasks = functions.listgen(db.select_table_with_filters('Tasks', filt), [0, 1, 3, 4, 6], 1)
+        if len(tasks) != 0:
+            for line in tasks:
+                bot.send_message(
+                    message.chat.id,
+                    functions.curtask(line.split()[2]),
+                    reply_markup=buttons.clearbuttons()
+                )
+        else:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["searchnone"],
+                reply_markup=buttons.clearbuttons()
+            )
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["hi"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+        )
+        bot.register_next_step_handler(message, Main.main1)
+    elif message.text == ActiveUser[message.chat.id]["dict"]["review"]:
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["enterreview"],
+            reply_markup=buttons.clearbuttons()
+        )
+        bot.register_next_step_handler(message, Main.confirmval1)
+    elif message.text == ActiveUser[message.chat.id]["dict"]["rate"]:
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["rating"],
+            reply_markup=buttons.Buttons(['5️⃣⭐️⭐️⭐️⭐️⭐️','4️⃣⭐️⭐️⭐️⭐️','3️⃣⭐️⭐️⭐️','2️⃣⭐️⭐️','1️⃣⭐️', '0️⃣'], 2)
+        )
+        bot.register_next_step_handler(message, Main.rate1)
+    elif message.text == ActiveUser[message.chat.id]["dict"]["settings"]:
+        sett = db.get_record_by_id('Clients', message.chat.id)
+        ActiveUser[message.chat.id]['code'] = sett[1]
+        ActiveUser[message.chat.id]['name'] = sett[2]
+        ActiveUser[message.chat.id]['person'] = sett[3]
+        ActiveUser[message.chat.id]['adr'] = sett[4]
+        ActiveUser[message.chat.id]['phone'] = sett[5]
+        ActiveUser[message.chat.id]['lang'] = sett[6]
+        ActiveUser[message.chat.id]['status'] = sett[7]
+        cont = db.get_record_by_id('Contragents', sett[1])
+        ActiveUser[message.chat.id]['type'] = cont[5]
+        ActiveUser[message.chat.id]["contract"] = cont[6]
+        print(ActiveUser[message.chat.id]['status'])
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
+    elif message.text == 'Sendtoall@labmono2858':
+        bot.send_message(
+            message.chat.id,
+            'Напишите ваше сообщение.',
+            reply_markup=buttons.Buttons(['Main Menu'])
+        )
+        bot.register_next_step_handler(message, allchats.chat1)
+    else:
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["errorcom"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+        )
+        bot.register_next_step_handler(message, Main.main1)
+
 @bot.message_handler(commands=['start'])
 
 def send_welcome(message):
@@ -220,6 +295,47 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 
+def check_user_id(message):
+    user_id = message.chat.id
+    global ActiveUser
+    ActiveUser[message.chat.id] = {}
+    try:
+        username = db.get_record_by_id('Clients', message.chat.id)[2]
+        logging.info(f'{username} Отправил запрос - {message.text}')
+    except Exception as e:
+        pass
+    ActiveUser[message.chat.id]["id"] = message.chat.id
+    finduser = db.search_record("Clients", "id", user_id)
+    if len(finduser) == 0:
+        ActiveUser[message.chat.id]["code"] = None
+        ActiveUser[message.chat.id]["name"] = None
+        ActiveUser[message.chat.id]["person"] = None
+        ActiveUser[message.chat.id]["addr"] = None
+        ActiveUser[message.chat.id]["phone"] = None
+        ActiveUser[message.chat.id]["lang"] = None
+        ActiveUser[message.chat.id]["status"] = None
+        ActiveUser[message.chat.id]['code'] = None
+        ActiveUser[message.chat.id]['name'] = None
+        ActiveUser[message.chat.id]['addr'] = None
+        ActiveUser[message.chat.id]['person'] = None
+        ActiveUser[message.chat.id]['phone'] = None
+        ActiveUser[message.chat.id]['type'] = None
+        ActiveUser[message.chat.id]["contract"] = None
+        bot.send_message(
+            user_id,
+            f'Выберите язык / Tilini tanlang / Select language',
+            reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
+        )
+        bot.register_next_step_handler(message, Reg.reg1)
+    else:
+        if db.get_record_by_id("Clients", message.chat.id)[6] == "ru":
+            ActiveUser[message.chat.id]["dict"] = config.ru
+        elif db.get_record_by_id("Clients", message.chat.id)[6] == "en":
+            ActiveUser[message.chat.id]["dict"] = config.en
+        elif db.get_record_by_id("Clients", message.chat.id)[6] == "uz":
+            ActiveUser[message.chat.id]["dict"] = config.uz
+        mainmenu(message)
+
 class Main():
     
     def main1(message):
@@ -230,79 +346,7 @@ class Main():
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == ActiveUser[message.chat.id]["dict"]["newtask"]:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["entertask"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, Main.confirmtask0)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["mytasks"]:
-            filt = {'contragent': db.get_record_by_id("Clients", message.chat.id)[1], 'status': 2, 'status': 1}
-            print(filt)
-            tasks = functions.listgen(db.select_table_with_filters('Tasks', filt), [0, 1, 3, 4, 6], 1)
-            if len(tasks) != 0:
-                for line in tasks:
-                    bot.send_message(
-                        message.chat.id,
-                        functions.curtask(line.split()[2]),
-                        reply_markup=buttons.clearbuttons()
-                    )
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    ActiveUser[message.chat.id]["dict"]["searchnone"],
-                    reply_markup=buttons.clearbuttons()
-                )
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["hi"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
-            )
-            bot.register_next_step_handler(message, Main.main1)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["review"]:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enterreview"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, Main.confirmval1)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["rate"]:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["rating"],
-                reply_markup=buttons.Buttons(['5️⃣⭐️⭐️⭐️⭐️⭐️','4️⃣⭐️⭐️⭐️⭐️','3️⃣⭐️⭐️⭐️','2️⃣⭐️⭐️','1️⃣⭐️', '0️⃣'], 2)
-            )
-            bot.register_next_step_handler(message, Main.rate1)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["settings"]:
-            sett = db.get_record_by_id('Clients', message.chat.id)
-            ActiveUser[message.chat.id]['code'] = sett[1]
-            ActiveUser[message.chat.id]['name'] = sett[2]
-            ActiveUser[message.chat.id]['person'] = sett[3]
-            ActiveUser[message.chat.id]['adr'] = sett[4]
-            ActiveUser[message.chat.id]['phone'] = sett[5]
-            ActiveUser[message.chat.id]['lang'] = sett[6]
-            ActiveUser[message.chat.id]['status'] = sett[7]
-            cont = db.get_record_by_id('Contragents', sett[1])
-            ActiveUser[message.chat.id]['type'] = cont[5]
-            ActiveUser[message.chat.id]["contract"] = cont[6]
-            print(ActiveUser[message.chat.id]['status'])
-            settingsmes(message.chat.id)
-            bot.register_next_step_handler(message, settings.set1)
-        elif message.text == 'Sendtoall@labmono2858':
-            bot.send_message(
-                message.chat.id,
-                'Напишите ваше сообщение.',
-                reply_markup=buttons.Buttons(['Main Menu'])
-            )
-            bot.register_next_step_handler(message, allchats.chat1)
-        else:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["errorcom"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
-            )
-            bot.register_next_step_handler(message, Main.main1)
+        mainmenu(message)
 
     def confirmval1(message):
         global ActiveUser
@@ -312,13 +356,21 @@ class Main():
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]["review"] = message.text
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["confirm"] + '\n' + ActiveUser[message.chat.id]["dict"]["review"],
-            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["bsend"], ActiveUser[message.chat.id]["dict"]["bn"]])
-        )
-        bot.register_next_step_handler(message, Main.confirmval2)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            bot.register_next_step_handler(message, Main.main1)
+            ActiveUser[message.chat.id]["review"] = message.text
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["confirm"] + '\n' + ActiveUser[message.chat.id]["dict"]["review"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["bsend"], ActiveUser[message.chat.id]["dict"]["bn"]])
+            )
+            bot.register_next_step_handler(message, Main.confirmval2)
     def confirmval2(message):
         global ActiveUser
         try:
@@ -327,23 +379,30 @@ class Main():
         except Exception as e:
             logging.error(e)
             pass
-        db.insert_record(
-            "rev",
-            [
-                None,
-                datetime.now().strftime("%d.%m.%Y %H:%M"),
+        if message.text == "/start":
+            bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["review"],
-                0
-            ],
-        )
-        messs = str(ActiveUser[message.chat.id]["dict"]["success"]) + "\n" + str(ActiveUser[message.chat.id]["dict"]["hi"])
-        bot.send_message(
-            message.chat.id,
-            messs,
-            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
-        )
-        bot.register_next_step_handler(message, Main.main1)
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            db.insert_record(
+                "rev",
+                [
+                    None,
+                    datetime.now().strftime("%d.%m.%Y %H:%M"),
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["review"],
+                    0
+                ],
+            )
+            messs = str(ActiveUser[message.chat.id]["dict"]["success"]) + "\n" + str(ActiveUser[message.chat.id]["dict"]["hi"])
+            bot.send_message(
+                message.chat.id,
+                messs,
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+            bot.register_next_step_handler(message, Main.main1)
 
     def rate1(message):
         global ActiveUser
@@ -353,13 +412,20 @@ class Main():
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]["rating"] = message.text
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["confirm"] + '\n' + ActiveUser[message.chat.id]["dict"]["rating"],
-            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["bsend"], ActiveUser[message.chat.id]["dict"]["bn"]])
-        )
-        bot.register_next_step_handler(message, Main.rate2)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            ActiveUser[message.chat.id]["rating"] = message.text
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["confirm"] + '\n' + ActiveUser[message.chat.id]["dict"]["rating"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["bsend"], ActiveUser[message.chat.id]["dict"]["bn"]])
+            )
+            bot.register_next_step_handler(message, Main.rate2)
     def rate2(message):
         global ActiveUser
         try:
@@ -368,23 +434,30 @@ class Main():
         except Exception as e:
             logging.error(e)
             pass
-        db.insert_record(
-            "rev",
-            [
-                None,
-                datetime.now().strftime("%d.%m.%Y %H:%M"),
+        if message.text == "/start":
+            bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["rating"],
-                0
-            ],
-        )
-        messs = str(ActiveUser[message.chat.id]["dict"]["success"]) + "\n" + str(ActiveUser[message.chat.id]["dict"]["hi"])
-        bot.send_message(
-            message.chat.id,
-            messs,
-            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
-        )
-        bot.register_next_step_handler(message, Main.main1)
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            db.insert_record(
+                "rev",
+                [
+                    None,
+                    datetime.now().strftime("%d.%m.%Y %H:%M"),
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["rating"],
+                    0
+                ],
+            )
+            messs = str(ActiveUser[message.chat.id]["dict"]["success"]) + "\n" + str(ActiveUser[message.chat.id]["dict"]["hi"])
+            bot.send_message(
+                message.chat.id,
+                messs,
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+            bot.register_next_step_handler(message, Main.main1)
 
     def confirmtask0(message):
         global ActiveUser
@@ -394,20 +467,27 @@ class Main():
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]['task'] = message.text
-        locations = db.select_table_with_filters('Locations', {'inn': db.get_record_by_id('Clients', message.chat.id)[1]})
-        btns = []
-        btns.append(ActiveUser[message.chat.id]["dict"]["locleave"])
-        if len(locations) > 0:
-            for loc in locations:
-                btns.append(str(loc[0]) + ' - ' + str(loc[2]))
-        btns.append(ActiveUser[message.chat.id]["dict"]["locadd"])
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["locwhere"],
-            reply_markup=buttons.Buttons(btns)
-        )
-        bot.register_next_step_handler(message, Main.confirmtask01)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            ActiveUser[message.chat.id]['task'] = message.text
+            locations = db.select_table_with_filters('Locations', {'inn': db.get_record_by_id('Clients', message.chat.id)[1]})
+            btns = []
+            btns.append(ActiveUser[message.chat.id]["dict"]["locleave"])
+            if len(locations) > 0:
+                for loc in locations:
+                    btns.append(str(loc[0]) + ' - ' + str(loc[2]))
+            btns.append(ActiveUser[message.chat.id]["dict"]["locadd"])
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locwhere"],
+                reply_markup=buttons.Buttons(btns)
+            )
+            bot.register_next_step_handler(message, Main.confirmtask01)
     def confirmtask01(message):
         global ActiveUser
         try:
@@ -416,29 +496,36 @@ class Main():
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == ActiveUser[message.chat.id]["dict"]["locleave"]:
-            ActiveUser[message.chat.id]['location'] = None
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                message.text + '\n' + ActiveUser[message.chat.id]["dict"]["confirm"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, Main.confirmtask2)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["locadd"]:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["locsendloc"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, ntnl)
-        elif len(message.text.split()) > 1 and (message.text.split()[0].isdigit):
-            ActiveUser[message.chat.id]['location'] = int(message.text.split()[0])
-            bot.send_message(
-                message.chat.id,
-                message.text + '\n' + ActiveUser[message.chat.id]["dict"]["confirm"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
-            )
-            bot.register_next_step_handler(message, Main.confirmtask2)
+        else:
+            if message.text == ActiveUser[message.chat.id]["dict"]["locleave"]:
+                ActiveUser[message.chat.id]['location'] = None
+                bot.send_message(
+                    message.chat.id,
+                    message.text + '\n' + ActiveUser[message.chat.id]["dict"]["confirm"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
+                )
+                bot.register_next_step_handler(message, Main.confirmtask2)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["locadd"]:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["locsendloc"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, ntnl)
+            elif len(message.text.split()) > 1 and (message.text.split()[0].isdigit):
+                ActiveUser[message.chat.id]['location'] = int(message.text.split()[0])
+                bot.send_message(
+                    message.chat.id,
+                    message.text + '\n' + ActiveUser[message.chat.id]["dict"]["confirm"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
+                )
+                bot.register_next_step_handler(message, Main.confirmtask2)
     def confirmtask2(message):
         global ActiveUser
         try:
@@ -447,62 +534,69 @@ class Main():
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == ActiveUser[message.chat.id]["dict"]["bn"]:
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["hi"],
+                ActiveUser[message.chat.id]["dict"]["welcome"],
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, Main.main1)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["by"]:
-            task = [
-                None,
-                datetime.now().strftime("%d.%m.%Y %H:%M"),
-                0,
-                db.get_record_by_id("Clients", message.chat.id)[1],
-                ActiveUser[message.chat.id]['task'],
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                0,
-                ActiveUser[message.chat.id]['location']
-            ]
-            db.insert_record('Tasks',task)
-            tasknum = db.get_last_record("Tasks")[0]
-            db.insert_record(
-                'ClTasks',
-                [
-                    tasknum,
-                    db.get_record_by_id("Clients", message.chat.id)[1],
-                    0
-                ]
-            )
-            # try:
-            #     tasks = db.get_record_by_id("Clients", message.chat.id)[8]
-            # except Exception as e:
-            #     tasks = str(tasknum)
-            #     pass
-            # if tasknum != tasks:
-            #     tasks = str(tasks) + ',' + str(tasknum)
-            # print(tasks)
-            # db.update_records('Clients', ['mts'], [tasks], 'id', message.chat.id)
-            messs = ActiveUser[message.chat.id]["dict"]["success"] + "\n" + ActiveUser[message.chat.id]["dict"]["hi"]
-            bot.send_message(
-                message.chat.id,
-                messs,
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
-            )
-            bot.register_next_step_handler(message, Main.main1)
         else:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["errorcom"] + " " + ActiveUser[message.chat.id]["dict"]["confirm"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id][""]])
-            )
-            bot.register_next_step_handler(message, Main.confirmtask2)
+            if message.text == ActiveUser[message.chat.id]["dict"]["bn"]:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["hi"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+                )
+                bot.register_next_step_handler(message, Main.main1)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["by"]:
+                task = [
+                    None,
+                    datetime.now().strftime("%d.%m.%Y %H:%M"),
+                    0,
+                    db.get_record_by_id("Clients", message.chat.id)[1],
+                    ActiveUser[message.chat.id]['task'],
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    0,
+                    ActiveUser[message.chat.id]['location']
+                ]
+                db.insert_record('Tasks',task)
+                tasknum = db.get_last_record("Tasks")[0]
+                db.insert_record(
+                    'ClTasks',
+                    [
+                        tasknum,
+                        db.get_record_by_id("Clients", message.chat.id)[1],
+                        0
+                    ]
+                )
+                # try:
+                #     tasks = db.get_record_by_id("Clients", message.chat.id)[8]
+                # except Exception as e:
+                #     tasks = str(tasknum)
+                #     pass
+                # if tasknum != tasks:
+                #     tasks = str(tasks) + ',' + str(tasknum)
+                # print(tasks)
+                # db.update_records('Clients', ['mts'], [tasks], 'id', message.chat.id)
+                messs = ActiveUser[message.chat.id]["dict"]["success"] + "\n" + ActiveUser[message.chat.id]["dict"]["hi"]
+                bot.send_message(
+                    message.chat.id,
+                    messs,
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+                )
+                bot.register_next_step_handler(message, Main.main1)
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["errorcom"] + " " + ActiveUser[message.chat.id]["dict"]["confirm"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id][""]])
+                )
+                bot.register_next_step_handler(message, Main.confirmtask2)
 
 class Reg:
     
@@ -513,22 +607,29 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        if message.text == "🇬🇧 English":
-            ActiveUser[message.chat.id]["lang"] = 'en'
-            ActiveUser[message.chat.id]["dict"] = config.en
-        elif message.text == "🇺🇿 O'zbekcha":
-            ActiveUser[message.chat.id]["lang"] = 'uz'
-            ActiveUser[message.chat.id]["dict"] = config.uz
-        elif message.text == "🇷🇺 Русский":
-            ActiveUser[message.chat.id]["lang"] = 'ru'
-            ActiveUser[message.chat.id]["dict"] = config.ru
-        logging.info(f"Для пользователя {message.chat.id} установлен язык {message.text}")
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["omporindivid"],
-            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["bcompany"], ActiveUser[message.chat.id]["dict"]["bindivid"]])
-        )
-        bot.register_next_step_handler(message, Reg.comp1)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            if message.text == "🇬🇧 English":
+                ActiveUser[message.chat.id]["lang"] = 'en'
+                ActiveUser[message.chat.id]["dict"] = config.en
+            elif message.text == "🇺🇿 O'zbekcha":
+                ActiveUser[message.chat.id]["lang"] = 'uz'
+                ActiveUser[message.chat.id]["dict"] = config.uz
+            elif message.text == "🇷🇺 Русский":
+                ActiveUser[message.chat.id]["lang"] = 'ru'
+                ActiveUser[message.chat.id]["dict"] = config.ru
+            logging.info(f"Для пользователя {message.chat.id} установлен язык {message.text}")
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["omporindivid"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["bcompany"], ActiveUser[message.chat.id]["dict"]["bindivid"]])
+            )
+            bot.register_next_step_handler(message, Reg.comp1)
         
     def comp1(message):
         global ActiveUser
@@ -537,33 +638,40 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        if message.text == ActiveUser[message.chat.id]['dict']['bcompany']:
-            logging.info('Выбрана фирма')
-            ActiveUser[message.chat.id]["status"] = 'Организация'
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["contractifno"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]['bskip']])
-            )
-            bot.register_next_step_handler(message, Reg.reg2)
-        elif message.text == ActiveUser[message.chat.id]['dict']['bindivid']:
-            logging.info('Выбрано физ лицо')
-            ActiveUser[message.chat.id]["status"] = 'Физлицо'
-            ActiveUser[message.chat.id]["contract"] = '...'
-            ActiveUser[message.chat.id]['type'] = 3
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["entername"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, Reg.reg3)
-        else:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["errorcom"],
+                ActiveUser[message.chat.id]["dict"]["welcome"],
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, settings.set1)
+        else:
+            if message.text == ActiveUser[message.chat.id]['dict']['bcompany']:
+                logging.info('Выбрана фирма')
+                ActiveUser[message.chat.id]["status"] = 'Организация'
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["contractifno"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]['bskip']])
+                )
+                bot.register_next_step_handler(message, Reg.reg2)
+            elif message.text == ActiveUser[message.chat.id]['dict']['bindivid']:
+                logging.info('Выбрано физ лицо')
+                ActiveUser[message.chat.id]["status"] = 'Физлицо'
+                ActiveUser[message.chat.id]["contract"] = '...'
+                ActiveUser[message.chat.id]['type'] = 3
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["entername"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, Reg.reg3)
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["errorcom"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+                )
+                bot.register_next_step_handler(message, settings.set1)
     
     def reg2(message):
         global ActiveUser
@@ -572,14 +680,21 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        ActiveUser[message.chat.id]["contract"] = message.text
-        ActiveUser[message.chat.id]['type'] = 2
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["entercname"],
-            reply_markup=buttons.clearbuttons()
-        )
-        bot.register_next_step_handler(message, Reg.reg3)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            ActiveUser[message.chat.id]["contract"] = message.text
+            ActiveUser[message.chat.id]['type'] = 2
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["entercname"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, Reg.reg3)
         
     def reg3(message):
         global ActiveUser
@@ -588,21 +703,28 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        ActiveUser[message.chat.id]["name"] = message.text
-        if ActiveUser[message.chat.id]['status'] == 'Организация':
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enterinn"],
-                reply_markup=buttons.clearbuttons()
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, Reg.reg4)
         else:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enterpinfl"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, Reg.reg5)
+            ActiveUser[message.chat.id]["name"] = message.text
+            if ActiveUser[message.chat.id]['status'] == 'Организация':
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enterinn"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, Reg.reg4)
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enterpinfl"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, Reg.reg5)
     
     def reg4(message):
         global ActiveUser
@@ -611,13 +733,28 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        ActiveUser[message.chat.id]["code"] = message.text
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["enterperson"],
-            reply_markup=buttons.clearbuttons()
-        )
-        bot.register_next_step_handler(message, Reg.reg5)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            if message.text.isdigit():
+                ActiveUser[message.chat.id]["code"] = message.text
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enterperson"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, Reg.reg5)
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]['dict']['innerror'],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, Reg.reg4)
         
     def reg5(message):
         global ActiveUser
@@ -626,17 +763,24 @@ class Reg:
             logging.info(f'{username} Отправил запрос - {message.text}')
         except Exception as e:
             pass
-        if ActiveUser[message.chat.id]["status"] == 'Организация':
-            ActiveUser[message.chat.id]["person"] = message.text
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
         else:
-            ActiveUser[message.chat.id]["code"] = message.text
-            ActiveUser[message.chat.id]["person"] = '...'
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["enteradr"],
-            reply_markup=buttons.clearbuttons()
-        )
-        bot.register_next_step_handler(message, reg6)
+            if ActiveUser[message.chat.id]["status"] == 'Организация':
+                ActiveUser[message.chat.id]["person"] = message.text
+            else:
+                ActiveUser[message.chat.id]["code"] = message.text
+                ActiveUser[message.chat.id]["person"] = '...'
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["enteradr"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, reg6)
         
     def reg7(message):
         global ActiveUser
@@ -646,21 +790,28 @@ class Reg:
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]["phone"] = message.text
-        if ActiveUser[message.chat.id]["status"] == 'Организация':
-            mess = "\n" + str(ActiveUser[message.chat.id]["dict"]["scname"]) + " " + str(ActiveUser[message.chat.id]["name"])
-            mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["sperson"]) + " " + str(ActiveUser[message.chat.id]["person"])
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
         else:
-            mess = "\n" + str(ActiveUser[message.chat.id]["dict"]["sname"]) + " " + str(ActiveUser[message.chat.id]["name"])
-        mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["sadr"]) + " " + str(ActiveUser[message.chat.id]["addr"])
-        mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["sphone"]) + " " + str(ActiveUser[message.chat.id]["phone"])
-        mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["slang"]) + " " + str(ActiveUser[message.chat.id]["lang"])
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["confirm"] + mess,
-            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
-        )
-        bot.register_next_step_handler(message, Reg.regsave)
+            ActiveUser[message.chat.id]["phone"] = message.text
+            if ActiveUser[message.chat.id]["status"] == 'Организация':
+                mess = "\n" + str(ActiveUser[message.chat.id]["dict"]["scname"]) + " " + str(ActiveUser[message.chat.id]["name"])
+                mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["sperson"]) + " " + str(ActiveUser[message.chat.id]["person"])
+            else:
+                mess = "\n" + str(ActiveUser[message.chat.id]["dict"]["sname"]) + " " + str(ActiveUser[message.chat.id]["name"])
+            mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["sadr"]) + " " + str(ActiveUser[message.chat.id]["addr"])
+            mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["sphone"]) + " " + str(ActiveUser[message.chat.id]["phone"])
+            mess = mess + "\n" + str(ActiveUser[message.chat.id]["dict"]["slang"]) + " " + str(ActiveUser[message.chat.id]["lang"])
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["confirm"] + mess,
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
+            )
+            bot.register_next_step_handler(message, Reg.regsave)
         
     def regsave(message):
         global ActiveUser
@@ -670,69 +821,58 @@ class Reg:
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == ActiveUser[message.chat.id]["dict"]["by"]:
-                
-            db.insert_record(
-                "Clients",
-                [
-                    message.chat.id,
-                    ActiveUser[message.chat.id]["code"],
-                    ActiveUser[message.chat.id]["name"],
-                    ActiveUser[message.chat.id]["person"],
-                    ActiveUser[message.chat.id]["addr"],
-                    ActiveUser[message.chat.id]["phone"],
-                    ActiveUser[message.chat.id]["lang"],
-                    ActiveUser[message.chat.id]["status"],
-                    None
-                ]
-            )
-            contragent = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]["code"])
-            if contragent is None:
-                db.insert_record(
-                    'Contragents',
-                    [
-                        ActiveUser[message.chat.id]['code'],
-                        ActiveUser[message.chat.id]['name'],
-                        ActiveUser[message.chat.id]['addr'],
-                        ActiveUser[message.chat.id]['person'],
-                        ActiveUser[message.chat.id]['phone'],
-                        ActiveUser[message.chat.id]['type'],
-                        ActiveUser[message.chat.id]["contract"]
-                    ]
-                )
-            # else:
-            #     cl = db.get_record_by_id("Contragents", ActiveUser[message.chat.id]['code'])
-            #     print(f"Зарегистрировался существующий клиент - контрагент {cl}")
-            #     db.update_records(
-            #         'Contragents',
-            #         [
-            #             'cadr',
-            #             'cperson',
-            #             'cphone'
-            #         ],
-            #         [
-            #             str(cl[2]) + '\n' + str(ActiveUser[message.chat.id]['addr']),
-            #             str(cl[3]) + ', ' + str(ActiveUser[message.chat.id]['person']),
-            #             str(cl[4]) + ', ' + str(ActiveUser[message.chat.id]['phone'])
-            #         ],
-            #         'id',
-            #         cl[1]
-            #     )
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["success"] + "\n" + ActiveUser[message.chat.id]["dict"]["hi"],
+                ActiveUser[message.chat.id]["dict"]["welcome"],
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, Main.main1)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["bn"]:
-            bot.send_message(
-                message.chat.id,
-                f"Пожалуйста пройдите регистрацию.\nIltimos ro'yxatdan o'ting\nRegister first please/\n\nВыберите язык / Tilini tanlang / Select language",
-                reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
-            )
-            bot.register_next_step_handler(message, Reg.reg1)
         else:
-            bot.register_next_step_handler(message, Reg.regsave)
+            if message.text == ActiveUser[message.chat.id]["dict"]["by"]:
+                    
+                db.insert_record(
+                    "Clients",
+                    [
+                        message.chat.id,
+                        ActiveUser[message.chat.id]["code"],
+                        ActiveUser[message.chat.id]["name"],
+                        ActiveUser[message.chat.id]["person"],
+                        ActiveUser[message.chat.id]["addr"],
+                        ActiveUser[message.chat.id]["phone"],
+                        ActiveUser[message.chat.id]["lang"],
+                        ActiveUser[message.chat.id]["status"],
+                        None
+                    ]
+                )
+                contragent = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]["code"])
+                if contragent is None:
+                    db.insert_record(
+                        'Contragents',
+                        [
+                            ActiveUser[message.chat.id]['code'],
+                            ActiveUser[message.chat.id]['name'],
+                            ActiveUser[message.chat.id]['addr'],
+                            ActiveUser[message.chat.id]['person'],
+                            ActiveUser[message.chat.id]['phone'],
+                            ActiveUser[message.chat.id]['type'],
+                            ActiveUser[message.chat.id]["contract"]
+                        ]
+                    )
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["success"] + "\n" + ActiveUser[message.chat.id]["dict"]["hi"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+                )
+                bot.register_next_step_handler(message, Main.main1)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["bn"]:
+                bot.send_message(
+                    message.chat.id,
+                    f"Пожалуйста пройдите регистрацию.\nIltimos ro'yxatdan o'ting\nRegister first please/\n\nВыберите язык / Tilini tanlang / Select language",
+                    reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
+                )
+                bot.register_next_step_handler(message, Reg.reg1)
+            else:
+                bot.register_next_step_handler(message, Reg.regsave)
 
 class settings:
     def set1(message):
@@ -743,166 +883,165 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == ActiveUser[message.chat.id]['dict']['bsave']:
-            if ActiveUser[message.chat.id]['status'] == 'Организация':
-                person = str(ActiveUser[message.chat.id]['person'])
-            else:
-                person = '...'
-            db.update_records(
-                'Clients',
-                [
-                    'code',
-                    'name',
-                    'person',
-                    'addr',
-                    'phone',
-                    'lang',
-                    'status'
-                ],
-                [
-                    ActiveUser[message.chat.id]['code'],
-                    ActiveUser[message.chat.id]['name'],
-                    person,
-                    ActiveUser[message.chat.id]['adr'],
-                    ActiveUser[message.chat.id]['phone'],
-                    ActiveUser[message.chat.id]['lang'],
-                    ActiveUser[message.chat.id]['status']
-                ],
-                'id',
-                message.chat.id
-            )
-            if db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code']) is None:
-                db.insert_record(
-                    'Contragents',
-                    [
-                        ActiveUser[message.chat.id]['code'],
-                        ActiveUser[message.chat.id]['name'],
-                        ActiveUser[message.chat.id]['adr'],
-                        person,
-                        ActiveUser[message.chat.id]['phone'],
-                        None,
-                        None
-                    ]
-                )
-            else:
-                cont = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code'])
-                if cont[3] is None:
-                    contrp = ''
-                else:
-                    contrp = cont[3]
-                db.update_records(
-                    'Contragents',
-                    [
-                        'cadr',
-                        'cperson',
-                        'cphone'
-                    ],
-                    [
-                        cont[2] + '\n' + ActiveUser[message.chat.id]['adr'],
-                        contrp + '\n' + person,
-                        cont[4] + '\n' + ActiveUser[message.chat.id]['phone']
-                    ],
-                    'id',
-                    cont[0]
-                )
-            if db.get_record_by_id("Clients", message.chat.id)[6] == "ru":
-                ActiveUser[message.chat.id]["dict"] = config.ru
-            elif db.get_record_by_id("Clients", message.chat.id)[6] == "en":
-                ActiveUser[message.chat.id]["dict"] = config.en
-            elif db.get_record_by_id("Clients", message.chat.id)[6] == "uz":
-                ActiveUser[message.chat.id]["dict"] = config.uz
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
                 ActiveUser[message.chat.id]["dict"]["welcome"],
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, Main.main1)
-        elif message.text == ActiveUser[message.chat.id]['dict']['bcancel']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["hi"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
-            )
-            bot.register_next_step_handler(message, Main.main1)
-        elif message.text == ActiveUser[message.chat.id]['dict']['binn']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enterinn"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, settings.inn)
-        elif message.text == ActiveUser[message.chat.id]['dict']['bpinfl']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enterpinfl"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, settings.pinfl)
-        elif message.text == ActiveUser[message.chat.id]['dict']['bmyname']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["entername"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, settings.myname)
-        # elif message.text == ActiveUser[message.chat.id]['dict']['bcname']:
-        #     bot.send_message(
-        #         message.chat.id,
-        #         ActiveUser[message.chat.id]["dict"]["entercname"],
-        #         reply_markup=buttons.clearbuttons()
-        #     )
-        #     bot.register_next_step_handler(message, settings.cname)
-        elif message.text == ActiveUser[message.chat.id]['dict']['bperson']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enterperson"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, settings.person)
-        elif message.text == ActiveUser[message.chat.id]['dict']['badr']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enteradr"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, adr)
-        elif message.text == ActiveUser[message.chat.id]['dict']['bphone']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enterphone"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, settings.phone)
-        elif message.text == ActiveUser[message.chat.id]['dict']['blang']:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["selectlang"],
-                reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
-            )
-            bot.register_next_step_handler(message, settings.lang)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["setmylocs"]:
-            usercode = db.get_record_by_id('Clients', message.chat.id)[1]
-            locs = db.select_table_with_filters('Locations', {'inn': usercode})
-            if len(locs) > 0:
-                for location in locs:
-                    loc = telebot.types.Location(location[4], location[3])
-                    bot.send_location(message.chat.id, loc.latitude, loc.longitude)
-                    bot.send_message(
-                        message.chat.id,
-                        str(location[2]),
-                        reply_markup=buttons.buttonsinline([[ActiveUser[message.chat.id]["dict"]["setchange"], 'location '+str(location[0])]])
-                    )
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["setmestochange"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["locadd"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
-            )
-            bot.register_next_step_handler(message, settings.locations1)
         else:
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-            settingsmes(message.chat.id)
-            bot.register_next_step_handler(message, settings.set1)
+            if message.text == ActiveUser[message.chat.id]['dict']['bsave']:
+                if ActiveUser[message.chat.id]['status'] == 'Организация':
+                    person = str(ActiveUser[message.chat.id]['person'])
+                else:
+                    person = '...'
+                db.update_records(
+                    'Clients',
+                    [
+                        'code',
+                        'name',
+                        'person',
+                        'addr',
+                        'phone',
+                        'lang',
+                        'status'
+                    ],
+                    [
+                        ActiveUser[message.chat.id]['code'],
+                        ActiveUser[message.chat.id]['name'],
+                        person,
+                        ActiveUser[message.chat.id]['adr'],
+                        ActiveUser[message.chat.id]['phone'],
+                        ActiveUser[message.chat.id]['lang'],
+                        ActiveUser[message.chat.id]['status']
+                    ],
+                    'id',
+                    message.chat.id
+                )
+                if db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code']) is None:
+                    db.insert_record(
+                        'Contragents',
+                        [
+                            ActiveUser[message.chat.id]['code'],
+                            ActiveUser[message.chat.id]['name'],
+                            ActiveUser[message.chat.id]['adr'],
+                            person,
+                            ActiveUser[message.chat.id]['phone'],
+                            None,
+                            None
+                        ]
+                    )
+                else:
+                    cont = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code'])
+                    if cont is not None:
+                        db.update_records(
+                            'Contragents',
+                            [
+                                'cadr',
+                                'cperson',
+                                'cphone'
+                            ],
+                            [
+                                ActiveUser[message.chat.id]['adr'],
+                                person,
+                                ActiveUser[message.chat.id]['phone']
+                            ],
+                            'id',
+                            cont[0]
+                        )
+                if db.get_record_by_id("Clients", message.chat.id)[6] == "ru":
+                    ActiveUser[message.chat.id]["dict"] = config.ru
+                elif db.get_record_by_id("Clients", message.chat.id)[6] == "en":
+                    ActiveUser[message.chat.id]["dict"] = config.en
+                elif db.get_record_by_id("Clients", message.chat.id)[6] == "uz":
+                    ActiveUser[message.chat.id]["dict"] = config.uz
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["welcome"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+                )
+                bot.register_next_step_handler(message, Main.main1)
+            elif message.text == ActiveUser[message.chat.id]['dict']['bcancel']:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["hi"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+                )
+                bot.register_next_step_handler(message, Main.main1)
+            elif message.text == ActiveUser[message.chat.id]['dict']['binn']:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enterinn"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, settings.inn)
+            elif message.text == ActiveUser[message.chat.id]['dict']['bpinfl']:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enterpinfl"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, settings.pinfl)
+            elif message.text == ActiveUser[message.chat.id]['dict']['bmyname']:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["entername"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, settings.myname)
+            elif message.text == ActiveUser[message.chat.id]['dict']['bperson']:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enterperson"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, settings.person)
+            elif message.text == ActiveUser[message.chat.id]['dict']['badr']:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enteradr"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, adr)
+            elif message.text == ActiveUser[message.chat.id]['dict']['bphone']:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enterphone"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, settings.phone)
+            elif message.text == ActiveUser[message.chat.id]['dict']['blang']:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["selectlang"],
+                    reply_markup=buttons.Buttons(["🇬🇧 English", "🇺🇿 O'zbekcha", "🇷🇺 Русский"])
+                )
+                bot.register_next_step_handler(message, settings.lang)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["setmylocs"]:
+                usercode = db.get_record_by_id('Clients', message.chat.id)[1]
+                locs = db.select_table_with_filters('Locations', {'inn': usercode})
+                if len(locs) > 0:
+                    for location in locs:
+                        loc = telebot.types.Location(location[4], location[3])
+                        bot.send_venue(
+                            message.chat.id,
+                            loc.latitude,
+                            loc.longitude,
+                            str(location[2]),
+                            '',
+                            reply_markup=buttons.buttonsinline([[ActiveUser[message.chat.id]["dict"]["setchange"], 'location '+str(location[0])]])
+                            )
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["setmestochange"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["locadd"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+                )
+                bot.register_next_step_handler(message, settings.locations1)
+            else:
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+                settingsmes(message.chat.id)
+                bot.register_next_step_handler(message, settings.set1)
 
     def locations1(message):
         global ActiveUser
@@ -912,18 +1051,25 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == ActiveUser[message.chat.id]["dict"]["locadd"]:
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["locsendloc"],
-                reply_markup=buttons.clearbuttons()
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, setloc1)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["bcancel"]:
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-            settingsmes(message.chat.id)
-            bot.register_next_step_handler(message, settings.set1)
+        else:
+            if message.text == ActiveUser[message.chat.id]["dict"]["locadd"]:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["locsendloc"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, setloc1)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["bcancel"]:
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+                settingsmes(message.chat.id)
+                bot.register_next_step_handler(message, settings.set1)
 
     def locations2(message):
         global ActiveUser
@@ -933,32 +1079,39 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == ActiveUser[message.chat.id]["dict"]["setlocationch"]:
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["locsendloc"],
-                reply_markup=buttons.clearbuttons()
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, setloc3)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["setnameloc"]:
-            bot.send_message(
-                message.chat.id,
-                "Введите название локации",
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, settings.locations3)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["setdelete"]:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["setconf"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
-            )
-            bot.register_next_step_handler(message, settings.locations4)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["bcancel"]:
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-            settingsmes(message.chat.id)
-            bot.register_next_step_handler(message, settings.set1)
+        else:
+            if message.text == ActiveUser[message.chat.id]["dict"]["setlocationch"]:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["locsendloc"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, setloc3)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["setnameloc"]:
+                bot.send_message(
+                    message.chat.id,
+                    "Введите название локации",
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, settings.locations3)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["setdelete"]:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["setconf"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
+                )
+                bot.register_next_step_handler(message, settings.locations4)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["bcancel"]:
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+                settingsmes(message.chat.id)
+                bot.register_next_step_handler(message, settings.set1)
     def locations3(message):
         global ActiveUser
         try:
@@ -967,19 +1120,26 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        db.update_records(
-            'Locations',
-            ['name'],
-            [message.text],
-            'id',
-            ActiveUser[message.chat.id]['curlocation']
-        )
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["success"],
-            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
-        )
-        bot.register_next_step_handler(message, settings.locations2)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            db.update_records(
+                'Locations',
+                ['name'],
+                [message.text],
+                'id',
+                ActiveUser[message.chat.id]['curlocation']
+            )
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["success"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+            )
+            bot.register_next_step_handler(message, settings.locations2)
     def locations4(message):
         global ActiveUser
         try:
@@ -988,31 +1148,38 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == ActiveUser[message.chat.id]["dict"]["by"]:
-            db.delete_record('Locations', 'id', ActiveUser[message.chat.id]['curlocation'])
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                "Локация удалена.",
-                reply_markup=buttons.clearbuttons()
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-            settingsmes(message.chat.id)
-            bot.register_next_step_handler(message, settings.set1)
-        elif message.text == ActiveUser[message.chat.id]["dict"]["bn"]:
-            bot.send_message(
-                message.chat.id,
-                "Операция отменена.",
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
-            )
-            bot.register_next_step_handler(message, settings.locations2)
         else:
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["setconf2"],
-                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
-            )
-            bot.register_next_step_handler(message, settings.locations4)
+            if message.text == ActiveUser[message.chat.id]["dict"]["by"]:
+                db.delete_record('Locations', 'id', ActiveUser[message.chat.id]['curlocation'])
+                bot.send_message(
+                    message.chat.id,
+                    "Локация удалена.",
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+                settingsmes(message.chat.id)
+                bot.register_next_step_handler(message, settings.set1)
+            elif message.text == ActiveUser[message.chat.id]["dict"]["bn"]:
+                bot.send_message(
+                    message.chat.id,
+                    "Операция отменена.",
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+                )
+                bot.register_next_step_handler(message, settings.locations2)
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["setconf2"],
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["by"], ActiveUser[message.chat.id]["dict"]["bn"]])
+                )
+                bot.register_next_step_handler(message, settings.locations4)
 
     def inn(message):
         global ActiveUser
@@ -1022,23 +1189,30 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]['code'] = message.text
-        if db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code']) is None:
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["entercname"],
-                reply_markup=buttons.clearbuttons()
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, settings.cname)
         else:
-            cont = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code'])
-            if cont is not None:
-                ActiveUser[message.chat.id]['cname'] = cont[1]
-                ActiveUser[message.chat.id]['name'] = cont[1]
-            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-            settingsmes(message.chat.id)
-            bot.register_next_step_handler(message, settings.set1)
+            ActiveUser[message.chat.id]['code'] = message.text
+            if db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code']) is None:
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["entercname"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, settings.cname)
+            else:
+                cont = db.get_record_by_id('Contragents', ActiveUser[message.chat.id]['code'])
+                if cont is not None:
+                    ActiveUser[message.chat.id]['cname'] = cont[1]
+                    ActiveUser[message.chat.id]['name'] = cont[1]
+                bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+                settingsmes(message.chat.id)
+                bot.register_next_step_handler(message, settings.set1)
     def pinfl(message):
         global ActiveUser
         try:
@@ -1047,11 +1221,18 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]['code'] = message.text
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-        settingsmes(message.chat.id)
-        bot.register_next_step_handler(message, settings.set1)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            ActiveUser[message.chat.id]['code'] = message.text
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
     def myname(message):
         global ActiveUser
         try:
@@ -1060,11 +1241,18 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]['name'] = message.text
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-        settingsmes(message.chat.id)
-        bot.register_next_step_handler(message, settings.set1)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            ActiveUser[message.chat.id]['name'] = message.text
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
     def cname(message):
         global ActiveUser
         try:
@@ -1073,11 +1261,18 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]['name'] = message.text
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-        settingsmes(message.chat.id)
-        bot.register_next_step_handler(message, settings.set1)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            ActiveUser[message.chat.id]['name'] = message.text
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
     def person(message):
         global ActiveUser
         try:
@@ -1086,11 +1281,18 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]['person'] = message.text
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-        settingsmes(message.chat.id)
-        bot.register_next_step_handler(message, settings.set1)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            ActiveUser[message.chat.id]['person'] = message.text
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
     def phone(message):
         global ActiveUser
         try:
@@ -1099,11 +1301,18 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        ActiveUser[message.chat.id]['phone'] = message.text
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-        settingsmes(message.chat.id)
-        bot.register_next_step_handler(message, settings.set1)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            ActiveUser[message.chat.id]['phone'] = message.text
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
     def lang(message):
         global ActiveUser
         try:
@@ -1112,16 +1321,23 @@ class settings:
         except Exception as e:
             logging.error(e)
             pass
-        if message.text == "🇬🇧 English":
-            ActiveUser[message.chat.id]["lang"] = 'en'
-        elif message.text == "🇺🇿 O'zbekcha":
-            ActiveUser[message.chat.id]["lang"] = 'uz'
-        elif message.text == "🇷🇺 Русский":
-            ActiveUser[message.chat.id]["lang"] = 'ru'
-        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-        settingsmes(message.chat.id)
-        bot.register_next_step_handler(message, settings.set1)
+        if message.text == "/start":
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["welcome"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+            )
+        else:
+            if message.text == "🇬🇧 English":
+                ActiveUser[message.chat.id]["lang"] = 'en'
+            elif message.text == "🇺🇿 O'zbekcha":
+                ActiveUser[message.chat.id]["lang"] = 'uz'
+            elif message.text == "🇷🇺 Русский":
+                ActiveUser[message.chat.id]["lang"] = 'ru'
+            bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+            settingsmes(message.chat.id)
+            bot.register_next_step_handler(message, settings.set1)
 
 # общий чат (пересылка сообщения всем пользователям)
 class allchats:
@@ -1129,36 +1345,43 @@ class allchats:
     def chat1(message):
         username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
         logging.info(f'{username} Отправил запрос в отправке всем пользователям - {message.text}')
-        if message.text == 'Main Menu' or message.text == '/start':
-            logging.info('main')
+        if message.text == "/start":
             bot.send_message(
                 message.chat.id,
-                'Выберите операцию.',
+                ActiveUser[message.chat.id]["dict"]["welcome"],
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
-            bot.register_next_step_handler(message, Main.main1)
         else:
-            logging.info('message to all')
-            users = db.select_table('Clients')
-            # for user in users:
-            #     try:
-            #         logging.info(f'sended message to user {user[3]} from {user[2]}')
-            #         if user[0] != message.chat.id:
-            #             bot.forward_message(user[0], message.chat.id, message.message_id)
-            #     except Exception as e:
-            #         logging.error(e)
-            #         pass
-            for user in users:
-                try:
-                    bot.forward_message(user[0], message.chat.id, message.message_id)
-                    if message.from_user.id == 65241621 or message.from_user.id == 1669785252:
-                        bot.unpin_chat_message(user[0])
-                        bot.pin_chat_message(user[0], message.message_id)
-                    logging.info(f'sent message to user {user[3]} from {user[2]}')
-                except Exception as e:
-                    logging.error(e)
-                    pass
-            bot.register_next_step_handler(message, allchats.chat1)
+            if message.text == 'Main Menu' or message.text == '/start':
+                logging.info('main')
+                bot.send_message(
+                    message.chat.id,
+                    'Выберите операцию.',
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+                )
+                bot.register_next_step_handler(message, Main.main1)
+            else:
+                logging.info('message to all')
+                users = db.select_table('Clients')
+                # for user in users:
+                #     try:
+                #         logging.info(f'sended message to user {user[3]} from {user[2]}')
+                #         if user[0] != message.chat.id:
+                #             bot.forward_message(user[0], message.chat.id, message.message_id)
+                #     except Exception as e:
+                #         logging.error(e)
+                #         pass
+                for user in users:
+                    try:
+                        bot.forward_message(user[0], message.chat.id, message.message_id)
+                        if message.from_user.id == 65241621 or message.from_user.id == 1669785252:
+                            bot.unpin_chat_message(user[0])
+                            bot.pin_chat_message(user[0], message.message_id)
+                        logging.info(f'sent message to user {user[3]} from {user[2]}')
+                    except Exception as e:
+                        logging.error(e)
+                        pass
+                bot.register_next_step_handler(message, allchats.chat1)
 
 @bot.message_handler(content_types=['text', 'location'])
 
@@ -1169,28 +1392,35 @@ def reg6(message):
         logging.info(f'{username} Отправил запрос - {message.text}')
     except Exception as e:
         pass
-    if message.content_type == 'location':
-        lon, lat = message.location.longitude, message.location.latitude
-        url = f'https://www.google.com/maps/search/?api=1&query={lat},{lon}'
-        ActiveUser[message.chat.id]['addr'] = url
-        db.insert_record(
-            'Locations',
-            [
-                None,
-                ActiveUser[message.chat.id]['code'],
-                'Основной адрес',
-                lat,
-                lon
-            ]
+    if message.text == "/start":
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["welcome"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
         )
     else:
-        ActiveUser[message.chat.id]['addr'] = message.text
-    bot.send_message(
-        message.chat.id,
-        ActiveUser[message.chat.id]["dict"]["enterphone"],
-        reply_markup=buttons.clearbuttons()
-    )
-    bot.register_next_step_handler(message, Reg.reg7)
+        if message.content_type == 'location':
+            lon, lat = message.location.longitude, message.location.latitude
+            url = f'https://www.google.com/maps/search/?api=1&query={lat},{lon}'
+            ActiveUser[message.chat.id]['addr'] = url
+            db.insert_record(
+                'Locations',
+                [
+                    None,
+                    ActiveUser[message.chat.id]['code'],
+                    'Основной адрес',
+                    lat,
+                    lon
+                ]
+            )
+        else:
+            ActiveUser[message.chat.id]['addr'] = message.text
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["enterphone"],
+            reply_markup=buttons.clearbuttons()
+        )
+        bot.register_next_step_handler(message, Reg.reg7)
 
 def adr(message):
     global ActiveUser
@@ -1200,24 +1430,30 @@ def adr(message):
     except Exception as e:
         logging.error(e)
         pass
-    if message.content_type == 'location':
-        lon, lat = message.location.longitude, message.location.latitude
-        url = f'https://www.google.com/maps/search/?api=1&query={lat},{lon}'
-        ActiveUser[message.chat.id]['adr'] = url
-        db.update_records(
-            'Locations',
-            ['lat', 'lon'],
-            [lat, lon],
-            'name',
-            'Основной адрес'
+    if message.text == "/start":
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["welcome"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
         )
-    
     else:
-        ActiveUser[message.chat.id]['adr'] = message.text
-    bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
-    settingsmes(message.chat.id)
-    bot.register_next_step_handler(message, settings.set1)
+        if message.content_type == 'location':
+            lon, lat = message.location.longitude, message.location.latitude
+            url = f'https://www.google.com/maps/search/?api=1&query={lat},{lon}'
+            ActiveUser[message.chat.id]['adr'] = url
+            db.update_records(
+                'Locations',
+                ['lat', 'lon'],
+                [lat, lon],
+                'name',
+                'Основной адрес'
+            )
+        else:
+            ActiveUser[message.chat.id]['adr'] = message.text
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        bot.delete_message(chat_id=ActiveUser[message.chat.id]['settingsmes'].chat.id, message_id=ActiveUser[message.chat.id]['settingsmes'].message_id)
+        settingsmes(message.chat.id)
+        bot.register_next_step_handler(message, settings.set1)
 
 def ntnl(message):
     global ActiveUser
@@ -1227,21 +1463,28 @@ def ntnl(message):
     except Exception as e:
         logging.error(e)
         pass
-    if message.content_type == 'location':
-        ActiveUser[message.chat.id]['lon'], ActiveUser[message.chat.id]['lat'] = message.location.longitude, message.location.latitude
+    if message.text == "/start":
         bot.send_message(
             message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["locentername"],
-            reply_markup=buttons.clearbuttons()
+            ActiveUser[message.chat.id]["dict"]["welcome"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
         )
-        bot.register_next_step_handler(message, ntnl1)
     else:
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["locerrorloc"],
-            reply_markup=buttons.clearbuttons()
-        )
-        bot.register_next_step_handler(message, ntnl)
+        if message.content_type == 'location':
+            ActiveUser[message.chat.id]['lon'], ActiveUser[message.chat.id]['lat'] = message.location.longitude, message.location.latitude
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locentername"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, ntnl1)
+        else:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locerrorloc"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, ntnl)
 
 def ntnl1(message):
     global ActiveUser
@@ -1251,31 +1494,38 @@ def ntnl1(message):
     except Exception as e:
         logging.error(e)
         pass
-    ActiveUser[message.chat.id]['locationname'] = message.text
-    inn = db.get_record_by_id('Clients', message.chat.id)[1]
-    db.insert_record(
-        'Locations',
-        [
-            None,
-            inn,
-            message.text,
-            ActiveUser[message.chat.id]['lat'],
-            ActiveUser[message.chat.id]['lon']
-        ]
-    )
-    locations = db.select_table_with_filters('Locations', {'inn': db.get_record_by_id('Clients', message.chat.id)[1]})
-    if len(locations) > 0:
-        btns = []
-        btns.append(ActiveUser[message.chat.id]["dict"]["locleave"])
-        for loc in locations:
-            btns.append(str(loc[0]) + ' - ' + str(loc[2]))
-        btns.append(ActiveUser[message.chat.id]["dict"]["locadd"])
+    if message.text == "/start":
         bot.send_message(
             message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["locwhere"],
-            reply_markup=buttons.Buttons(btns)
+            ActiveUser[message.chat.id]["dict"]["welcome"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
         )
-        bot.register_next_step_handler(message, Main.confirmtask01)
+    else:
+        ActiveUser[message.chat.id]['locationname'] = message.text
+        inn = db.get_record_by_id('Clients', message.chat.id)[1]
+        db.insert_record(
+            'Locations',
+            [
+                None,
+                inn,
+                message.text,
+                ActiveUser[message.chat.id]['lat'],
+                ActiveUser[message.chat.id]['lon']
+            ]
+        )
+        locations = db.select_table_with_filters('Locations', {'inn': db.get_record_by_id('Clients', message.chat.id)[1]})
+        if len(locations) > 0:
+            btns = []
+            btns.append(ActiveUser[message.chat.id]["dict"]["locleave"])
+            for loc in locations:
+                btns.append(str(loc[0]) + ' - ' + str(loc[2]))
+            btns.append(ActiveUser[message.chat.id]["dict"]["locadd"])
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locwhere"],
+                reply_markup=buttons.Buttons(btns)
+            )
+            bot.register_next_step_handler(message, Main.confirmtask01)
 
 def setloc1(message):
     global ActiveUser
@@ -1285,21 +1535,28 @@ def setloc1(message):
     except Exception as e:
         logging.error(e)
         pass
-    if message.content_type == 'location':
-        ActiveUser[message.chat.id]['lon'], ActiveUser[message.chat.id]['lat'] = message.location.longitude, message.location.latitude
+    if message.text == "/start":
         bot.send_message(
             message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["locentername"],
-            reply_markup=buttons.clearbuttons()
+            ActiveUser[message.chat.id]["dict"]["welcome"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
         )
-        bot.register_next_step_handler(message, setloc2)
     else:
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["locerrorloc"],
-            reply_markup=buttons.clearbuttons()
-        )
-        bot.register_next_step_handler(message, setloc1)
+        if message.content_type == 'location':
+            ActiveUser[message.chat.id]['lon'], ActiveUser[message.chat.id]['lat'] = message.location.longitude, message.location.latitude
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locentername"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, setloc2)
+        else:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locerrorloc"],
+                reply_markup=buttons.clearbuttons()
+            )
+            bot.register_next_step_handler(message, setloc1)
 def setloc2(message):
     global ActiveUser
     try:
@@ -1308,35 +1565,42 @@ def setloc2(message):
     except Exception as e:
         logging.error(e)
         pass
-    ActiveUser[message.chat.id]['locationname'] = message.text
-    inn = db.get_record_by_id('Clients', message.chat.id)[1]
-    db.insert_record(
-        'Locations',
-        [
-            None,
-            inn,
-            message.text,
-            ActiveUser[message.chat.id]['lat'],
-            ActiveUser[message.chat.id]['lon']
-        ]
-    )
-    usercode = db.get_record_by_id('Clients', message.chat.id)[1]
-    locs = db.select_table_with_filters('Locations', {'inn': usercode})
-    if len(locs) > 0:
-        for location in locs:
-            loc = telebot.types.Location(location[4], location[3])
-            bot.send_location(message.chat.id, loc.latitude, loc.longitude)
-            bot.send_message(
-                message.chat.id,
-                str(location[2]),
-                reply_markup=buttons.buttonsinline([[ActiveUser[message.chat.id]["dict"]["setchange"], 'location '+str(location[0])]])
-            )
-    bot.send_message(
-        message.chat.id,
-        ActiveUser[message.chat.id]["dict"]["setmestochange"],
-        reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["locadd"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
-    )
-    bot.register_next_step_handler(message, settings.locations1)
+    if message.text == "/start":
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["welcome"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
+        )
+    else:
+        ActiveUser[message.chat.id]['locationname'] = message.text
+        inn = db.get_record_by_id('Clients', message.chat.id)[1]
+        db.insert_record(
+            'Locations',
+            [
+                None,
+                inn,
+                message.text,
+                ActiveUser[message.chat.id]['lat'],
+                ActiveUser[message.chat.id]['lon']
+            ]
+        )
+        usercode = db.get_record_by_id('Clients', message.chat.id)[1]
+        locs = db.select_table_with_filters('Locations', {'inn': usercode})
+        if len(locs) > 0:
+            for location in locs:
+                loc = telebot.types.Location(location[4], location[3])
+                bot.send_location(message.chat.id, loc.latitude, loc.longitude)
+                bot.send_message(
+                    message.chat.id,
+                    str(location[2]),
+                    reply_markup=buttons.buttonsinline([[ActiveUser[message.chat.id]["dict"]["setchange"], 'location '+str(location[0])]])
+                )
+        bot.send_message(
+            message.chat.id,
+            ActiveUser[message.chat.id]["dict"]["setmestochange"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["locadd"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+        )
+        bot.register_next_step_handler(message, settings.locations1)
 def setloc3(message):
     global ActiveUser
     try:
@@ -1345,34 +1609,41 @@ def setloc3(message):
     except Exception as e:
         logging.error(e)
         pass
-    if message.content_type == 'location':
-        lon, lat = message.location.longitude, message.location.latitude
-        db.update_records(
-            'Locations',
-            [
-                'lon',
-                'lat'
-            ],
-            [
-                lon,
-                lat
-            ],
-            'id',
-            ActiveUser[message.chat.id]['curlocation']
-        )
+    if message.text == "/start":
         bot.send_message(
             message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["success"],
-            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+            ActiveUser[message.chat.id]["dict"]["welcome"],
+            reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
         )
-        bot.register_next_step_handler(message, settings.locations2)
     else:
-        bot.send_message(
-            message.chat.id,
-            ActiveUser[message.chat.id]["dict"]["locerrorloc"],
-            reply_markup=buttons.clearbuttons
-        )
-        bot.register_next_step_handler(message, setloc3)
+        if message.content_type == 'location':
+            lon, lat = message.location.longitude, message.location.latitude
+            db.update_records(
+                'Locations',
+                [
+                    'lon',
+                    'lat'
+                ],
+                [
+                    lon,
+                    lat
+                ],
+                'id',
+                ActiveUser[message.chat.id]['curlocation']
+            )
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["success"],
+                reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["setlocationch"], ActiveUser[message.chat.id]["dict"]["setnameloc"], ActiveUser[message.chat.id]["dict"]["setdelete"], ActiveUser[message.chat.id]["dict"]["bcancel"]])
+            )
+            bot.register_next_step_handler(message, settings.locations2)
+        else:
+            bot.send_message(
+                message.chat.id,
+                ActiveUser[message.chat.id]["dict"]["locerrorloc"],
+                reply_markup=buttons.clearbuttons
+            )
+            bot.register_next_step_handler(message, setloc3)
 
 @bot.callback_query_handler(func=lambda call: True)
 # Реакция на кнопки
@@ -1391,15 +1662,12 @@ def callback_handler(call):
 
 # Запуск бота
 if __name__ == '__main__':
-    sendtoall('‼️‼️‼️Сервер бота был перезагружен...‼️‼️‼️\nНажмите кнопку "/start"', buttons.Buttons(['/start']), 0, 0, True)
     thread = threading.Thread(target=asyncio.run, args=(main(),))
     thread.start()
     # bot.polling()
-    while True:
-        try:
-            bot.stop_polling()
-            bot.polling(none_stop=True, interval=0)
-            logging.info()
-        except Exception as e:
-            logging.error(e)
-            time.sleep(5)
+while True:
+    try:
+        bot.polling()
+    except Exception as e:
+        logging.error(f'\n🆘 Ошибка!\n    ⚠️ - {e}\n')
+        pass

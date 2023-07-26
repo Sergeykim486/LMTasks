@@ -26,7 +26,7 @@ async def schedule_message():
                             mid = bot.send_message(
                                 user[0],
                                 functions.curtask(tid),
-                                reply_markup=buttons.buttonsinline([['👍 Принять', 'confirm ' + str(tid)], ['📎 Назначить', 'set ' + str(tid)]])
+                                reply_markup=buttons.buttonsinline([['👍 Принять', 'confirm ' + str(tid)], ['📎 Назначить', 'set ' + str(tid)], ['ЛОКАЦИЯ', 'location ' + str(tid)]])
                             )
                             db.insert_record('NewTasksMessages', [None, tid, uid, mid.message_id])
                         except Exception as e:

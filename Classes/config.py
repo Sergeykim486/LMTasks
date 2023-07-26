@@ -39,7 +39,7 @@ ru = {
     "bcompany": "🏛 Организация",
     "bindivid": "👤 Частное лицо",
     "entername": "Как Вас зовут (фамилия имя).",
-    "enterinn": "Укажите ИНН Вашей организации.",
+    "enterinn": "Укажите ИНН Вашей организации. (Только цифры без пробелов)",
     "enterpinfl": "Укажите Ваш ПИНФЛ",
     "entercname": "Укажите наименование Вашей организации",
     "enteradr": "Укажите Адрес, или отправьте локацию.",
@@ -104,7 +104,8 @@ ru = {
     "setnameloc": "Название",
     "setdelete": "🗑 Удалить",
     "setconf": "Вы уверены что хотите удалить эту локацию?",
-    "setconf2": "Вы не подтвердили удаление.\nУдалить локацию?"
+    "setconf2": "Вы не подтвердили удаление.\nУдалить локацию?",
+    "innerror": "Ошибка ввода. Введите цифры без пробелов и букв"
 }
 
 # АНГЛИЙСКИЙ ЯЗЫК КНОПКИ И СООБЩЕНИЯ
@@ -113,7 +114,7 @@ en = {
     "bcompany": "🏛 Organization",
     "bindivid": "👤 Individual",
     "entername": "What is your name (last name, first name).",
-    "enterinn": "Enter your organization's TIN.",
+    "enterinn": "Enter your organization's TIN. (Only numbers without spaces)",
     "enterpinfl": "Enter your PINFL.",
     "entercname": "Enter your organization name.",
     "enteradr": "Enter address, or send location.",
@@ -178,7 +179,8 @@ en = {
     "setnameloc": "Name",
     "setdelete": "🗑 Delete",
     "setconf": "Are you sure you want to delete this location?",
-    "setconf2": "You haven't confirmed the deletion. Delete the location?"
+    "setconf2": "You haven't confirmed the deletion. Delete the location?",
+    "innerror": "Input error. Please enter numbers without spaces or letters."
 }
 
 # УЗБЕКСКИЙ ЯЗЫК КНОПКИ И СООБЩЕНИЯ
@@ -187,7 +189,7 @@ uz = {
     "bcompany": "🏛 Tashkilot",
     "bindivid": "👤 Shaxsiy",
     "entername": "Ismingizni kiriting (familiya ism).",
-    "enterinn": "Tashkilotingizning STIRni kiriting.",
+    "enterinn": "Tashkilotingizning STIRni kiriting. (Faqat raqamlarni kiriting)",
     "enterpinfl": "PINFL-ni kiriting",
     "entercname": "Tashkilotingizning nomini kiriting",
     "enteradr": "Manzilingizni yoki lokatsiyani yuboring.",
@@ -252,5 +254,6 @@ uz = {
     "setnameloc": "Nomi",
     "setdelete": "🗑 O'chirish",
     "setconf": "Ushbu joylashuvni o'chirishga ishonchingiz komilmi?",
-    "setconf2": "O'chirishni tasdiqlamadingiz. Joylashuvni o'chirishni xohlaysizmi?"
+    "setconf2": "O'chirishni tasdiqlamadingiz. Joylashuvni o'chirishni xohlaysizmi?",
+    "innerror": "Noto'g'ri ma'lumot kiritish. Iltimos, faqat raqamlarni kiriting. Barcha bo'sh joylarni, harflarni yoki boshqa belgilarni olib tashlang."
 }
