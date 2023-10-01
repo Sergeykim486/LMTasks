@@ -16,8 +16,6 @@ class NewTask:
             username = db.get_record_by_id('Users', message.chat.id)[2] + ' ' + db.get_record_by_id('Users', message.chat.id)[1]
             if num != 0:
                 logging.info(f'\nℹ️ {username} Отправил запрос\n    -    {message.text}\n')
-        if num == 0:
-            num = 1
         ActiveUser[message.chat.id]['block_nt1'] = True
         ActiveUser[message.chat.id]['added'] = datetime.now().strftime("%d.%m.%Y %H:%M")
         ActiveUser[message.chat.id]['manager'] = message.chat.id
@@ -34,6 +32,7 @@ class NewTask:
             ActiveUser[message.chat.id]['Finishedop'] = True
             ActiveUser[message.chat.id]['block_main_menu'] = False
             ActiveUser[message.chat.id]['block_nt1'] = False
+            num = 0
         elif message.text.split()[0].isdigit():
             processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
             if message.text.split()[0].isdigit():
@@ -50,6 +49,7 @@ class NewTask:
                     reply_markup=buttons.Buttons(['Разовый', 'Долгосрочный', 'Физ. лицо'])
                 )
                 ActiveUser[message.chat.id]['block_nt1'] = False
+                num = 0
                 bot.register_next_step_handler(message, NewTask.NeContr1)
             else:
                 functions.mesdel(message.chat.id, processing.message_id)
@@ -62,6 +62,7 @@ class NewTask:
                     )
                     functions.top10add(client, message.chat.id)
                     ActiveUser[message.chat.id]['block_nt1'] = False
+                    num = 0
                     bot.register_next_step_handler(message, NewTask.tech1)
                 else:
                     bot.send_message(
@@ -71,11 +72,12 @@ class NewTask:
                     )
                     functions.top10add(client, message.chat.id)
                     ActiveUser[message.chat.id]['block_nt1'] = False
+                    num = 0
                     bot.register_next_step_handler(message, NewTask.type1)
         else:
             print('else')
             if num == 1:
-                # num = num + 1
+                print('num = 1')
                 processing = bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
                 contrs = db.select_table('Contragents')
                 res = functions.search_items(message.text, contrs)
@@ -98,21 +100,22 @@ class NewTask:
                         pass
                 else:
                     functions.mesdel(message.chat.id, processing.message_id)
-                    if message.text == '📝 Новая заявка' or message.text == None:
-                        bot.send_message(
-                            message.chat.id,
-                            'Введите ИНН, ПИНФЛ или серию пвсспоррта клиента.\nТак же Вы можете попытаться поискать контрагента по наименованию или его части\nНапримар:\nmonohrom\nВыдаст все компании из базы бота у которых в названии есть monohrom',
-                            reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
-                        )
-                    else:
-                        bot.send_message(
-                            message.chat.id,
-                            '⚠️ ВНИМЕНИЕ!\nКонтрагент не найден.\nПопробуйте перефразировать.',
-                            reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
-                        )
+                    bot.send_message(
+                        message.chat.id,
+                        '⚠️ ВНИМЕНИЕ!\nКонтрагент не найден.\nПопробуйте перефразировать.',
+                        reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
+                    )
                 ActiveUser[message.chat.id]['block_nt1'] = False
+                num = 0
                 bot.register_next_step_handler(message, NewTask.nt1)
             else:
+                if message.text == '📝 Новая заявка' or message.text == None:
+                    bot.send_message(
+                        message.chat.id,
+                        'Введите ИНН, ПИНФЛ или серию пвсспоррта клиента.\nТак же Вы можете попытаться поискать контрагента по наименованию или его части\nНапримар:\nmonohrom\nВыдаст все компании из базы бота у которых в названии есть monohrom',
+                        reply_markup=buttons.Buttons(functions.top10buttons(message.chat.id), 1)
+                    )
+                num = 1
                 bot.register_next_step_handler(message, NewTask.nt1)
 
     # Техника

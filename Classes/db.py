@@ -107,9 +107,11 @@ class Database:
 
         col_indexes = []
 
-        for column, value in filters.items():
-            filter_conditions.append(f"{column} = ?")
-            parameters.append(value)
+        for column, values in filters.items():
+            if not isinstance(values, (list, tuple)):
+                values = [values]
+            filter_conditions.append(f"{column} IN ({', '.join(['?']*len(values))})")
+            parameters.extend(values)
 
         if date_columns:
             column_names = self.get_column_names(table_name)
@@ -119,7 +121,7 @@ class Database:
 
         query = f"SELECT * FROM {table_name} WHERE {' AND '.join(filter_conditions)}"
         rows = self.execute_query(query, parameters)
-        
+
         result_rows = []
 
         if date_columns is not None and from_dates is not None and to_dates is not None:

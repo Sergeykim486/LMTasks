@@ -203,7 +203,12 @@ def top10add(client, user):
 def top10buttons(user):
     data = db.select_table_with_filters('Top10', {'uid': user})
     sorted_data = sorted(data, key=lambda x: x[3], reverse=True)
-    top_10 = sorted_data[:5] if len(sorted_data) >= 5 else sorted_data
+    # for lin in sorted_data:
+    #     print(f'{db.get_record_by_id(lin[2])[1]} - {lin[3]}')
+    if len(sorted_data) >= 10:
+        top_10 = sorted_data[:10]
+    else:
+        top_10 = sorted_data
     buttonscont = []
     buttonscont.append('🚫 Отмена')
     for contr in top_10:

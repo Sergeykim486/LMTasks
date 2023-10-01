@@ -18,6 +18,7 @@ def MenuReactions(message):
             ActiveUser[message.chat.id]['Pause_main_handler'] = False
             ActiveUser[message.chat.id]['Finishedop'] = True
         if message.text == '📝 Новая заявка':
+            ActiveUser[message.chat.id]['s'] = 0
             ActiveUser[message.chat.id]['nt'] = 1
             ActiveUser[message.chat.id]['Pause_main_handler'] = True
             ActiveUser[message.chat.id]['Finishedop'] = False
@@ -303,11 +304,16 @@ def callback_handler(call):
                     ActiveUser[call.from_user.id]['Finishedop'] = True
             elif call.data.split()[0] == 'confirm':# Принятие заявки
                 processing = bot.send_sticker(call.from_user.id, "CAACAgIAAxkBAAEJL8dkedQ1ckrfN8fniwY7yUc-YNaW_AACIAAD9wLID1KiROfjtgxPLwQ", reply_markup=buttons.clearbuttons())
+                print('step 1')
                 if db.get_record_by_id('Tasks', call.data.split()[1])[11] == 5:
                     stat = 6
                 else:
                     stat = 2
-                if db.get_record_by_id('Tasks', call.data.split()[1])[11] > 1:
+                print('step 2')
+                st = 'status - ' + str(db.get_record_by_id('Tasks', call.data.split()[1])[11])
+                print(st)
+                if db.get_record_by_id('Tasks', call.data.split()[1])[11] != 1 and db.get_record_by_id('Tasks', call.data.split()[1])[11] != 5:
+                    print('step 3')
                     functions.mesdel(call.from_user.id, processing.message_id)
                     bot.send_message(
                         call.from_user.id,
@@ -315,6 +321,7 @@ def callback_handler(call):
                         reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                     )
                 else:
+                    print('step 4')
                     db.update_records(
                         'Tasks',
                         [
@@ -337,6 +344,7 @@ def callback_handler(call):
                         reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                     )
                     functions.deletentm(call.data.split()[1])
+                print('step 5')
                 ActiveUser[call.from_user.id]['Pause_main_handler'] = False
                 ActiveUser[call.from_user.id]['Finishedop'] = True
             elif call.data.split()[0] == 'set':# Назначение мастера
