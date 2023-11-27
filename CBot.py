@@ -722,7 +722,7 @@ class Reg:
                 bot.send_message(
                     message.chat.id,
                     ActiveUser[message.chat.id]["dict"]["enterpinfl"],
-                    reply_markup=buttons.clearbuttons()
+                    reply_markup=buttons.Buttons([ActiveUser[message.chat.id]['dict']['bskip']])
                 )
                 bot.register_next_step_handler(message, Reg.reg5)
     
@@ -770,17 +770,45 @@ class Reg:
                 reply_markup=buttons.Buttons([ActiveUser[message.chat.id]["dict"]["newtask"], ActiveUser[message.chat.id]["dict"]["mytasks"], ActiveUser[message.chat.id]["dict"]["review"], ActiveUser[message.chat.id]["dict"]["rate"], ActiveUser[message.chat.id]["dict"]["settings"]],3)
             )
         else:
-            if ActiveUser[message.chat.id]["status"] == 'Организация':
-                ActiveUser[message.chat.id]["person"] = message.text
+            if message.text.isdigit():
+                if ActiveUser[message.chat.id]["status"] == 'Организация':
+                    ActiveUser[message.chat.id]["person"] = message.text
+                else:
+                    ActiveUser[message.chat.id]["code"] = message.text
+                    ActiveUser[message.chat.id]["person"] = '...'
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enteradr"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, reg6)
+            elif message.text == ActiveUser[message.chat.id]['dict']['bskip']:
+                first = 20230001
+                finded = 1
+                while finded == 1:
+                    cont = db.select_table_with_filters('Contragents', {'id': first})
+                    if cont == None:
+                        finded = 0
+                    else:
+                        first = first + 1
+                if ActiveUser[message.chat.id]["status"] == 'Организация':
+                    ActiveUser[message.chat.id]["person"] = first
+                else:
+                    ActiveUser[message.chat.id]["code"] = first
+                    ActiveUser[message.chat.id]["person"] = '...'
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]["dict"]["enteradr"],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, reg6)
             else:
-                ActiveUser[message.chat.id]["code"] = message.text
-                ActiveUser[message.chat.id]["person"] = '...'
-            bot.send_message(
-                message.chat.id,
-                ActiveUser[message.chat.id]["dict"]["enteradr"],
-                reply_markup=buttons.clearbuttons()
-            )
-            bot.register_next_step_handler(message, reg6)
+                bot.send_message(
+                    message.chat.id,
+                    ActiveUser[message.chat.id]['dict']['innerror'],
+                    reply_markup=buttons.clearbuttons()
+                )
+                bot.register_next_step_handler(message, Reg.reg5)
         
     def reg7(message):
         global ActiveUser
