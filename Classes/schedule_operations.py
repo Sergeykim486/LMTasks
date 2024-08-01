@@ -56,6 +56,12 @@ async def schedule_message():
             if sended == 0:
                 sended = 1
                 await daylyreport.evening()
+        elif now.hour == 00 and now.minute ==00:
+            try:
+                ActiveUser.clear()
+            except Exception as e:
+                logging.info(e)
+                pass
         else:
             sended = 0
         daterep = str(datetime.now().strftime("%d.%m.%Y"))
