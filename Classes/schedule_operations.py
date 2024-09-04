@@ -3,7 +3,7 @@ from datetime import datetime
 from Classes.edit_contragent import editcont
 from Classes.add_new_task import NewTask
 from Classes.reports import report
-from Classes.config import ActiveUser, bot, db
+from Classes.config import ActiveUser, sendedmessages, bot, db
 # логи
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 sended = 0
@@ -58,7 +58,11 @@ async def schedule_message():
                 await daylyreport.evening()
         elif now.hour == 00 and now.minute ==00:
             try:
-                ActiveUser.clear()
+                for user in db.Select_table('Users'):
+                    logging.info(f'Очистка кэша пользователя: {user[2]} {user[1]}...')
+                    ActiveUser[user] = {}
+                logging.info('Очистка буфера сообщений...')
+                sendedmessages = []
             except Exception as e:
                 logging.info(e)
                 pass

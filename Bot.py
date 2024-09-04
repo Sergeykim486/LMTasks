@@ -364,7 +364,11 @@ def callback_handler(call):
                     reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
                 )
                 ActiveUser[call.from_user.id]['Pause_main_handler'] = False
-            bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+            try:
+                bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+            except Exception as e:
+                logging.error(f'\n🆘 Попытка изменить не существующее сообщение!\n    ⚠️ - {e}\n')
+                pass
 
 # =====================================  Ц И К Л И Ч Е С К И Й   З А П У С К   Б О Т А  =====================================
 
