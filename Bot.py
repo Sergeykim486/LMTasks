@@ -73,6 +73,19 @@ def MenuReactions(message):
             )
             ActiveUser[message.chat.id]['block_main_menu'] = False
             bot.register_next_step_handler(message, MainMenu.Main2)
+        elif message.text == '/adduser':
+            print('New user')
+            bot.send_message(
+                message.chat.id,
+                'Укажите имя пользователя в формате - Имя Фамилия'
+            )
+            bot.register_next_step_handler(message, newusername)
+        elif message.text == '/deluser':
+            bot.send_message(
+                message.chat.id,
+                'Укажите id пользователя...'
+            )
+            bot.register_next_step_handler(message, deluser)
         elif message.text != None:
             if message.text.isdigit() or (len(message.text.split()) > 1 and message.text.split()[1].isdigit()):
                 if message.text.isdigit():
@@ -112,6 +125,7 @@ def MenuReactions(message):
         ActiveUser[message.chat.id]['block_main_menu'] = False
         bot.register_next_step_handler(message, MainMenu.Main2)
 
+
 # =====================================  С Т А Р Т   Б О Т А  =====================================
 
 @bot.message_handler(commands=['start'])
@@ -133,14 +147,6 @@ def handle_start(message):
             reply_markup=buttons.Buttons(['ок'])
         )
         bot.register_next_step_handler(message, handle_start)
-        # bot.send_message(
-        #     user_id,
-        #     'Вы не зарегистрированы.',
-        #     reply_markup=buttons.Buttons(['🔑 Регистрация'])
-        # )
-        # ActiveUser[message.chat.id]['Pause_main_handler'] = True
-        # ActiveUser[message.chat.id]['Finishedop'] = False
-        # bot.register_next_step_handler(message, Reg.reg1)
     else:
         bot.send_message(
             user_id,
@@ -217,6 +223,76 @@ def filters(message):
     if ActiveUser[message.chat.id]['filter']['justmy'] == 1:
         messagetouser = messagetouser + '\n👤 Показать только мои заявки.'
     return messagetouser
+
+#add user admin
+def newusername(message):
+    fullname = message.text
+    ActiveUser[message.chat.id]['NewUserFName'],ActiveUser[message.chat.id]['NewUserLname'] = fullname.split()
+    bot.send_message(
+        message.chat.id,
+        'Укажите контактный номер телефона.'
+    )
+    bot.register_next_step_handler(message, newuserphone)
+
+def newuserphone(message):
+    ActiveUser[message.chat.id]['NewUserPhone'] = message.text
+    bot.send_message(
+        message.chat.id,
+        'Укажите id пользователя.\nID пользователя можно получить в телеграм боте @getmyid_bot.'
+    )
+    bot.register_next_step_handler(message, newuserid)
+
+def newuserid(message):
+    ActiveUser[message.chat.id]['NewUserID'] = message.text
+    db.insert_record(
+        'Users',
+        [
+            ActiveUser[message.chat.id]['NewUserID'],
+            ActiveUser[message.chat.id]['NewUserFName'],
+            ActiveUser[message.chat.id]['NewUserLname'],
+            ActiveUser[message.chat.id]['NewUserPhone']
+        ]
+    )
+    ActiveUser[message.chat.id]['Pause_main_handler'] = False
+    bot.send_message(
+        message.chat.id,
+        'Выберите операцию.',
+        reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+    )
+    ActiveUser[message.chat.id]['block_main_menu'] = False
+    bot.register_next_step_handler(message, MainMenu.Main2)
+
+
+# delete user
+def deluser(message):
+    ActiveUser[message.chat.id]['Delid'] = message.text
+    bot.send_message(
+        message.chat.id,
+        'Удалить пользователя?]',
+        reply_markup=buttons.Buttons(['Да', 'Нет'],2)
+    )
+    bot.register_next_step_handler(message, deluser2)
+
+def deluser2(message):
+    if message.text == 'Да':
+        db.delete_record('Users','id',ActiveUser[message.chat.id]['Delid'])
+        bot.send_message(
+            message.chat.id,
+            'Запись удалена. Выберите операцию.',
+            reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+        )
+        ActiveUser[message.chat.id]['block_main_menu'] = False
+        bot.register_next_step_handler(message, MainMenu.Main2)
+    else:
+        print('del canceled.')
+    bot.send_message(
+        message.chat.id,
+        'Выберите операцию.',
+        reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
+    )
+    ActiveUser[message.chat.id]['block_main_menu'] = False
+    bot.register_next_step_handler(message, MainMenu.Main2)
+
 
 # общий чат (пересылка сообщения всем пользователям)
 class allchats:
@@ -384,4 +460,3 @@ while True:
         pass
 
 # bot.polling()
-
