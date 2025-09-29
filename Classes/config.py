@@ -4,7 +4,7 @@ from Classes.db import Database
 
 # ==========================================================================
 # Основной
-TOKEN = "6172385271:AAHYeTps9AXE8dP77_JM4kXV0kIPm22WFwM"
+TOKEN = "6172385271:AAEvfid9yXFU7Fy5e1t8F5f25JtztYv3-3Y"
 
 # тестовый
 # TOKEN = "911710144:AAGmHGL80xy_dlQPhx-LxqivNSNQDHrGEjw"
@@ -12,7 +12,7 @@ TOKEN = "6172385271:AAHYeTps9AXE8dP77_JM4kXV0kIPm22WFwM"
 
 # ==========================================================================
 # Основной
-TOKENC = "303078994:AAFJHY1df6bRv8VtXxzxHoajhVmlHz3cyeY"
+TOKENC = "303078994:AAFJT_lxE3TfRCEAWb9P2VcHjI1GdJ2o6Zw"
 
 # Тестовый
 # TOKENC = "5750687344:AAG-AGZjwyLKInDj4LNMQTR7KxH_QpDlUsQ"

@@ -81,9 +81,15 @@ def MenuReactions(message):
             )
             bot.register_next_step_handler(message, newusername)
         elif message.text == '/deluser':
+            users = db.select_table('Users')
+            btn = []
+            for user in users:
+                line = str(user[0]) + ' ' + str(user[2]) + ' ' + str(user[1])
+                btn.append(line)
             bot.send_message(
                 message.chat.id,
-                'Укажите id пользователя...'
+                'Выберите пользователя которого нужно удалить.',
+                reply_markup=buttons.Buttons(btn,1)
             )
             bot.register_next_step_handler(message, deluser)
         elif message.text != None:
@@ -238,12 +244,12 @@ def newuserphone(message):
     ActiveUser[message.chat.id]['NewUserPhone'] = message.text
     bot.send_message(
         message.chat.id,
-        'Укажите id пользователя.\nID пользователя можно получить в телеграм боте @getmyid_bot.'
+        'Перешлите мне любое сообщение от нового пользователя...'
     )
     bot.register_next_step_handler(message, newuserid)
 
 def newuserid(message):
-    ActiveUser[message.chat.id]['NewUserID'] = message.text
+    ActiveUser[message.chat.id]['NewUserID'] = message.forward_from.id
     db.insert_record(
         'Users',
         [
@@ -253,10 +259,16 @@ def newuserid(message):
             ActiveUser[message.chat.id]['NewUserPhone']
         ]
     )
+    user_id = ActiveUser[message.chat.id]['NewUserID']
+    last_name = ActiveUser[message.chat.id]['NewUserLname']
+    first_name = ActiveUser[message.chat.id]['NewUserFName']
     ActiveUser[message.chat.id]['Pause_main_handler'] = False
+    ActiveUser[user_id] = {}
     bot.send_message(
         message.chat.id,
-        'Выберите операцию.',
+            f"Пользователь:\n{user_id}\n"
+            f"{last_name} {first_name}\n"
+            f"Успешно добавлен в систему",
         reply_markup=buttons.Buttons(['📝 Новая заявка', '🔃 Обновить список заявок', '🖨️ Обновить список техники', '📋 Мои заявки', '✏️ Редактировать контрагента', '📈 Отчеты', '🗺️ Карта', '📢 Написать всем'],3)
     )
     ActiveUser[message.chat.id]['block_main_menu'] = False
@@ -265,7 +277,7 @@ def newuserid(message):
 
 # delete user
 def deluser(message):
-    ActiveUser[message.chat.id]['Delid'] = message.text
+    ActiveUser[message.chat.id]['Delid'] = message.text.split(' ', 1)[0]
     bot.send_message(
         message.chat.id,
         'Удалить пользователя?]',
@@ -276,6 +288,11 @@ def deluser(message):
 def deluser2(message):
     if message.text == 'Да':
         db.delete_record('Users','id',ActiveUser[message.chat.id]['Delid'])
+        if ActiveUser[message.chat.id]['Delid'] in ActiveUser:
+            del ActiveUser[message.chat.id]['Delid']
+            print(f"Сессия для пользователя {ActiveUser[message.chat.id]['Delid']} успешно удалена. 🗑️")
+        else:
+            print(f"Пользователя {ActiveUser[message.chat.id]['Delid']} не было в активных сессиях.")
         bot.send_message(
             message.chat.id,
             'Запись удалена. Выберите операцию.',

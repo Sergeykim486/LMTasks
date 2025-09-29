@@ -153,7 +153,6 @@ async def schedule_message():
             logging.info(e)
             pass
         if len(locations) > 0:
-            functions.mmapgen(locations)
             functions.mapgen(locations)
         await asyncio.sleep(30)
 async def main():
